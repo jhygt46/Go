@@ -8,7 +8,7 @@ import (
 
 func NewConsulRegister() *ConsulRegister {
 	return &ConsulRegister{
-		Address:                        10.128.0.4:8500, //consul address
+		Address:                        "10.128.0.4:8500", //consul address
 		Name:                           "unknown",
 		Tag:                            []string{},
 		Port:                           80,
