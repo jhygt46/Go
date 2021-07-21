@@ -1,8 +1,9 @@
 package main
 
 import (
-    "fmt"
     "os"
+	"fmt"
+    "net"
     "math"
     "time"
     "log"
@@ -12,6 +13,7 @@ import (
     "encoding/json"
     "github.com/valyala/fasthttp"
     "github.com/dgraph-io/ristretto"
+	"github.com/hashicorp/consul/api"
 )
 
 type Campos struct {
@@ -37,6 +39,15 @@ type Cacheip struct {
 }
 type MyHandler struct {
 	cache *ristretto.Cache
+}
+
+type ConsulRegister struct {
+	Address                        string
+	Name                           string
+	Tag                            []string
+	Port                           int
+	DeregisterCriticalServiceAfter time.Duration
+	Interval                       time.Duration
 }
 
 var Datas []Data
@@ -89,7 +100,34 @@ func main() {
 
 		}
     }
-    
+
+	s := NewConsulRegister()
+	config := api.DefaultConfig()
+	config.Address = s.Address
+	client, err := api.NewClient(config)
+	if err != nil {
+		fmt.Println(err)
+	}
+	agent := client.Agent()
+
+	IP := LocalIP()
+	reg := &api.AgentServiceRegistration{
+		 ID: fmt.Sprintf("%v-%v-%v", s.Name, IP, s.Port), // Name of the service node
+		 Name: s.Name, // service name
+		 Tags: s.Tag, // tag, can be empty
+		 Port: s.Port, // service port
+		 Address: IP, // Service IP
+		 Check: &api.AgentServiceCheck{ // Health Check
+			 Interval: s.Interval.String(), // Health check interval
+			 GRPC: fmt.Sprintf("%v:%v/%v", IP, s.Port, s.Name), // grpc support, address to perform health check, service will be passed to Health.Check function
+			 DeregisterCriticalServiceAfter: s.DeregisterCriticalServiceAfter.String(), // Deregistration time, equivalent to expiration time
+		},
+	}
+ 
+	if err := agent.ServiceRegister(reg); err != nil {
+		fmt.Println(err)
+	}
+
     pass := &MyHandler{ cache: cache, }
     fasthttp.ListenAndServe(":80", pass.HandleFastHTTP)
 
@@ -135,4 +173,15 @@ func humanateBytes(s uint64, base float64, sizes []string) string {
 func FileSize(s int64) string {
 	sizes := []string{"B", "KB", "MB", "GB", "TB", "PB", "EB"}
 	return humanateBytes(uint64(s), 1024, sizes)
+}
+
+func NewConsulRegister() *ConsulRegister {
+	return &ConsulRegister{
+		Address:                        "10.128.0.4:8500", //consul address
+		Name:                           "unknown",
+		Tag:                            []string{},
+		Port:                           80,
+		DeregisterCriticalServiceAfter: time.Duration(1) * time.Minute,
+		Interval:                       time.Duration(10) * time.Second,
+	}
 }
