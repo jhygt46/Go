@@ -111,6 +111,7 @@ func main() {
 	agent := client.Agent()
 
 	IP := LocalIP()
+	fmt.Println("http://%s:%d/%s", IP, s.Port, s.Name)
 	reg := &api.AgentServiceRegistration{
 		 ID: fmt.Sprintf("%v-%v-%v", s.Name, IP, s.Port), // Name of the service node
 		 Name: s.Name, // service name
@@ -119,7 +120,7 @@ func main() {
 		 Address: IP, // Service IP
 		 Check: &api.AgentServiceCheck{ // Health Check
 			 Interval: s.Interval.String(), // Health check interval
-			 HTTP: fmt.Sprintf("%v:%v/%v", IP, s.Port, s.Name), // grpc support, address to perform health check, service will be passed to Health.Check function
+			 HTTP: fmt.Sprintf("http://%s:%d/%s", IP, s.Port, s.Name), // grpc support, address to perform health check, service will be passed to Health.Check function
 			 DeregisterCriticalServiceAfter: s.DeregisterCriticalServiceAfter.String(), // Deregistration time, equivalent to expiration time
 		},
 	}
