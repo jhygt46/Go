@@ -3,7 +3,9 @@ package main
 import (
     "net"
 	"github.com/hashicorp/consul/api"
-	"github.com/hashicorp/consul/connect"
+	//"github.com/hashicorp/consul/connect"
+	"fmt"
+	"time"
 )
 
 func NewConsulRegister() *ConsulRegister {
