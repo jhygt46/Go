@@ -111,7 +111,8 @@ func main() {
 	agent := client.Agent()
 
 	IP := LocalIP()
-	fmt.Println("http://%s:%d/%s", IP, s.Port, s.Name)
+	aux := fmt.Sprintf("http://%s:%d/%s", IP, s.Port, s.Name)
+	fmt.Println(aux)
 	reg := &api.AgentServiceRegistration{
 		 ID: fmt.Sprintf("%v-%v-%v", s.Name, IP, s.Port), // Name of the service node
 		 Name: s.Name, // service name
