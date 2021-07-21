@@ -111,8 +111,6 @@ func main() {
 	agent := client.Agent()
 
 	IP := LocalIP()
-	aux := fmt.Sprintf("http://%s:%d/%s", IP, s.Port, s.Name)
-	fmt.Println(aux)
 	reg := &api.AgentServiceRegistration{
 		 ID: fmt.Sprintf("%v-%v-%v", s.Name, IP, s.Port), // Name of the service node
 		 Name: s.Name, // service name
@@ -140,7 +138,7 @@ func (h *MyHandler) HandleFastHTTP(ctx *fasthttp.RequestCtx) {
     id := string(ctx.QueryArgs().Peek("id"))
     value, found := h.cache.Get(id)
     if !found {
-        fmt.Fprintf(ctx, "Ok.");
+        fmt.Fprintf(ctx, "OK");
     }else{
         json.NewEncoder(ctx).Encode(value)
     }
