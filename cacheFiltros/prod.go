@@ -174,7 +174,6 @@ func FileSize(s int64) string {
 	sizes := []string{"B", "KB", "MB", "GB", "TB", "PB", "EB"}
 	return humanateBytes(uint64(s), 1024, sizes)
 }
-
 func NewConsulRegister() *ConsulRegister {
 	return &ConsulRegister{
 		Address:                        "10.128.0.4:8500", //consul address
@@ -184,4 +183,18 @@ func NewConsulRegister() *ConsulRegister {
 		DeregisterCriticalServiceAfter: time.Duration(1) * time.Minute,
 		Interval:                       time.Duration(10) * time.Second,
 	}
+}
+func LocalIP() string {
+	addrs, err := net.InterfaceAddrs()
+	if err != nil {
+		return ""
+	}
+	for _, address := range addrs {
+		if ipnet, ok := address.(*net.IPNet); ok && !ipnet.IP.IsLoopback() {
+			if ipnet.IP.To4() != nil {
+				return ipnet.IP.String()
+			}
+		}
+	}
+	return ""
 }
