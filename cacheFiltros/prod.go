@@ -138,7 +138,7 @@ func (h *MyHandler) HandleFastHTTP(ctx *fasthttp.RequestCtx) {
     id := string(ctx.QueryArgs().Peek("id"))
     value, found := h.cache.Get(id)
     if !found {
-        fmt.Fprintf(ctx, "CACHE NOT FOUND");
+        fmt.Fprintf(ctx, "Ok.");
     }else{
         json.NewEncoder(ctx).Encode(value)
     }
