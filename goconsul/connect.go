@@ -36,7 +36,7 @@ func main() {
 	config.Address = r.Address
 	client, err := api.NewClient(config)
 	if err != nil {
-		return err
+		fmt.Println(err)
 	}
 	agent := client.Agent()
 
@@ -55,7 +55,7 @@ func main() {
 	}
  
 	if err := agent.ServiceRegister(reg); err != nil {
-		return err
+		fmt.Println(err)
 	}
 
 }
