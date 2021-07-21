@@ -101,7 +101,7 @@ func main() {
 		}
     }
 
-	s := NewConsulRegister()
+	s := NewConsulRegister("BuenaNelson")
 	config := api.DefaultConfig()
 	config.Address = s.Address
 	client, err := api.NewClient(config)
@@ -138,7 +138,7 @@ func (h *MyHandler) HandleFastHTTP(ctx *fasthttp.RequestCtx) {
     id := string(ctx.QueryArgs().Peek("id"))
     value, found := h.cache.Get(id)
     if !found {
-        fmt.Fprintf(ctx, "OK");
+        fmt.Fprintf(ctx, "Ok.");
     }else{
         json.NewEncoder(ctx).Encode(value)
     }
@@ -174,10 +174,10 @@ func FileSize(s int64) string {
 	sizes := []string{"B", "KB", "MB", "GB", "TB", "PB", "EB"}
 	return humanateBytes(uint64(s), 1024, sizes)
 }
-func NewConsulRegister() *ConsulRegister {
+func NewConsulRegister(name string) *ConsulRegister {
 	return &ConsulRegister{
 		Address:                        "10.128.0.4:8500", //consul address
-		Name:                           "unknown",
+		Name:                           name,
 		Tag:                            []string{},
 		Port:                           80,
 		DeregisterCriticalServiceAfter: time.Duration(1) * time.Minute,
