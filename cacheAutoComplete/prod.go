@@ -1,19 +1,20 @@
 package main
 
 import (
+	"os"
     "fmt"
-    "os"
+	"net"
     "math"
     "time"
     "log"
     "bufio"
 	"strconv"
-	//"reflect"
 	"io/ioutil"
 	"path/filepath"
     "encoding/json"
     "github.com/valyala/fasthttp"
     "github.com/dgraph-io/ristretto"
+	"github.com/hashicorp/consul/api"
 )
 
 type Data struct {
@@ -30,6 +31,15 @@ var MultipleDatas []SingleData
 
 type MyHandler struct {
 	cache *ristretto.Cache
+}
+
+type ConsulRegister struct {
+	Address                        string
+	Name                           string
+	Tag                            []string
+	Port                           int
+	DeregisterCriticalServiceAfter time.Duration
+	Interval                       time.Duration
 }
 
 var leng = [27]string{"a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "ñ", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z"}
@@ -83,6 +93,33 @@ func main() {
 		}
     }
     
+	s := NewConsulRegister("BuenaNelson")
+	config := api.DefaultConfig()
+	config.Address = s.Address
+	client, err := api.NewClient(config)
+	if err != nil {
+		fmt.Println(err)
+	}
+	agent := client.Agent()
+
+	IP := LocalIP()
+	reg := &api.AgentServiceRegistration{
+		 ID: fmt.Sprintf("%v-%v-%v", s.Name, IP, s.Port), // Name of the service node
+		 Name: s.Name, // service name
+		 Tags: s.Tag, // tag, can be empty
+		 Port: s.Port, // service port
+		 Address: IP, // Service IP
+		 Check: &api.AgentServiceCheck{ // Health Check
+			 Interval: s.Interval.String(), // Health check interval
+			 HTTP: fmt.Sprintf("http://%s:%d/%s", IP, s.Port, s.Name), // grpc support, address to perform health check, service will be passed to Health.Check function
+			 DeregisterCriticalServiceAfter: s.DeregisterCriticalServiceAfter.String(), // Deregistration time, equivalent to expiration time
+		},
+	}
+ 
+	if err := agent.ServiceRegister(reg); err != nil {
+		fmt.Println(err)
+	}
+
     pass := &MyHandler{ cache: cache, }
     fasthttp.ListenAndServe(":80", pass.HandleFastHTTP)
 
@@ -178,4 +215,28 @@ func humanateBytes(s uint64, base float64, sizes []string) string {
 func FileSize(s int64) string {
 	sizes := []string{"B", "KB", "MB", "GB", "TB", "PB", "EB"}
 	return humanateBytes(uint64(s), 1024, sizes)
+}
+func NewConsulRegister(name string) *ConsulRegister {
+	return &ConsulRegister{
+		Address:                        "10.128.0.4:8500", //consul address
+		Name:                           name,
+		Tag:                            []string{},
+		Port:                           80,
+		DeregisterCriticalServiceAfter: time.Duration(1) * time.Minute,
+		Interval:                       time.Duration(10) * time.Second,
+	}
+}
+func LocalIP() string {
+	addrs, err := net.InterfaceAddrs()
+	if err != nil {
+		return ""
+	}
+	for _, address := range addrs {
+		if ipnet, ok := address.(*net.IPNet); ok && !ipnet.IP.IsLoopback() {
+			if ipnet.IP.To4() != nil {
+				return ipnet.IP.String()
+			}
+		}
+	}
+	return ""
 }
