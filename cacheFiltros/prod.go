@@ -135,7 +135,7 @@ func main() {
 
 func (h *MyHandler) HandleFastHTTP(ctx *fasthttp.RequestCtx) {
 	
-	fmt.Println(LoclaIP());
+	fmt.Println(LocalIP());
     id := string(ctx.QueryArgs().Peek("id"))
     value, found := h.cache.Get(id)
     if !found {
@@ -185,7 +185,7 @@ func NewConsulRegister(name string) *ConsulRegister {
 		Interval:                       time.Duration(10) * time.Second,
 	}
 }
-func LoclaIP() string {
+func LocalIP() string {
 	addrs, err := net.InterfaceAddrs()
 	if err != nil {
 		return ""
