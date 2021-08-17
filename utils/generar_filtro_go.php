@@ -3,7 +3,7 @@
 error_reporting(0);
 set_time_limit(0);
 
-$options = getopt("f:hp:");
+$options = getopt("f:p:s:");
 var_dump($options);
 
 /*
