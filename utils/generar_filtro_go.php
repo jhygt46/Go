@@ -3,10 +3,10 @@
 error_reporting(0);
 set_time_limit(0);
 
-$options = getopt("f:p:s:");
-echo $options["f"];
-echo $options["p"];
-echo $options["s"];
+$options = getopt("file:tipo:cantidad:");
+echo $options["file"];
+echo $options["tipo"];
+echo $options["cantidad"];
 
 /*
 $tiempo1 = microtime(true);
