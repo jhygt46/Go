@@ -3,6 +3,9 @@
 error_reporting(0);
 set_time_limit(0);
 
+echo $_GET
+
+/*
 $tiempo1 = microtime(true);
 
 writeFileGo(1000, 'go/filtros/filtros_go.json');
@@ -10,17 +13,18 @@ $tiempo2 = microtime(true);
 $diff1 = $tiempo2 - $tiempo1;
 echo "El tiempo de ejecución del archivo ha sido de " . $diff1 . " segundos\n";
 
-/*
+
 writeFileNode(1000000, 'nodejs/data/filtros_node.json');
 $tiempo3 = microtime(true);
 $diff2 = $tiempo3 - $tiempo2;
 echo "El tiempo de ejecución del archivo ha sido de " . $diff2 . " segundos\n";
-*/
+
 
 writeFileAutoComplete('go/autocomplete/autocomplete_go.json', 2, 3);
 $tiempo3 = microtime(true);
 $diff3 = $tiempo3 - $tiempo2;
 echo "El tiempo de ejecución del archivo ha sido de " . $diff3 . " segundos\n";
+
 
 function writeFileAutoComplete($file, $jmin, $jmax){
 
@@ -117,5 +121,5 @@ function writeFileNode($len, $file){
     file_put_contents($file, $data, FILE_APPEND);
 
 }
-
+*/
 ?>
