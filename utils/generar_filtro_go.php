@@ -3,7 +3,8 @@
 error_reporting(0);
 set_time_limit(0);
 
-echo $_GET
+$options = getopt("f:hp:");
+var_dump($options);
 
 /*
 $tiempo1 = microtime(true);
