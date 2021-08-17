@@ -4,7 +4,9 @@ error_reporting(0);
 set_time_limit(0);
 
 $options = getopt("f:p:s:");
-var_dump($options);
+echo $options["f"];
+echo $options["p"];
+echo $options["s"];
 
 /*
 $tiempo1 = microtime(true);
