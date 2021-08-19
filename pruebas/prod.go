@@ -41,8 +41,6 @@ type MyHandler struct {
 	//data *[]Data
 }
 
-
-
 func main() {
 
 	var files []string
@@ -110,16 +108,13 @@ func main() {
     }
 
 	pass := &MyHandler{ cache: cache, minicache: &minicache }
-    fasthttp.ListenAndServe(":81", pass.HandleFastHTTP)
+    fasthttp.ListenAndServe(":80", pass.HandleFastHTTP)
 
 }
- 
-
 
 func (h *MyHandler) HandleFastHTTP(ctx *fasthttp.RequestCtx) {
 	
 	id, _ := strconv.Atoi(string(ctx.QueryArgs().Peek("id")))
-	
 	val := *h.minicache
 	fmt.Println(val[id])
 	fmt.Println(id)
