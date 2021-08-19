@@ -4,12 +4,13 @@ import (
 	"os"
 	"log"
 	"fmt"
+	"flag"
 	"time"
 	"math"
 	"bufio"
+	"strconv"
 	//"reflect"
 	//"runtime"
-	"strconv"
 	//"io/ioutil"
 	"path/filepath"
 	"encoding/json"
@@ -44,6 +45,26 @@ type MyHandler struct {
 
 func main() {
 
+	var files []string
+
+	file := flag.String("file", "filtros_go.json", "")
+	isfile := flag.Bool("isfile", false, "")
+	folder := flag.String("folder", "../utils/files/", "")
+
+	if !*isfile  {
+		i:=0
+		errs := filepath.Walk(*folder, func(path string, info os.FileInfo, err error) error {
+			if i > 0{
+				files = append(files, path)
+			}
+			i++
+			return nil
+		})
+		if errs != nil { panic(errs) }
+	}else{
+		files = append(files, *folder+*file)
+	}
+
 	var Datas []Data
 	var minicache = make(map[int]*Data)
 
@@ -55,13 +76,6 @@ func main() {
 	if err != nil { panic(err) }
 
 	// READ AUTOCOMPLETE FOLDER
-	var files []string
-	errs := filepath.Walk("filtros", func(path string, info os.FileInfo, err error) error {
-        files = append(files, path)
-        return nil
-    })
-
-	if errs != nil { panic(err) }
     for _, file := range files {
 		if FileExists(file) {
 
@@ -99,13 +113,12 @@ func main() {
     fasthttp.ListenAndServe(":81", pass.HandleFastHTTP)
 
 }
-
+ 
 
 
 func (h *MyHandler) HandleFastHTTP(ctx *fasthttp.RequestCtx) {
 	
 	id, _ := strconv.Atoi(string(ctx.QueryArgs().Peek("id")))
-	
 	
 	val := *h.minicache
 	fmt.Println(val[id])

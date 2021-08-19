@@ -3,30 +3,69 @@
 error_reporting(0);
 set_time_limit(0);
 
-$options = getopt("file:tipo:cantidad:");
-echo $options["file"];
-echo $options["tipo"];
-echo $options["cantidad"];
-
-/*
-$tiempo1 = microtime(true);
-
-writeFileGo(1000, 'go/filtros/filtros_go.json');
-$tiempo2 = microtime(true);
-$diff1 = $tiempo2 - $tiempo1;
-echo "El tiempo de ejecución del archivo ha sido de " . $diff1 . " segundos\n";
+$longopts  = array("help::");
+$opt = getopt("f:t:c:", $longopts);
 
 
-writeFileNode(1000000, 'nodejs/data/filtros_node.json');
-$tiempo3 = microtime(true);
-$diff2 = $tiempo3 - $tiempo2;
-echo "El tiempo de ejecución del archivo ha sido de " . $diff2 . " segundos\n";
+if(isset($opt["help"])){
+    echo "-f nombre y ruta del archivo\n";
+    echo "-t tipo => 1 filtros GO / 2 autocomplete\n";
+    echo "-c cantidad";
+    exit;
+}
 
+if(isset($opt["t"])){
 
-writeFileAutoComplete('go/autocomplete/autocomplete_go.json', 2, 3);
-$tiempo3 = microtime(true);
-$diff3 = $tiempo3 - $tiempo2;
-echo "El tiempo de ejecución del archivo ha sido de " . $diff3 . " segundos\n";
+    if(isset($opt["f"])){
+        if(str_contains($opt["f"], '/')) {
+            $file = $opt["f"];
+        }else{
+            $file = "files/".$opt["f"];
+        }
+    }else{
+        switch ($opt["t"]) {
+            case 1:
+                $file = "files/filtros_go.json";
+                break;
+            case 2:
+                $file = "files/autocomplete_go.json";
+                break;
+            default:
+                echo "Tipo ".$opt["t"]." no existe\n";
+        }
+    }
+
+    switch ($opt["t"]) {
+        case 1:
+            if(isset($opt["c"])){
+                echo "Creando ".$file." ....\n";
+                $inicio = microtime(true);
+                writeFileGo($opt["c"], $file);
+                $fin = microtime(true);
+                $diff = $fin - $inicio;
+                echo "El tiempo de ejecución del archivo ha sido de " . $diff . " segundos\n";
+            }else{
+                echo "Debe seleccionar la cantidad ej -c 1000\n";
+            }
+            break;
+        case 2:
+            if(isset($opt["c"])){
+                echo "Creando ".$file." ....\n";
+                $inicio = microtime(true);
+                writeFileAutoComplete($file, 2, $opt["c"]);
+                $fin = microtime(true);
+                $diff = $fin - $inicio;
+                echo "El tiempo de ejecución del archivo ha sido de " . $diff . " segundos\n";
+            }else{
+                echo "Debe seleccionar la cantidad ej -c 3\n";
+            }
+            break;
+        default:
+            echo "Debe Seleccionar el tipo\n";
+    }
+
+}
+
 
 
 function writeFileAutoComplete($file, $jmin, $jmax){
@@ -124,5 +163,5 @@ function writeFileNode($len, $file){
     file_put_contents($file, $data, FILE_APPEND);
 
 }
-*/
+
 ?>
