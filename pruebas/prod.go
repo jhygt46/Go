@@ -8,7 +8,7 @@ import (
 	"time"
 	"math"
 	"bufio"
-	"strconv"
+	//"strconv"
 	//"reflect"
 	//"runtime"
 	//"io/ioutil"
@@ -114,11 +114,11 @@ func main() {
 
 func (h *MyHandler) HandleFastHTTP(ctx *fasthttp.RequestCtx) {
 	
-	id, _ := strconv.Atoi(string(ctx.QueryArgs().Peek("id")))
+	//id, _ := strconv.Atoi(string(ctx.QueryArgs().Peek("id")))
 	//val := *h.minicache
 	//fmt.Println(val[id])
 	//fmt.Println(id)
-    fmt.Fprintf(ctx, id);
+    fmt.Fprintf(ctx, "Ok");
 	
 }
 
