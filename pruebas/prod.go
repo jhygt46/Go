@@ -114,10 +114,10 @@ func main() {
 
 func (h *MyHandler) HandleFastHTTP(ctx *fasthttp.RequestCtx) {
 	
-	id, _ := strconv.Atoi(string(ctx.QueryArgs().Peek("id")))
-	val := *h.minicache
-	fmt.Println(val[id])
-	fmt.Println(id)
+	//id, _ := strconv.Atoi(string(ctx.QueryArgs().Peek("id")))
+	//val := *h.minicache
+	//fmt.Println(val[id])
+	//fmt.Println(id)
     fmt.Fprintf(ctx, "Ok");
 	
 }
