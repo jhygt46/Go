@@ -22,7 +22,7 @@ type Filtros struct {
 	Id int `json:"Id"`
 	Data Data `json:"Data"`
 }
-*/
+
 
 type Campos struct {
 	T int `json:"T"`
@@ -38,6 +38,12 @@ type Data struct {
 	C [] Campos `json:"C"`
 	E [] Evals `json:"E"`
 }
+*/
+type Data struct {
+	C int `json:"C"`
+	F int `json:"F"`
+	E string `json:"E"`
+}
 type MyHandler struct {
 	minicache *map[int]*Data
 	//data *[]Data
@@ -46,6 +52,9 @@ type MyHandler struct {
 func main() {
 
 	var minicache = make(map[int]*Data)
+	for n := 0; n <= 1000; n++ {
+		minicache[n] = &Data{ 1, 5, "Hola" }
+	}
 	pass := &MyHandler{ minicache: &minicache }
     fasthttp.ListenAndServe(":80", pass.HandleFastHTTP)
 
