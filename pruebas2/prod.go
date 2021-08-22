@@ -1,12 +1,12 @@
 package main
 
 import (
-	"os"
+	//"os"
 	//"log"
 	"fmt"
 	//"flag"
 	//"time"
-	"math"
+	//"math"
 	//"bufio"
 	//"strconv"
 	//"reflect"
@@ -17,11 +17,13 @@ import (
     "github.com/valyala/fasthttp"
     //"github.com/dgraph-io/ristretto"
 )
-
+/*
 type Filtros struct {
 	Id int `json:"Id"`
 	Data Data `json:"Data"`
 }
+*/
+
 type Campos struct {
 	T int `json:"T"`
 	N string `json:"N"`
@@ -31,6 +33,7 @@ type Evals struct {
 	T int `json:"T"`
 	N string `json:"N"`
 }
+
 type Data struct {
 	C [] Campos `json:"C"`
 	E [] Evals `json:"E"`
@@ -53,7 +56,7 @@ func (h *MyHandler) HandleFastHTTP(ctx *fasthttp.RequestCtx) {
     fmt.Fprintf(ctx, "Ok");
 	
 }
-
+/*
 func logn(n, b float64) float64 {
 	return math.Log(n) / math.Log(b)
 }
@@ -82,6 +85,7 @@ func FileExists(name string) bool {
     }
     return false
 }
+*/
 /*
 
 	jsonFile, err := os.Open("daemon.json")
