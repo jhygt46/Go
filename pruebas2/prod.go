@@ -8,7 +8,7 @@ import (
 	//"time"
 	//"math"
 	//"bufio"
-	//"strconv"
+	"strconv"
 	//"reflect"
 	//"runtime"
 	//"io/ioutil"
@@ -52,8 +52,8 @@ type MyHandler struct {
 func main() {
 
 	var minicache = make(map[int]*Data)
-	for n := 0; n <= 100000; n++ {
-		minicache[n] = &Data{ 1, 5, "Hola" }
+	for n := 0; n <= 1000000; n++ {
+		minicache[n] = &Data{ n, 5, "Hola" }
 	}
 	pass := &MyHandler{ minicache: &minicache }
     fasthttp.ListenAndServe(":80", pass.HandleFastHTTP)
@@ -61,9 +61,11 @@ func main() {
 }
 
 func (h *MyHandler) HandleFastHTTP(ctx *fasthttp.RequestCtx) {
-	
+	id, _ := strconv.Atoi(string(ctx.QueryArgs().Peek("id")))
+	val := *h.minicache
+	fmt.Println(val[id])
+	fmt.Println(id)
     fmt.Fprintf(ctx, "Ok");
-	
 }
 /*
 func logn(n, b float64) float64 {
