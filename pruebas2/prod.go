@@ -52,7 +52,7 @@ type MyHandler struct {
 func main() {
 
 	var minicache = make(map[int]*Data)
-	for n := 0; n <= 1000; n++ {
+	for n := 0; n <= 100000; n++ {
 		minicache[n] = &Data{ 1, 5, "Hola" }
 	}
 	pass := &MyHandler{ minicache: &minicache }
