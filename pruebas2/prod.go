@@ -1,7 +1,8 @@
 package main
 
 import (
-	//"fmt"
+	"flag"
+	"fmt"
 	"strconv"
 	"encoding/json"
     "github.com/valyala/fasthttp"
@@ -19,11 +20,14 @@ type MyHandler struct {
 
 func main() {
 
+	numbPtr := flag.Int("numb", 3000000, "an int")
+
 	pass := &MyHandler{ minicache: make(map[int]*Data) }
-	for n := 0; n <= 3000000; n++ {
+	for n := 0; n <= *numbPtr; n++ {
 		pass.minicache[n] = &Data{ int64(n), 1844674407370955161, 1844674407370955161 }
 	}
-    fasthttp.ListenAndServe(":81", pass.HandleFastHTTP)
+	fmt.Println("Se crearon: ", *numbPtr)
+    fasthttp.ListenAndServe(":80", pass.HandleFastHTTP)
 
 }
 
