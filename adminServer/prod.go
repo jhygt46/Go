@@ -51,25 +51,19 @@ type config struct {
 	userAgent   string
 }
 func run(ctx context.Context, c *config, stdout io.Writer, daemon *Daemon) error {
-	
 	c.init(os.Args)
 	log.SetOutput(os.Stdout)
-
 	for {
 		select {
 		case <-ctx.Done():
 			return nil
 		case <-time.Tick(c.tick):
-
 			daemon.StartDaemon()
-			//daemon.LeerAlertas()
-
-			
-			
 		}
 	}
 }
 func (c *config) init(args []string) error {
+
 	flags := flag.NewFlagSet(args[0], flag.ExitOnError)
 	flags.String(flag.DefaultConfigFlagname, "", "Path to config file")
 

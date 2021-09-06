@@ -3,6 +3,7 @@ module allinapp.com/prod
 go 1.16
 
 require (
+	github.com/DmitriyVTitov/size v1.1.0 // indirect
 	github.com/andybalholm/brotli v1.0.3 // indirect
 	github.com/dgraph-io/ristretto v0.1.0 // indirect
 	github.com/golang/glog v0.0.0-20210429001901-424d2337a529 // indirect

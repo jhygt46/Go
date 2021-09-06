@@ -135,15 +135,24 @@ func main() {
 
 func (h *MyHandler) HandleFastHTTP(ctx *fasthttp.RequestCtx) {
 	
-	fmt.Println(LocalIP());
-    id := string(ctx.QueryArgs().Peek("id"))
-    value, found := h.cache.Get(id)
-    if !found {
-        fmt.Fprintf(ctx, "Ok.");
-    }else{
-        json.NewEncoder(ctx).Encode(value)
-    }
-	
+	ctx.Response.Header.Set("Content-Type", "application/json")
+
+	switch string(ctx.Path()) {
+	case "/filtro":
+		id := string(ctx.QueryArgs().Peek("id"))
+		if filtro, found := h.minicache[id]; found {
+			json.NewEncoder(ctx).Encode(filtro)
+		}else{
+
+		}
+	case "/health":
+		fmt.Fprintf(ctx, "OK");
+	case "/info":
+		fmt.Fprintf(ctx, "INFO");
+	default:
+		ctx.Error("Not Found", fasthttp.StatusNotFound)
+	}
+
 }
 
 
