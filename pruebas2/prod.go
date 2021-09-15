@@ -10,6 +10,7 @@ import (
 	"math"
 	"time"
 	//"unsafe"
+	"bufio"
 	"syscall"
 	"context"
 	"strconv"
@@ -20,7 +21,23 @@ import (
     "github.com/valyala/fasthttp"
     //"github.com/dgraph-io/ristretto"
 )
-
+type Campos struct {
+	T int `json:"T"`
+	N string `json:"N"`
+	V [] string `json:"V"`
+}
+type Evals struct {
+	T int `json:"T"`
+	N string `json:"N"`
+}
+type Data struct {
+	C [] Campos `json:"C"`
+	E [] Evals `json:"E"`
+}
+type Filtros struct {
+	Id int `json:"Id"`
+	Data Data `json:"Data"`
+}
 type ConfigIp struct {
 	Ddos bool `json:"Dos"`
 	Fecha time.Time `json:"FechaDos"`
@@ -44,39 +61,108 @@ type Autoinfo struct {
 type Config struct {
 	Id int8 `json:"Id"`
 	Fecha time.Time `json:"Fecha"`
-	Time time.Duration `json:"Time"`
-	Count uint32 `json:"Count"`
-	MaxCount uint32 `json:"MaxCount"`
-	StartCount bool `json:"StartCount"`
-	StartCountCache bool `json:"StartCountCache"`
+	Tiempo time.Duration `json:"Time"`
+}
+type Metricas struct {
+	Start bool `json:"Start"`
+	Fecha time.Time `json:"Fecha"`
+	Count uint64 `json:"Count"`
 	CountCache uint64 `json:"CountCache"`
 	CountFiles uint64 `json:"CountFiles"`
 }
-type Data struct {
+type AutoCache struct {
+	Start bool `json:"Start"`
+	Count uint64 `json:"Count"`
+	TotalCache uint64 `json:"TotalCache"`
+}
+/*
+type Datas struct {
 	C uint16 `json:"C"`
 	F int64 `json:"F"`
 	E int64 `json:"E"`
 }
+*/
 type MyHandler struct {
 	minicache map[uint32]*Data
 	ConfIp *ConfigIp
 	ConfAuto *ConfigAuto
 	Conf *Config
+	Metricas *Metricas
+	AutoCache *AutoCache
 }
-
 func main() {
 
 	ipflag := flag.Int("ip", 30, "")
-	cantmemflag := flag.Int("cantmem", 3, "")
+	totalcache := flag.Int("totalcache", 3000, "")
 	cacheautoflag := flag.Int("cacheauto", 60, "")
 	flag.Parse()
 
 	pass := &MyHandler {
-		minicache: make(map[uint32]*Data, *cantmemflag), 
-		Conf: &Config{ Id: 8, Fecha: time.Now(), Count: 0, MaxCount: uint32(*cantmemflag) }, 
+		minicache: make(map[uint32]*Data, *totalcache), 
+		Conf: &Config{ Id: 8, Fecha: time.Now() },
 		ConfAuto: &ConfigAuto{ Auto: true, Fecha: time.Now(), Lista: make([]Autoinfo, *cacheautoflag) }, 
-		ConfIp: &ConfigIp{ Ddos: true, Fecha: time.Now(), Ipddos: make([]Ipinfo, *ipflag) },
+		ConfIp: &ConfigIp{ Ddos: false, Fecha: time.Now(), Ipddos: make([]Ipinfo, *ipflag) },
+		Metricas: &Metricas{  Start: false, Fecha: time.Now(), Count: 0, CountCache: 0, CountFiles: 0 },
+		AutoCache: &AutoCache{ Start: true, Count: 0, TotalCache: uint64(*totalcache) },
 	}
+
+	file1 := "../utils/cache/cachedata.json"
+	if FileExists(file1) {
+
+		start := time.Now()
+
+		f, err := os.Open(file1)
+		if err != nil { log.Fatalf("Error to read [file=%v]: %v", file1, err.Error()) }
+		fi, err := f.Stat()
+		if err != nil { log.Fatalf("Could not obtain stat, handle error: %v", err.Error()) }
+
+		r := bufio.NewReader(f)
+		dec := json.NewDecoder(r)
+		i := 0
+
+		dec.Token()
+		for dec.More() {
+			var m Filtros
+			err := dec.Decode(&m)
+			if err != nil {
+				log.Fatal(err)
+			}
+			i++
+			pass.minicache[uint32(m.Id)] = &m.Data
+
+		}
+		dec.Token()
+
+		elapsed := time.Since(start)
+		fmt.Printf("Cantidad [%v] Peso [%s] Tiempo [%v] .\n", i, FileSize(fi.Size()), elapsed)
+
+	}
+
+	file2 := "../utils/cache/cachelist.json"
+	if FileExists(file2) {
+
+		jsonFile, err := os.Open(file2)
+		if err == nil{
+			var list []int
+			byteValue, _ := ioutil.ReadAll(jsonFile)
+			json.Unmarshal(byteValue, &list)
+			for _, v := range list {
+				if pass.minicache[uint32(v)] == nil {
+					jsonFiltro, err2 := os.Open("../utils/filtros/"+strconv.Itoa(v)+".json")
+					if err2 == nil {
+						byteValueFiltro, _ := ioutil.ReadAll(jsonFiltro)
+						data := Data{}
+						_ = json.Unmarshal(byteValueFiltro, &data)
+						pass.minicache[uint32(v)] = &data
+					}
+					defer jsonFiltro.Close()
+				}
+			}
+		}
+		defer jsonFile.Close()
+
+	}
+
 
 	con := context.Background()
 	con, cancel := context.WithCancel(con)
@@ -107,7 +193,7 @@ func main() {
 	}()
 
 	go func() {
-		fasthttp.ListenAndServe(":81", pass.HandleFastHTTP)
+		fasthttp.ListenAndServe(":80", pass.HandleFastHTTP)
 	}()
 
 	if err := run(con, pass, os.Stdout); err != nil {
@@ -118,14 +204,14 @@ func main() {
 }
 func (h *MyHandler) StartDaemon() {
 
-	fmt.Println(*h.Conf)
-	h.Conf.Time = 20 * time.Second
+	//fmt.Println(*h.Conf)
+	h.Conf.Tiempo = 5 * time.Second
 
 }
 func (c *Config) init(args []string) {
 
-	var tick = flag.Duration("tick", 2 * time.Second, "Ticking interval")
-	c.Time = *tick
+	var tick = flag.Duration("tick", 5 * time.Second, "Ticking interval")
+	c.Tiempo = *tick
 
 }
 func run(con context.Context, c *MyHandler, stdout io.Writer) error {
@@ -136,7 +222,7 @@ func run(con context.Context, c *MyHandler, stdout io.Writer) error {
 		select {
 		case <-con.Done():
 			return nil
-		case <-time.Tick(c.Conf.Time):
+		case <-time.Tick(c.Conf.Tiempo):
 			c.StartDaemon()
 		}
 	}
@@ -156,12 +242,14 @@ func (h *MyHandler) HandleFastHTTP(ctx *fasthttp.RequestCtx) {
 			if err == nil {
 				if res, found := h.minicache[uint32(id)]; found {
 
-					if h.Conf.StartCount {
-						h.Conf.CountCache++
+					if h.Metricas.Start {
+						h.Metricas.CountCache++
 					}
+					/*
 					if h.Conf.StartCountCache {
 						h.minicache[uint32(id)].C++
 					}
+					*/
 					ctx.Response.Header.Set("Content-Type", "application/json")
 					json.NewEncoder(ctx).Encode(res)
 
@@ -171,23 +259,18 @@ func (h *MyHandler) HandleFastHTTP(ctx *fasthttp.RequestCtx) {
 
 						ctx.Response.Header.Set("Content-Type", "application/json")
 						byteValue, _ := ioutil.ReadAll(jsonFile)
-
-						if h.ConfAuto.Auto {
-							if h.Conf.Count < h.Conf.MaxCount {
+						if h.AutoCache.Start {
+							if h.AutoCache.Count < h.AutoCache.TotalCache {
 								data := Data{}
 								_ = json.Unmarshal(byteValue, &data)
 								h.minicache[uint32(id)] = &data
-								h.Conf.Count++
+								h.AutoCache.Count++
 							}else{
-								h.ConfAuto.Auto = false
-								h.Conf.StartCount = true
+								h.AutoCache.Start = false
 							}
 						}
-						if h.Conf.StartCount {
-							h.Conf.CountFiles++
-						}
-						if h.Conf.StartCountCache {
-							
+						if h.Metricas.Start {
+							h.Metricas.CountFiles++
 						}
 						fmt.Fprintf(ctx, string(byteValue))
 
@@ -208,6 +291,12 @@ func (h *MyHandler) HandleFastHTTP(ctx *fasthttp.RequestCtx) {
 		fmt.Fprintf(ctx, "OK");
 	case "/info":
 		json.NewEncoder(ctx).Encode(h.Conf)
+	case "/metrica":
+		if h.Metricas.CountFiles > 0 {
+			fmt.Fprintf(ctx, strconv.FormatUint(h.Metricas.CountCache/h.Metricas.CountFiles, 10)+"s")
+		}else{
+			fmt.Fprintf(ctx, "BUENA")
+		}
 	default:
 		ctx.Error("Not Found", fasthttp.StatusNotFound)
 	}
@@ -216,7 +305,7 @@ func (h *MyHandler) HandleFastHTTP(ctx *fasthttp.RequestCtx) {
 }
 func (h *MyHandler) ResetCount(){
 	for _, element := range h.minicache {
-        element.C = 0
+		fmt.Println(element)
     }
 }
 func (h *MyHandler) registerCache(id int) bool {
@@ -226,9 +315,7 @@ func (h *MyHandler) registerCache(id int) bool {
 			h.ConfAuto.Lista[i].Valor = newVal(v)
 			if h.ConfAuto.Lista[i].Valor > 100 {
 				for _, element := range h.minicache {
-					if element.C < 100 {
-						return true 
-					}
+					fmt.Println(element)
 				}
 			}
 		}else{
@@ -279,6 +366,14 @@ func LocalIP() string {
 		}
 	}
 	return ""
+}
+func FileExists(name string) bool {
+    if fi, err := os.Stat(name); err == nil {
+        if fi.Mode().IsRegular() {
+            return true
+        }
+    }
+    return false
 }
 
 /*
