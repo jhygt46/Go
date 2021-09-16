@@ -9,7 +9,7 @@ $opt = getopt("f:t:c:", $longopts);
 
 if(isset($opt["help"])){
     echo "-f nombre y ruta del archivo\n";
-    echo "-t tipo => 1 filtros GO / 2 autocomplete\n";
+    echo "-t tipo => 1 filtros GO / 2 autocomplete / 3 filtros Go separado\n";
     echo "-c cantidad";
     exit;
 }
@@ -29,6 +29,9 @@ if(isset($opt["t"])){
                 break;
             case 2:
                 $file = "files/autocomplete_go.json";
+                break;
+            case 3:
+                $file = "filtros";
                 break;
             default:
                 echo "Tipo ".$opt["t"]." no existe\n";
@@ -53,6 +56,18 @@ if(isset($opt["t"])){
                 echo "Creando ".$file." ....\n";
                 $inicio = microtime(true);
                 writeFileAutoComplete($file, 2, $opt["c"]);
+                $fin = microtime(true);
+                $diff = $fin - $inicio;
+                echo "El tiempo de ejecución del archivo ha sido de " . $diff . " segundos\n";
+            }else{
+                echo "Debe seleccionar la cantidad ej -c 3\n";
+            }
+            break;
+        case 3:
+            if(isset($opt["c"])){
+                echo "Creando ".$opt["c"]." archivos en ".$file." ....\n";
+                $inicio = microtime(true);
+                writeFileDiffGo($file, $opt["c"]);
                 $fin = microtime(true);
                 $diff = $fin - $inicio;
                 echo "El tiempo de ejecución del archivo ha sido de " . $diff . " segundos\n";
@@ -149,6 +164,14 @@ function writeFileGo($len, $file){
 
     $data = ']';
     file_put_contents($file, $data, FILE_APPEND);
+
+}
+function writeFileDiffGo($folder, $len){
+
+    for($i=1; $i<=$len; $i++){
+        $data = '{"Id":'.$i.',"Data":{"C":[{ "T": 1, "N": "Nacionalidad", "V": ["Chilena", "Argentina", "Brasileña", "Uruguaya"] }, { "T": 2, "N": "Servicios", "V": ["Americana", "Rusa", "Bailarina", "Masaje"] },{ "T": 3, "N": "Edad" }],"E": [{ "T": 1, "N": "Rostro" },{ "T": 1, "N": "Senos" },{ "T": 1, "N": "Trasero" }]}}';
+        file_put_contents($folder."/".$i.".json", $data);
+    }
 
 }
 function writeFileNode($len, $file){
