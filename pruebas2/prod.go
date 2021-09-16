@@ -273,6 +273,7 @@ func (h *MyHandler) HandleFastHTTP(ctx *fasthttp.RequestCtx) {
 						fmt.Println(err)
 						ctx.Error("Not Found", fasthttp.StatusNotFound)
 					}
+					defer jsonFile.Close()
 				}
 			}else{
 				ctx.Error("Not Found", fasthttp.StatusNotFound)
