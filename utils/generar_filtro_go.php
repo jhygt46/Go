@@ -6,14 +6,12 @@ set_time_limit(0);
 $longopts  = array("help::");
 $opt = getopt("f:t:c:", $longopts);
 
-
 if(isset($opt["help"])){
     echo "-f nombre y ruta del archivo\n";
     echo "-t tipo => 1 filtros GO / 2 autocomplete / 3 filtros Go separado\n";
     echo "-c cantidad";
     exit;
 }
-
 if(isset($opt["t"])){
 
     if(isset($opt["f"])){
@@ -80,8 +78,6 @@ if(isset($opt["t"])){
     }
 
 }
-
-
 
 function writeFileAutoComplete($file, $jmin, $jmax){
 
