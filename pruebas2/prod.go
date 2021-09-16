@@ -231,7 +231,7 @@ func run(con context.Context, c *MyHandler, stdout io.Writer) error {
 
 func (h *MyHandler) HandleFastHTTP(ctx *fasthttp.RequestCtx) {
 
-	fmt.Println(ctx.RemoteIP())
+	//fmt.Println(ctx.RemoteIP())
 
 	switch string(ctx.Path()) {
 	case "/filtro":
