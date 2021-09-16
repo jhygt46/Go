@@ -8,6 +8,6 @@ async function init(){
         method: 'GET',
         pipelining: 4
     });
-    autocannon.track(instance, {renderProgressBar: true});
+    autocannon.track(instance, { renderProgressBar: true });
 }
 init();

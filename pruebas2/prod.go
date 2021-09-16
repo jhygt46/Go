@@ -106,7 +106,7 @@ func main() {
 		AutoCache: &AutoCache{ Start: true, Count: 0, TotalCache: uint64(*totalcache) },
 	}
 
-	file1 := "../utils/cache/cachedata.json"
+	file1 := "../utils/cache/cachedata2.json"
 	if FileExists(file1) {
 
 		start := time.Now()
@@ -138,7 +138,7 @@ func main() {
 
 	}
 
-	file2 := "../utils/cache/cachelist.json"
+	file2 := "../utils/cache/cachelist2.json"
 	if FileExists(file2) {
 
 		jsonFile, err := os.Open(file2)
@@ -245,11 +245,6 @@ func (h *MyHandler) HandleFastHTTP(ctx *fasthttp.RequestCtx) {
 					if h.Metricas.Start {
 						h.Metricas.CountCache++
 					}
-					/*
-					if h.Conf.StartCountCache {
-						h.minicache[uint32(id)].C++
-					}
-					*/
 					ctx.Response.Header.Set("Content-Type", "application/json")
 					json.NewEncoder(ctx).Encode(res)
 
@@ -263,7 +258,7 @@ func (h *MyHandler) HandleFastHTTP(ctx *fasthttp.RequestCtx) {
 							if h.AutoCache.Count < h.AutoCache.TotalCache {
 								data := Data{}
 								_ = json.Unmarshal(byteValue, &data)
-								h.minicache[uint32(id)] = &data
+								//h.minicache[uint32(id)] = &data
 								h.AutoCache.Count++
 							}else{
 								h.AutoCache.Start = false
