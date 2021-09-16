@@ -258,7 +258,7 @@ func (h *MyHandler) HandleFastHTTP(ctx *fasthttp.RequestCtx) {
 							if h.AutoCache.Count < h.AutoCache.TotalCache {
 								data := Data{}
 								_ = json.Unmarshal(byteValue, &data)
-								//h.minicache[uint32(id)] = &data
+								h.minicache[uint32(id)] = &data
 								h.AutoCache.Count++
 							}else{
 								h.AutoCache.Start = false
