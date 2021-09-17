@@ -1,14 +1,14 @@
 package main
 
 import (
-	"flag"
+	//"flag"
 	"fmt"
-	"math"
-	"time"
-	"strconv"
-	"unsafe"
-	"encoding/json"
-	"github.com/DmitriyVTitov/size"
+	//"math"
+	//"time"
+	//"strconv"
+	//"unsafe"
+	//"encoding/json"
+	//"github.com/DmitriyVTitov/size"
     "github.com/valyala/fasthttp"
     //"github.com/dgraph-io/ristretto"
 )
@@ -29,34 +29,38 @@ type MyHandler struct {
 
 func main() {
 
-	config := Config{ Tipo: 1 }
+	pass := &MyHandler{}
 
+	/*
+	config := Config{ Tipo: 1 }
 	start := time.Now()
 	numbPtr := flag.Int("numb", 3000000, "an int")
 	flag.Parse()
-
 	pass := &MyHandler{ minicache: make(map[int]*Data, *numbPtr), config: config }
 	for n := 0; n < *numbPtr; n++ {
 		pass.minicache[n] = &Data{ int64(n), 1844674407370955161, 1844674407370955161 }
 	}
-	
 	fmt.Println(FileSize(int64(size.Of(pass))))
-
 	printelaped(start, "MyHandler listo")
 	fmt.Println("Memory size of Data", unsafe.Sizeof(Data{}))
 	fmt.Println("Se crearon: ", *numbPtr)
-
-    fasthttp.ListenAndServe(":81", pass.HandleFastHTTP)
+	*/
+	
+    fasthttp.ListenAndServe(":80", pass.HandleFastHTTP)
 
 }
 
 func (h *MyHandler) HandleFastHTTP(ctx *fasthttp.RequestCtx) {
+	/*
 	start := time.Now()
 	id, _ := strconv.Atoi(string(ctx.QueryArgs().Peek("id")))
 	fmt.Println("Tipo: ", h.config.Tipo)
 	json.NewEncoder(ctx).Encode(h.minicache[id])
 	printelaped(start, "Visita")
+	*/
+	fmt.Fprintf(ctx, "OK")
 }
+/*
 func printelaped(start time.Time, str string){
 	elapsed := time.Since(start)
 	fmt.Printf("%s / Tiempo [%v]\n", str, elapsed)
@@ -82,3 +86,4 @@ func FileSize(s int64) string {
 	sizes := []string{"B", "KB", "MB", "GB", "TB", "PB", "EB"}
 	return humanateBytes(uint64(s), 1024, sizes)
 }
+*/

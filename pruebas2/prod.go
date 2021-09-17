@@ -134,12 +134,15 @@ func main() {
 		dec.Token()
 
 		elapsed := time.Since(start)
-		fmt.Printf("Cantidad [%v] Peso [%s] Tiempo [%v] .\n", i, FileSize(fi.Size()), elapsed)
+		fmt.Printf("CacheData Cantidad [%v] Peso [%s] Tiempo [%v] .\n", i, FileSize(fi.Size()), elapsed)
 
 	}
 
 	file2 := "../utils/cache/cachelist2.json"
 	if FileExists(file2) {
+
+		start := time.Now()
+		i := 0
 
 		jsonFile, err := os.Open(file2)
 		if err == nil{
@@ -154,12 +157,16 @@ func main() {
 						data := Data{}
 						_ = json.Unmarshal(byteValueFiltro, &data)
 						pass.minicache[uint32(v)] = &data
+						i++
 					}
 					defer jsonFiltro.Close()
 				}
 			}
 		}
 		defer jsonFile.Close()
+
+		elapsed := time.Since(start)
+		fmt.Printf("CacheList Cantidad [%v] Tiempo [%v] .\n", i, elapsed)
 
 	}
 
@@ -204,7 +211,7 @@ func main() {
 }
 func (h *MyHandler) StartDaemon() {
 
-	//fmt.Println(*h.Conf)
+	fmt.Println("DAEMON")
 	h.Conf.Tiempo = 5 * time.Second
 
 }
@@ -241,7 +248,7 @@ func (h *MyHandler) HandleFastHTTP(ctx *fasthttp.RequestCtx) {
 			id, err := strconv.Atoi(string(ctx.QueryArgs().Peek("id")))
 			if err == nil {
 				if res, found := h.minicache[uint32(id)]; found {
-
+					
 					if h.Metricas.Start {
 						h.Metricas.CountCache++
 					}
