@@ -248,7 +248,7 @@ func (h *MyHandler) HandleFastHTTP(ctx *fasthttp.RequestCtx) {
 			id, err := strconv.Atoi(string(ctx.QueryArgs().Peek("id")))
 			if err == nil {
 				if res, found := h.minicache[uint32(id)]; found {
-					
+
 					if h.Metricas.Start {
 						h.Metricas.CountCache++
 					}
@@ -265,7 +265,7 @@ func (h *MyHandler) HandleFastHTTP(ctx *fasthttp.RequestCtx) {
 							if h.AutoCache.Count < h.AutoCache.TotalCache {
 								data := Data{}
 								_ = json.Unmarshal(byteValue, &data)
-								//h.minicache[uint32(id)] = &data
+								h.minicache[uint32(id)] = &data
 								h.AutoCache.Count++
 							}else{
 								h.AutoCache.Start = false
