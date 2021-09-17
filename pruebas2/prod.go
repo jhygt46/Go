@@ -249,9 +249,7 @@ func (h *MyHandler) HandleFastHTTP(ctx *fasthttp.RequestCtx) {
 			if err == nil {
 				if res, found := h.minicache[uint32(id)]; found {
 
-					if h.Metricas.Start {
-						h.Metricas.CountCache++
-					}
+					//if h.Metricas.Start { h.Metricas.CountCache++ }
 					ctx.Response.Header.Set("Content-Type", "application/json")
 					json.NewEncoder(ctx).Encode(res)
 

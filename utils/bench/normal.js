@@ -4,9 +4,9 @@ async function init(){
     const instance = autocannon({
         url: 'http://localhost/filtro?id=1',
         connections: 10,
-        duration: 5,
+        duration: 60,
         method: 'GET',
-        pipelining: 4
+        pipelining: 8
     });
     autocannon.track(instance, { renderProgressBar: true });
 }

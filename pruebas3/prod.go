@@ -5,7 +5,7 @@ import (
 	"fmt"
 	//"math"
 	//"time"
-	//"strconv"
+	"strconv"
 	//"unsafe"
 	//"encoding/json"
 	//"github.com/DmitriyVTitov/size"
@@ -51,6 +51,12 @@ func main() {
 }
 
 func (h *MyHandler) HandleFastHTTP(ctx *fasthttp.RequestCtx) {
+
+	id, err := strconv.Atoi(string(ctx.QueryArgs().Peek("id")))
+	if err == nil {
+		fmt.Fprintf(ctx, "%d", id)
+	}
+
 	/*
 	start := time.Now()
 	id, _ := strconv.Atoi(string(ctx.QueryArgs().Peek("id")))
@@ -58,7 +64,7 @@ func (h *MyHandler) HandleFastHTTP(ctx *fasthttp.RequestCtx) {
 	json.NewEncoder(ctx).Encode(h.minicache[id])
 	printelaped(start, "Visita")
 	*/
-	fmt.Fprintf(ctx, "OK")
+	
 }
 /*
 func printelaped(start time.Time, str string){
