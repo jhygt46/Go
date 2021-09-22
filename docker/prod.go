@@ -20,7 +20,7 @@ import (
     "github.com/valyala/fasthttp"
 	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/client"
-	"github.com/docker/docker/pkg/archive"
+	//"github.com/docker/docker/pkg/archive"
 )
 type Config struct {
 	Id int8 `json:"Id"`
