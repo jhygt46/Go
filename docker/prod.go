@@ -4,16 +4,20 @@ import (
 	"os"
 	"io"
 	"log"
-	"flag"
 	"fmt"
+	"flag"
 	"math"
 	"time"
+	"bufio"
+	"errors"
 	"syscall"
 	"context"
 	"os/signal"
+	"encoding/json"
     "github.com/valyala/fasthttp"
 	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/client"
+	"github.com/docker/docker/pkg/archive"
 )
 type Config struct {
 	Id int8 `json:"Id"`
@@ -22,26 +26,32 @@ type Config struct {
 }
 type MyHandler struct {
 	Conf *Config
+	cli *client.Client
 }
+type ErrorLine struct {
+	Error       string      `json:"error"`
+	ErrorDetail ErrorDetail `json:"errorDetail"`
+}
+type ErrorDetail struct {
+	Message string `json:"message"`
+}
+
+var dockerRegistryUserID = "111"
+
 func main() {
 
-	ctx := context.Background()
 	cli, err := client.NewClientWithOpts(client.FromEnv, client.WithAPIVersionNegotiation())
 	if err != nil {
 		panic(err)
 	}
 
-	images, err := cli.ImageList(ctx, types.ImageListOptions{})
+	err = imageBuild("Test Go", cli)
 	if err != nil {
-		panic(err)
+		fmt.Println(err.Error())
+		return
 	}
 
-	for _, image := range images {
-		fmt.Println(image.ID)
-	}
-
-
-	pass := &MyHandler{ Conf: &Config{ Id: 8, Fecha: time.Now() } }
+	pass := &MyHandler{ Conf: &Config{ Id: 8, Fecha: time.Now() }, cli: cli }
 
 	con := context.Background()
 	con, cancel := context.WithCancel(con)
@@ -81,10 +91,50 @@ func main() {
 	}
 
 }
+func imageBuild(nombre string, dockerClient *client.Client) error {
+
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*120)
+	defer cancel()
+
+	tar, err := archive.TarWithOptions(nombre, &archive.TarOptions{})
+	if err != nil {
+		return err
+	}
+
+	opts := types.ImageBuildOptions{
+		Dockerfile: "Dockerfile",
+		Tags:       []string{dockerRegistryUserID + nombre},
+		Remove:     true,
+	}
+	res, err := dockerClient.ImageBuild(ctx, tar, opts)
+	if err != nil {
+		return err
+	}
+
+	defer res.Body.Close()
+
+	err = print(res.Body)
+	if err != nil {
+		return err
+	}
+
+	return nil
+
+}
 func (h *MyHandler) StartDaemon() {
 
 	fmt.Println("DAEMON")
 	h.Conf.Tiempo = 5 * time.Second
+
+	ctx := context.Background()
+	images, err := h.cli.ImageList(ctx, types.ImageListOptions{})
+	if err != nil {
+		panic(err)
+	}
+
+	for _, image := range images {
+		fmt.Println(image)
+	}
 
 }
 func (c *Config) init(args []string) {
@@ -147,4 +197,25 @@ func humanateBytes(s uint64, base float64, sizes []string) string {
 func FileSize(s int64) string {
 	sizes := []string{"B", "KB", "MB", "GB", "TB", "PB", "EB"}
 	return humanateBytes(uint64(s), 1024, sizes)
+}
+func print(rd io.Reader) error {
+	var lastLine string
+
+	scanner := bufio.NewScanner(rd)
+	for scanner.Scan() {
+		lastLine = scanner.Text()
+		fmt.Println(scanner.Text())
+	}
+
+	errLine := &ErrorLine{}
+	json.Unmarshal([]byte(lastLine), errLine)
+	if errLine.Error != "" {
+		return errors.New(errLine.Error)
+	}
+
+	if err := scanner.Err(); err != nil {
+		return err
+	}
+
+	return nil
 }
