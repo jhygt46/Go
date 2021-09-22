@@ -382,3 +382,4 @@ fmt.Println(FileSize(int64(size.Of(pass))))
 fmt.Println("Memory size of Data", unsafe.Sizeof(Data{}))
 fmt.Println("Se crearon: ", *cantmemflag)
 */
+
