@@ -8,11 +8,14 @@ import (
 	"flag"
 	"math"
 	"time"
+	"bytes"
 	"bufio"
 	"errors"
 	"syscall"
 	"context"
+	"io/ioutil"
 	"os/signal"
+	"archive/tar"
 	"encoding/json"
     "github.com/valyala/fasthttp"
 	"github.com/docker/docker/api/types"
@@ -45,10 +48,10 @@ func main() {
 		panic(err)
 	}
 
-	err = imageBuild("testgo", cli)
-	if err != nil {
-		fmt.Println(err.Error())
-		return
+	if imageBuild(cli) {
+		fmt.Println("IMAGEN CREADA")
+	}else{
+		fmt.Println("ERROR CREAR IMAGEN")
 	}
 
 	pass := &MyHandler{ Conf: &Config{ Id: 8, Fecha: time.Now() }, cli: cli }
@@ -91,34 +94,55 @@ func main() {
 	}
 
 }
-func imageBuild(nombre string, dockerClient *client.Client) error {
+func imageBuild(cli *client.Client) bool {
 
-	ctx, cancel := context.WithTimeout(context.Background(), time.Second*120)
-	defer cancel()
+	ctx := context.Background()
 
-	tar, err := archive.TarWithOptions(nombre, &archive.TarOptions{})
-	if err != nil {
-		return err
-	}
+	buf := new(bytes.Buffer)
+    tw := tar.NewWriter(buf)
+    defer tw.Close()
 
-	opts := types.ImageBuildOptions{
-		Dockerfile: "/var/docker-images/filtros/Dockerfile",
-		Tags:       []string{dockerRegistryUserID + nombre},
-		Remove:     true,
-	}
-	res, err := dockerClient.ImageBuild(ctx, tar, opts)
-	if err != nil {
-		return err
-	}
+    dockerFile := "myDockerfile"
+    dockerFileReader, err := os.Open("/path/to/dockerfile")
+    if err != nil {
+        log.Fatal(err, " :unable to open Dockerfile")
+    }
+    readDockerFile, err := ioutil.ReadAll(dockerFileReader)
+    if err != nil {
+        log.Fatal(err, " :unable to read dockerfile")
+    }
 
-	defer res.Body.Close()
+    tarHeader := &tar.Header{
+        Name: dockerFile,
+        Size: int64(len(readDockerFile)),
+    }
+    err = tw.WriteHeader(tarHeader)
+    if err != nil {
+        log.Fatal(err, " :unable to write tar header")
+    }
+    _, err = tw.Write(readDockerFile)
+    if err != nil {
+        log.Fatal(err, " :unable to write tar body")
+    }
+    dockerFileTarReader := bytes.NewReader(buf.Bytes())
 
-	err = print(res.Body)
-	if err != nil {
-		return err
-	}
+    imageBuildResponse, err := cli.ImageBuild(
+        ctx,
+        dockerFileTarReader,
+        types.ImageBuildOptions{
+            Context:    dockerFileTarReader,
+            Dockerfile: dockerFile,
+            Remove:     true})
+    if err != nil {
+        log.Fatal(err, " :unable to build docker image")
+    }
+    defer imageBuildResponse.Body.Close()
+    _, err = io.Copy(os.Stdout, imageBuildResponse.Body)
+    if err != nil {
+        log.Fatal(err, " :unable to read image build response")
+    }
 
-	return nil
+	return true
 
 }
 func (h *MyHandler) StartDaemon() {
