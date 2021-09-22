@@ -102,7 +102,7 @@ func imageBuild(nombre string, dockerClient *client.Client) error {
 	}
 
 	opts := types.ImageBuildOptions{
-		Dockerfile: "Dockerfile",
+		Dockerfile: "/var/docker-images/filtros/Dockerfile",
 		Tags:       []string{dockerRegistryUserID + nombre},
 		Remove:     true,
 	}
