@@ -45,7 +45,7 @@ func main() {
 		panic(err)
 	}
 
-	err = imageBuild("Test Go", cli)
+	err = imageBuild("test go", cli)
 	if err != nil {
 		fmt.Println(err.Error())
 		return
