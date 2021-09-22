@@ -103,7 +103,7 @@ func imageBuild(cli *client.Client) bool {
     defer tw.Close()
 
     dockerFile := "myDockerfile"
-    dockerFileReader, err := os.Open("/path/to/dockerfile")
+    dockerFileReader, err := os.Open("/var/docker-images/filtros/Dockerfile")
     if err != nil {
         log.Fatal(err, " :unable to open Dockerfile")
     }
