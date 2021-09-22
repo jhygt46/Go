@@ -104,7 +104,7 @@ func GetContext(filePath string) io.Reader {
 func imageBuild(s string, cli *client.Client) bool {
 
 	buildOptions := types.ImageBuildOptions{
-		Tags:   []string{"filtrogo"},
+		Tags:   []string{"filtrogo2"},
 	}
 
 	imageBuildResponse, err := cli.ImageBuild(context.Background(), GetContext(s), buildOptions)
