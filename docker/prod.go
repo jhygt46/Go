@@ -8,18 +8,20 @@ import (
 	"flag"
 	"math"
 	"time"
-	"bytes"
+	//"bytes"
 	"bufio"
 	"errors"
 	"syscall"
 	"context"
-	"io/ioutil"
+	//"io/ioutil"
 	"os/signal"
-	"archive/tar"
+	//"archive/tar"
 	"encoding/json"
     "github.com/valyala/fasthttp"
 	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/client"
+	"github.com/mitchellh/go-homedir"
+    "github.com/docker/docker/pkg/archive"
 	//"github.com/docker/docker/pkg/archive"
 )
 type Config struct {
@@ -48,7 +50,7 @@ func main() {
 		panic(err)
 	}
 
-	if imageBuild(cli) {
+	if imageBuild("/var/docker-images/filtros/Dockerfile", cli) {
 		fmt.Println("IMAGEN CREADA")
 	}else{
 		fmt.Println("ERROR CREAR IMAGEN")
@@ -94,8 +96,26 @@ func main() {
 	}
 
 }
-func imageBuild(cli *client.Client) bool {
+func GetContext(filePath string) io.Reader {
+    filePaths, _ := homedir.Expand(filePath)
+    ctx, _ := archive.TarWithOptions(filePaths, &archive.TarOptions{})
+    return ctx
+}
+func imageBuild(s string, cli *client.Client) bool {
 
+	buildOptions := types.ImageBuildOptions{
+		Tags:   []string{"filtrogo"},
+	}
+
+	imageBuildResponse, err := cli.ImageBuild(context.Background(), GetContext(s), buildOptions)
+	if err != nil {
+        log.Fatalf("build error - %s", err)
+    }
+	io.Copy(os.Stdout, imageBuildResponse.Body)
+    defer imageBuildResponse.Body.Close()
+
+
+	/*
 	ctx := context.Background()
 
 	buf := new(bytes.Buffer)
@@ -132,7 +152,8 @@ func imageBuild(cli *client.Client) bool {
         types.ImageBuildOptions{
             Context:    dockerFileTarReader,
             Dockerfile: dockerFile,
-            Remove:     true})
+            Remove:     true
+		})
     if err != nil {
         log.Fatal(err, " :unable to build docker image")
     }
@@ -141,6 +162,7 @@ func imageBuild(cli *client.Client) bool {
     if err != nil {
         log.Fatal(err, " :unable to read image build response")
     }
+	*/
 
 	return true
 
