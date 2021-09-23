@@ -17,6 +17,7 @@ import (
 	"os/signal"
 	//"archive/tar"
 	"encoding/json"
+	"path/filepath"
     "github.com/valyala/fasthttp"
 	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/client"
@@ -169,7 +170,6 @@ func imageBuild(s string, cli *client.Client) bool {
 }
 func (h *MyHandler) StartDaemon() {
 
-	fmt.Println("DAEMON")
 	h.Conf.Tiempo = 5 * time.Second
 
 	ctx := context.Background()
@@ -177,10 +177,16 @@ func (h *MyHandler) StartDaemon() {
 	if err != nil {
 		panic(err)
 	}
-
 	for _, image := range images {
 		fmt.Println(image.ID)
 	}
+
+	errs := filepath.Walk("./", func(path string, info os.FileInfo, err error) error {
+		fmt.Println(path)
+		return nil
+	})
+	if errs != nil { panic(errs) }
+
 
 }
 func (c *Config) init(args []string) {
