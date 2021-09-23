@@ -179,7 +179,7 @@ func (h *MyHandler) StartDaemon() {
 	}
 
 	for _, image := range images {
-		fmt.Println(image)
+		fmt.Println(image.ID)
 	}
 
 }
