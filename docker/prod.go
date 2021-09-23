@@ -23,7 +23,6 @@ import (
 	"github.com/docker/docker/client"
 	"github.com/mitchellh/go-homedir"
     "github.com/docker/docker/pkg/archive"
-	//"github.com/docker/docker/pkg/archive"
 )
 type Config struct {
 	Id int8 `json:"Id"`
@@ -98,6 +97,7 @@ func main() {
 
 }
 func GetContext(filePath string) io.Reader {
+
     filePaths, _ := homedir.Expand(filePath)
     ctx, _ := archive.TarWithOptions(filePaths, &archive.TarOptions{})
     return ctx
@@ -134,7 +134,13 @@ func imageBuild(s string, cli *client.Client) bool {
 		Tags:   []string{"filtrogo"},
 	}
 
-	imageBuildResponse, err := cli.ImageBuild(context.Background(), GetContext(s), buildOptions)
+	tar, err := archive.TarWithOptions("/var/docker-images/filtros/", &archive.TarOptions{})
+	if err != nil {
+		panic(err)
+	}
+
+
+	imageBuildResponse, err := cli.ImageBuild(context.Background(), tar, buildOptions)
 	if err != nil {
         log.Fatalf("build error - %s", err)
     }
