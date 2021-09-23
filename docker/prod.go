@@ -104,10 +104,22 @@ func GetContext(filePath string) io.Reader {
 }
 func imageBuild(s string, cli *client.Client) bool {
 
-	/*
-	dels, err := cli.ImageRemove(context.Background(), img, options)
-	fmt.Println(dels)
-	*/
+	ctx := context.Background()
+	images, err := cli.ImageList(ctx, types.ImageListOptions{})
+	if err != nil {
+		panic(err)
+	}
+	for _, image := range images {
+		for _, img := range image.RepoTags{
+			if img == "filtrogo:latest" {
+				dels, _ := cli.ImageRemove(context.Background(), image.ID, types.ImageRemoveOptions{Force: false, PruneChildren: false})
+				fmt.Println(dels)
+			}
+		}
+		//fmt.Println(image.ID)
+		//fmt.Println(image.Size)
+		//fmt.Println(image.VirtualSize)
+	}
 
 	buildOptions := types.ImageBuildOptions{
 		Tags:   []string{"filtrogo"},
@@ -127,26 +139,11 @@ func (h *MyHandler) StartDaemon() {
 
 	h.Conf.Tiempo = 5 * time.Second
 
-	ctx := context.Background()
-	images, err := h.cli.ImageList(ctx, types.ImageListOptions{})
-	if err != nil {
-		panic(err)
-	}
-	for _, image := range images {
-		//fmt.Println(image.ID)
-		for _, img := range image.RepoTags{
-			fmt.Println(img)
-		}
-		//fmt.Println(image.Size)
-		//fmt.Println(image.VirtualSize)
-	}
-
 	errs := filepath.Walk("./", func(path string, info os.FileInfo, err error) error {
 		fmt.Println(path)
 		return nil
 	})
 	if errs != nil { panic(errs) }
-
 
 }
 func (c *Config) init(args []string) {
