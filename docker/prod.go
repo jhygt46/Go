@@ -99,6 +99,7 @@ func main() {
 }
 func GetContext(filePath string) io.Reader {
     filePaths, _ := homedir.Expand(filePath)
+	fmt.Println(filePaths)
     ctx, _ := archive.TarWithOptions(filePaths, &archive.TarOptions{})
     return ctx
 }
