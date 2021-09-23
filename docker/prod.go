@@ -133,10 +133,12 @@ func (h *MyHandler) StartDaemon() {
 		panic(err)
 	}
 	for _, image := range images {
-		fmt.Println(image.ID)
-		fmt.Println(image.RepoTags)
-		fmt.Println(image.Size)
-		fmt.Println(image.VirtualSize)
+		//fmt.Println(image.ID)
+		for _, img := range image.RepoTags{
+			fmt.Println(img)
+		}
+		//fmt.Println(image.Size)
+		//fmt.Println(image.VirtualSize)
 	}
 
 	errs := filepath.Walk("./", func(path string, info os.FileInfo, err error) error {
