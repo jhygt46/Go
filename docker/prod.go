@@ -50,13 +50,13 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	
+	/*
 	if imageBuild("/var/docker-images/filtros/Dockerfile", cli) {
 		fmt.Println("IMAGEN CREADA")
 	}else{
 		fmt.Println("ERROR CREAR IMAGEN")
 	}
-	
+	*/
 	pass := &MyHandler{ Conf: &Config{ Id: 8, Fecha: time.Now() }, cli: cli }
 
 	con := context.Background()
@@ -104,6 +104,11 @@ func GetContext(filePath string) io.Reader {
 }
 func imageBuild(s string, cli *client.Client) bool {
 
+	/*
+	dels, err := cli.ImageRemove(context.Background(), img, options)
+	fmt.Println(dels)
+	*/
+
 	buildOptions := types.ImageBuildOptions{
 		Tags:   []string{"filtrogo"},
 	}
@@ -114,56 +119,6 @@ func imageBuild(s string, cli *client.Client) bool {
     }
 	io.Copy(os.Stdout, imageBuildResponse.Body)
     defer imageBuildResponse.Body.Close()
-
-
-	/*
-	ctx := context.Background()
-
-	buf := new(bytes.Buffer)
-    tw := tar.NewWriter(buf)
-    defer tw.Close()
-
-    dockerFile := "myDockerfile"
-    dockerFileReader, err := os.Open("/var/docker-images/filtros/Dockerfile")
-    if err != nil {
-        log.Fatal(err, " :unable to open Dockerfile")
-    }
-    readDockerFile, err := ioutil.ReadAll(dockerFileReader)
-    if err != nil {
-        log.Fatal(err, " :unable to read dockerfile")
-    }
-
-    tarHeader := &tar.Header{
-        Name: dockerFile,
-        Size: int64(len(readDockerFile)),
-    }
-    err = tw.WriteHeader(tarHeader)
-    if err != nil {
-        log.Fatal(err, " :unable to write tar header")
-    }
-    _, err = tw.Write(readDockerFile)
-    if err != nil {
-        log.Fatal(err, " :unable to write tar body")
-    }
-    dockerFileTarReader := bytes.NewReader(buf.Bytes())
-
-    imageBuildResponse, err := cli.ImageBuild(
-        ctx,
-        dockerFileTarReader,
-        types.ImageBuildOptions{
-            Context:    dockerFileTarReader,
-            Dockerfile: dockerFile,
-            Remove:     true
-		})
-    if err != nil {
-        log.Fatal(err, " :unable to build docker image")
-    }
-    defer imageBuildResponse.Body.Close()
-    _, err = io.Copy(os.Stdout, imageBuildResponse.Body)
-    if err != nil {
-        log.Fatal(err, " :unable to read image build response")
-    }
-	*/
 
 	return true
 
@@ -179,6 +134,9 @@ func (h *MyHandler) StartDaemon() {
 	}
 	for _, image := range images {
 		fmt.Println(image.ID)
+		fmt.Println(image.RepoTags)
+		fmt.Println(image.Size)
+		fmt.Println(image.VirtualSize)
 	}
 
 	errs := filepath.Walk("./", func(path string, info os.FileInfo, err error) error {
