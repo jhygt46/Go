@@ -100,10 +100,12 @@ func main() {
 func GetContext(filePath string) io.Reader {
     filePaths, _ := homedir.Expand(filePath)
 	fmt.Println(filePaths)
-    ctx, _ := archive.TarWithOptions(filePaths, &archive.TarOptions{})
+    ctx, _ := archive.TarWithOptions(filePath, &archive.TarOptions{})
     return ctx
 }
 func imageBuild(s string, cli *client.Client) bool {
+
+	os.Chdir("/var/dockers-images/filtros")
 
 	ctx := context.Background()
 	images, err := cli.ImageList(ctx, types.ImageListOptions{})
