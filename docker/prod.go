@@ -113,7 +113,7 @@ func imageBuild(s string, cli *client.Client) bool {
 		for _, img := range image.RepoTags{
 			if img == "filtrogo:latest" {
 				fmt.Println("image encontrada")
-				dels, err := cli.ImageRemove(context.Background(), image.ID, types.ImageRemoveOptions{Force: false, PruneChildren: false})
+				dels, err := cli.ImageRemove(context.Background(), image.ID, types.ImageRemoveOptions{Force: true, PruneChildren: false})
 				if err != nil {
 					panic(err)
 				}else{
