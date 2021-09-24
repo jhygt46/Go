@@ -178,7 +178,10 @@ func ExampleCmd_StderrPipe() {
 		log.Fatal(err)
 	}
 
-	fmt.Println(SplitLines(string(stdoutStderr)))
+	lines := SplitLines(string(stdoutStderr))
+	for i, v := range lines {
+		fmt.Printf("%d => %s\n", i, v)
+	}
 
 
 }
