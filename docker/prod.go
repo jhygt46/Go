@@ -13,8 +13,9 @@ import (
 	"errors"
 	"syscall"
 	"context"
-	//"io/ioutil"
+	"os/exec"
 	"os/signal"
+	//"io/ioutil"
 	//"archive/tar"
 	"encoding/json"
 	"path/filepath"
@@ -22,7 +23,6 @@ import (
 	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/client"
     "github.com/docker/docker/pkg/archive"
-	"google.golang.org/api/compute/v1"
 )
 type Config struct {
 	Id int8 `json:"Id"`
@@ -45,9 +45,13 @@ var dockerRegistryUserID = "111"
 
 func main() {
 
+	/*
 	ctx := context.Background()
 	computeService, _ := compute.NewService(ctx)
 	fmt.Println(computeService)
+	*/
+
+	ExampleCmd_StderrPipe()
 
 	cli, err := client.NewClientWithOpts(client.FromEnv, client.WithAPIVersionNegotiation())
 	if err != nil {
@@ -146,6 +150,24 @@ func imageBuild(titulo string, cli *client.Client) bool {
 
 	return true
 
+}
+func ExampleCmd_StderrPipe() {
+	cmd := exec.Command("sh", "-c", "echo stdout; echo 1>&2 stderr")
+	stderr, err := cmd.StderrPipe()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	if err := cmd.Start(); err != nil {
+		log.Fatal(err)
+	}
+
+	slurp, _ := io.ReadAll(stderr)
+	fmt.Printf("%s\n", slurp)
+
+	if err := cmd.Wait(); err != nil {
+		log.Fatal(err)
+	}
 }
 func (h *MyHandler) StartDaemon() {
 
