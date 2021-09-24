@@ -164,7 +164,7 @@ func ExampleCmd_StderrPipe() {
 	scanner := bufio.NewScanner(cmdReader)
 	go func() {
 		for scanner.Scan() {
-			//fmt.Printf(" out | %s\n", scanner.Text())
+			fmt.Printf(" out => | %s\n", scanner.Text())
 			words := strings.Fields(scanner.Text())
 			fmt.Println(words, len(words))
 		}
