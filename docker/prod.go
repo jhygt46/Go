@@ -57,13 +57,13 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	
+	/*
 	if imageBuild("/var/docker-images/filtros/Dockerfile", cli) {
 		fmt.Println("IMAGEN CREADA")
 	}else{
 		fmt.Println("ERROR CREAR IMAGEN")
 	}
-	
+	*/
 	pass := &MyHandler{ Conf: &Config{ Id: 8, Fecha: time.Now() }, cli: cli }
 
 	con := context.Background()
@@ -152,7 +152,8 @@ func imageBuild(titulo string, cli *client.Client) bool {
 
 }
 func ExampleCmd_StderrPipe() {
-	cmd := exec.Command("sh", "-c", "echo stdout; echo 1>&2 stderr")
+
+	cmd := exec.Command("bash", "-c", "echo HOLA MUNDO")
 	stderr, err := cmd.StderrPipe()
 	if err != nil {
 		log.Fatal(err)
@@ -168,6 +169,7 @@ func ExampleCmd_StderrPipe() {
 	if err := cmd.Wait(); err != nil {
 		log.Fatal(err)
 	}
+
 }
 func (h *MyHandler) StartDaemon() {
 
