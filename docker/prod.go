@@ -154,21 +154,20 @@ func imageBuild(titulo string, cli *client.Client) bool {
 func ExampleCmd_StderrPipe() {
 
 	cmd := exec.Command("bash", "-c", "echo HOLA MUNDO")
-	stderr, err := cmd.StderrPipe()
+	cmdReader, err := cmd.StderrPipe()
 	if err != nil {
-		log.Fatal(err)
+		fmt.Fprintln(os.Stderr, "Error creating StdoutPipe for Cmd", err)
+		os.Exit(1)
 	}
 
-	if err := cmd.Start(); err != nil {
-		log.Fatal(err)
-	}
+	scanner := bufio.NewScanner(cmdReader)
+			go func() {
+		for scanner.Scan() {
+			fmt.Printf(" out | %s\n", scanner.Text())
+		}
 
-	slurp, _ := io.ReadAll(stderr)
-	fmt.Printf("%s\n", slurp)
+	}()
 
-	if err := cmd.Wait(); err != nil {
-		log.Fatal(err)
-	}
 
 }
 func (h *MyHandler) StartDaemon() {
