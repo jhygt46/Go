@@ -177,7 +177,7 @@ func ExampleCmd_StderrPipe() {
 		log.Fatal(err)
 	}
 	fmt.Println("a1")
-	fmt.Println(stdoutStderr)
+	fmt.Println(string(stdoutStderr))
 	fmt.Println("a2")
 
 }
