@@ -13,6 +13,7 @@ import (
 	"errors"
 	"syscall"
 	"context"
+	"strings"
 	"os/exec"
 	"os/signal"
 	//"io/ioutil"
@@ -176,10 +177,18 @@ func ExampleCmd_StderrPipe() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	fmt.Println("a1")
-	fmt.Println(string(stdoutStderr))
-	fmt.Println("a2")
 
+	fmt.Println(SplitLines(string(stdoutStderr)))
+
+
+}
+func SplitLines(s string) []string {
+    var lines []string
+    sc := bufio.NewScanner(strings.NewReader(s))
+    for sc.Scan() {
+        lines = append(lines, sc.Text())
+    }
+    return lines
 }
 func (h *MyHandler) StartDaemon() {
 
