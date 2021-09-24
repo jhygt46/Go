@@ -10,7 +10,7 @@ import (
 	"time"
 	//"bytes"
 	"bufio"
-	"errors"
+	//"errors"
 	"syscall"
 	"context"
 	"strings"
@@ -18,7 +18,7 @@ import (
 	"os/signal"
 	//"io/ioutil"
 	//"archive/tar"
-	"encoding/json"
+	//"encoding/json"
 	"path/filepath"
     "github.com/valyala/fasthttp"
 	"github.com/docker/docker/api/types"
@@ -180,7 +180,11 @@ func ExampleCmd_StderrPipe() {
 
 	lines := SplitLines(string(stdoutStderr))
 	for i, v := range lines {
-		fmt.Printf("%d => %s\n", i, v)
+
+		fmt.Println(i)
+		words := strings.Fields(v)
+		fmt.Println(words)
+
 	}
 
 
@@ -264,25 +268,4 @@ func humanateBytes(s uint64, base float64, sizes []string) string {
 func FileSize(s int64) string {
 	sizes := []string{"B", "KB", "MB", "GB", "TB", "PB", "EB"}
 	return humanateBytes(uint64(s), 1024, sizes)
-}
-func print(rd io.Reader) error {
-	var lastLine string
-
-	scanner := bufio.NewScanner(rd)
-	for scanner.Scan() {
-		lastLine = scanner.Text()
-		fmt.Println(scanner.Text())
-	}
-
-	errLine := &ErrorLine{}
-	json.Unmarshal([]byte(lastLine), errLine)
-	if errLine.Error != "" {
-		return errors.New(errLine.Error)
-	}
-
-	if err := scanner.Err(); err != nil {
-		return err
-	}
-
-	return nil
 }
