@@ -163,7 +163,7 @@ func ExampleCmd_StderrPipe() {
 		os.Exit(1)
 	}
 
-	fmt.Println(cmdReader)
+	fmt.Println(*cmdReader)
 
 	scanner := bufio.NewScanner(cmdReader)
 	go func() {
