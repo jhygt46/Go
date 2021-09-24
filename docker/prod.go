@@ -11,6 +11,7 @@ import (
 	//"bytes"
 	"bufio"
 	"errors"
+	"strings"
 	"syscall"
 	"context"
 	"os/exec"
@@ -153,7 +154,7 @@ func imageBuild(titulo string, cli *client.Client) bool {
 }
 func ExampleCmd_StderrPipe() {
 
-	cmd := exec.Command("bash", "-c", "echo HOLA MUNDO")
+	cmd := exec.Command("bash", "-c", "gcloud compute instances create-with-container test --container-image=docker.io/filtrogo --zone=us-central1-a --machine-type=f1-micro")
 	cmdReader, err := cmd.StderrPipe()
 	if err != nil {
 		fmt.Fprintln(os.Stderr, "Error creating StdoutPipe for Cmd", err)
@@ -161,11 +162,12 @@ func ExampleCmd_StderrPipe() {
 	}
 
 	scanner := bufio.NewScanner(cmdReader)
-			go func() {
+	go func() {
 		for scanner.Scan() {
-			fmt.Printf(" out | %s\n", scanner.Text())
+			//fmt.Printf(" out | %s\n", scanner.Text())
+			words := strings.Fields(scanner.Text())
+			fmt.Println(words, len(words))
 		}
-
 	}()
 
 
