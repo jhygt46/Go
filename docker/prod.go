@@ -156,7 +156,7 @@ func ExampleCmd_StderrPipe() {
 
 	fmt.Println("CMD START")
 
-	cmd := exec.Command("bash", "-c", "gcloud compute instances create-with-container test --container-image=docker.io/filtrogo --zone=us-central1-a --machine-type=f1-micro")
+	cmd := exec.Command("sh", "-c", "gcloud compute instances create-with-container test --container-image=docker.io/filtrogo --zone=us-central1-a --machine-type=f1-micro")
 	cmdReader, err := cmd.StderrPipe()
 	if err != nil {
 		fmt.Fprintln(os.Stderr, "Error creating StdoutPipe for Cmd", err)
