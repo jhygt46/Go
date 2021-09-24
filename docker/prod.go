@@ -176,7 +176,9 @@ func ExampleCmd_StderrPipe() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	fmt.Printf("%s\n", stdoutStderr)
+	fmt.Println("a1")
+	fmt.Println(stdoutStderr)
+	fmt.Println("a2")
 
 }
 func (h *MyHandler) StartDaemon() {
