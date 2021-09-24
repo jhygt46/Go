@@ -21,8 +21,8 @@ import (
     "github.com/valyala/fasthttp"
 	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/client"
-	"github.com/mitchellh/go-homedir"
     "github.com/docker/docker/pkg/archive"
+	"google.golang.org/api/compute/v1"
 )
 type Config struct {
 	Id int8 `json:"Id"`
@@ -44,6 +44,10 @@ type ErrorDetail struct {
 var dockerRegistryUserID = "111"
 
 func main() {
+
+	ctx := context.Background()
+	computeService, _ := compute.NewService(ctx)
+	fmt.Println(computeService)
 
 	cli, err := client.NewClientWithOpts(client.FromEnv, client.WithAPIVersionNegotiation())
 	if err != nil {
@@ -96,13 +100,7 @@ func main() {
 	}
 
 }
-func GetContext(filePath string) io.Reader {
-
-    filePaths, _ := homedir.Expand(filePath)
-    ctx, _ := archive.TarWithOptions(filePaths, &archive.TarOptions{})
-    return ctx
-}
-func imageBuild(s string, cli *client.Client) bool {
+func imageBuild(titulo string, cli *client.Client) bool {
 
 	os.Chdir("/var/dockers-images/filtros")
 
@@ -110,7 +108,7 @@ func imageBuild(s string, cli *client.Client) bool {
 	images, err := cli.ImageList(ctx, types.ImageListOptions{})
 	if err != nil {
 		panic(err)
-	}
+	} 
 	for _, image := range images {
 		for _, img := range image.RepoTags{
 			if img == "filtrogo:latest" {
@@ -138,7 +136,6 @@ func imageBuild(s string, cli *client.Client) bool {
 	if err != nil {
 		panic(err)
 	}
-
 
 	imageBuildResponse, err := cli.ImageBuild(context.Background(), tar, buildOptions)
 	if err != nil {
