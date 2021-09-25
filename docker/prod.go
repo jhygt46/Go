@@ -180,11 +180,10 @@ func ExampleCmd_StderrPipe() {
 
 	lines := SplitLines(string(stdoutStderr))
 	for i, v := range lines {
-
-		fmt.Println(i)
 		words := strings.Fields(v)
-		fmt.Println(words)
-
+		for j, d := range words {
+			fmt.Printf("linea: %d palabra: %d (%s)", i, j, d)
+		}
 	}
 
 
