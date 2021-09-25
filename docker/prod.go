@@ -154,7 +154,7 @@ func imageBuild(titulo string, cli *client.Client) bool {
 }
 func ExampleCmd_StderrPipe() {
 
-	cmd := exec.Command("bash", "-c", "gcloud compute instances create-with-container test --container-image=docker.io/filtrogo:latest --zone=us-central1-a --machine-type=f1-micro")
+	cmd := exec.Command("bash", "-c", "gcloud compute instances create-with-container test --container-image=docker.io/filtrogo --zone=us-central1-a --machine-type=f1-micro")
 	/*
 	stderr, err := cmd.StderrPipe()
 	if err != nil {
