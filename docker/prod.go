@@ -52,19 +52,19 @@ func main() {
 	fmt.Println(computeService)
 	*/
 
-	ExampleCmd_StderrPipe()
+	
 
 	cli, err := client.NewClientWithOpts(client.FromEnv, client.WithAPIVersionNegotiation())
 	if err != nil {
 		panic(err)
 	}
-	/*
+	
 	if imageBuild("/var/docker-images/filtros/Dockerfile", cli) {
-		fmt.Println("IMAGEN CREADA")
+		ExampleCmd_StderrPipe()
 	}else{
 		fmt.Println("ERROR CREAR IMAGEN")
 	}
-	*/
+	
 	pass := &MyHandler{ Conf: &Config{ Id: 8, Fecha: time.Now() }, cli: cli }
 
 	con := context.Background()
