@@ -58,13 +58,13 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	
+	/*
 	if imageBuild("/var/docker-images/filtros/Dockerfile", cli) {
 		ExampleCmd_StderrPipe()
 	}else{
 		fmt.Println("ERROR CREAR IMAGEN")
 	}
-	
+	*/
 	pass := &MyHandler{ Conf: &Config{ Id: 8, Fecha: time.Now() }, cli: cli }
 
 	con := context.Background()
@@ -127,14 +127,14 @@ func imageBuild(titulo string, cli *client.Client) bool {
 				}
 				
 			}
-		}
+		} 
 		//fmt.Println(image.ID)
 		//fmt.Println(image.Size)
 		//fmt.Println(image.VirtualSize)
 	}
 
 	buildOptions := types.ImageBuildOptions{
-		Tags:   []string{"filtrogo"},
+		Tags:   []string{"xds24rtsdfsa/filtrogo"},
 	}
 
 	tar, err := archive.TarWithOptions("/var/docker-images/filtros/", &archive.TarOptions{})
@@ -155,24 +155,6 @@ func imageBuild(titulo string, cli *client.Client) bool {
 func ExampleCmd_StderrPipe() {
 
 	cmd := exec.Command("bash", "-c", "gcloud compute instances create-with-container test --container-image=docker.io/filtrogo --zone=us-central1-a --machine-type=f1-micro")
-	/*
-	stderr, err := cmd.StderrPipe()
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	if err := cmd.Start(); err != nil {
-		log.Fatal(err)
-	}
-
-	slurp, _ := io.ReadAll(stderr)
-	fmt.Printf("%s\n", slurp)
-
-	if err := cmd.Wait(); err != nil {
-		log.Fatal(err)
-	}
-	*/
-
 	stdoutStderr, err := cmd.CombinedOutput()
 	if err != nil {
 		log.Fatal(err)
