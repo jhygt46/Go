@@ -58,13 +58,13 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	/*
+	
 	if imageBuild("/var/docker-images/filtros/Dockerfile", cli) {
-		ExampleCmd_StderrPipe()
+		//ExampleCmd_StderrPipe()
 	}else{
 		fmt.Println("ERROR CREAR IMAGEN")
 	}
-	*/
+	
 	pass := &MyHandler{ Conf: &Config{ Id: 8, Fecha: time.Now() }, cli: cli }
 
 	con := context.Background()
