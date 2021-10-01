@@ -146,7 +146,7 @@ func imageBuild(titulo string, cli *client.Client) bool {
 	if err != nil {
         log.Fatalf("build error - %s", err)
     }
-	io.Copy(os.Stdout, imageBuildResponse.Body)
+	//io.Copy(os.Stdout, imageBuildResponse.Body)
     defer imageBuildResponse.Body.Close()
 
 
@@ -162,12 +162,14 @@ func imageBuild(titulo string, cli *client.Client) bool {
 	authConfigBytes, _ := json.Marshal(authConfig)
 	authConfigEncoded := base64.URLEncoding.EncodeToString(authConfigBytes)
 
-	tag := "xds24rtsdfsa/filtrogo:latest"
+	tag := "xds24rtsdfsa/filtrogo"
 	opts := types.ImagePushOptions{ RegistryAuth: authConfigEncoded }
 	rd, err := cli.ImagePush(ctx, tag, opts)
 	if err != nil {
 		fmt.Println(err)
 		return false
+	}else{
+		fmt.Println("IMAGE PUSH")
 	}
 	defer rd.Close()
 
