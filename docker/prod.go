@@ -162,10 +162,11 @@ func imageBuild(titulo string, cli *client.Client) bool {
 	authConfigBytes, _ := json.Marshal(authConfig)
 	authConfigEncoded := base64.URLEncoding.EncodeToString(authConfigBytes)
 
-	tag := "xds24rtsdfsa/filtrogo"
+	tag := "xds24rtsdfsa/filtrogo:latest"
 	opts := types.ImagePushOptions{ RegistryAuth: authConfigEncoded }
 	rd, err := cli.ImagePush(ctx, tag, opts)
 	if err != nil {
+		fmt.Println(err)
 		return false
 	}
 	defer rd.Close()
