@@ -18,7 +18,8 @@ import (
 	"os/signal"
 	//"io/ioutil"
 	//"archive/tar"
-	//"encoding/json"
+	"encoding/base64"
+	"encoding/json"
 	"path/filepath"
     "github.com/valyala/fasthttp"
 	"github.com/docker/docker/api/types"
@@ -109,8 +110,7 @@ func imageBuild(titulo string, cli *client.Client) bool {
 
 	os.Chdir("/var/dockers-images/filtros")
 
-	ctx := context.Background()
-	images, err := cli.ImageList(ctx, types.ImageListOptions{})
+	images, err := cli.ImageList(context.Background(), types.ImageListOptions{})
 	if err != nil {
 		panic(err)
 	} 
@@ -148,6 +148,27 @@ func imageBuild(titulo string, cli *client.Client) bool {
     }
 	io.Copy(os.Stdout, imageBuildResponse.Body)
     defer imageBuildResponse.Body.Close()
+
+
+	var authConfig = types.AuthConfig{
+		Username:      "xds24rtsdfsa",
+		Password:      "kcm9mtt3sdk",
+		ServerAddress: "https://index.docker.io/v1/",
+	}
+
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*120)
+	defer cancel()
+
+	authConfigBytes, _ := json.Marshal(authConfig)
+	authConfigEncoded := base64.URLEncoding.EncodeToString(authConfigBytes)
+
+	tag := "xds24rtsdfsa/filtrogo"
+	opts := types.ImagePushOptions{ RegistryAuth: authConfigEncoded }
+	rd, err := cli.ImagePush(ctx, tag, opts)
+	if err != nil {
+		return false
+	}
+	defer rd.Close()
 
 	return true
 
