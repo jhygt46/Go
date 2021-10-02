@@ -134,7 +134,7 @@ func imageBuild(titulo string, cli *client.Client) bool {
 	}
 
 	buildOptions := types.ImageBuildOptions{
-		Tags:   []string{"xds24rtsdfsa/filtrogo:latest"},
+		Tags:   []string{"xds24rtsdfsa/filtrogo"},
 	}
 
 	tar, err := archive.TarWithOptions("/var/docker-images/filtros/", &archive.TarOptions{})
