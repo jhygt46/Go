@@ -134,7 +134,7 @@ func imageBuild(titulo string, cli *client.Client) bool {
 	}
 
 	buildOptions := types.ImageBuildOptions{
-		Tags:   []string{"xds24rtsdfsa/filtrogo"},
+		Tags:   []string{"xds24rtsdfsa/filtrogo:latest"},
 	}
 
 	tar, err := archive.TarWithOptions("/var/docker-images/filtros/", &archive.TarOptions{})
@@ -184,7 +184,7 @@ func imageBuild(titulo string, cli *client.Client) bool {
 }
 func ExampleCmd_StderrPipe() {
 
-	cmd := exec.Command("bash", "-c", "gcloud compute instances create-with-container test --container-image=docker.io/filtrogo --zone=us-central1-a --machine-type=f1-micro")
+	cmd := exec.Command("bash", "-c", "gcloud compute instances create-with-container test --container-image=docker.io/xds24rtsdfsa/filtrogo:latest --zone=us-central1-a --machine-type=f1-micro")
 	stdoutStderr, err := cmd.CombinedOutput()
 	if err != nil {
 		log.Fatal(err)
