@@ -146,7 +146,7 @@ func imageBuild(titulo string, cli *client.Client) bool {
 	if err != nil {
         log.Fatalf("build error - %s", err)
     }
-	//io.Copy(os.Stdout, imageBuildResponse.Body)
+	io.Copy(os.Stdout, imageBuildResponse.Body)
     defer imageBuildResponse.Body.Close()
 
 
