@@ -22,7 +22,7 @@ func (h *MyHandler) HandleFastHTTP(ctx *fasthttp.RequestCtx) {
 
 	id := binary.LittleEndian.Uint16(ctx.QueryArgs().Peek("id"))
 	time := time.Now()
-	fmt.Fprintf(ctx, id);
+	fmt.Fprintf(ctx, "id := %d", id);
 	printelaped(time, "HTTP")
 
 }
