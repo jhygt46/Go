@@ -19,10 +19,9 @@ func main() {
 
 func (h *MyHandler) HandleFastHTTP(ctx *fasthttp.RequestCtx) {
 
-	id := ctx.QueryArgs().Peek("id")
+	id := binary.LittleEndian.Uint16(ctx.QueryArgs().Peek("id"))
 	time := time.Now()
-	fmt.Fprintf(ctx, "ERROR DDos");
-	fmt.Println(id)
+	fmt.Fprintf(ctx, id);
 	printelaped(time, "HTTP")
 
 }
