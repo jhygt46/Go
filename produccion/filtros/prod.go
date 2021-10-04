@@ -1,8 +1,9 @@
 package main
 
 import (
-	"time"
 	"fmt"
+	"time"
+	"encoding/binary"
     "github.com/valyala/fasthttp"
 )
 
