@@ -13,9 +13,9 @@ func main() {
 
 	pass := &MyHandler {}
 
-	//go func() {
+	go func() {
 		fasthttp.ListenAndServe(":80", pass.HandleFastHTTP)
-	//}()
+	}()
 
 }
 
