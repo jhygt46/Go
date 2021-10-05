@@ -3,41 +3,41 @@ package main
 import (
     "testing"
 	"fmt"
-    "encoding/binary"
-    "bytes"
+    "strconv"
 )
 
 func main() {
     fmt.Println("Hello World")
 }
 
-func read_int32(data []byte) (ret uint32) {
-    buf := bytes.NewBuffer(data)
-    binary.Read(buf, binary.LittleEndian, &ret)
-    return
+func read_int32(data []byte) int32 {
+    var x int32
+    for _, c := range data {
+        x = x * 10 + int32(c - '0')
+    }
+    return x
+}
+func read_int32b(data []byte) int {
+    x, _ := strconv.Atoi(string(data))
+    return x
 }
 
 func BenchmarkCalculateA(b *testing.B) {
 
-    byteNumber := []byte{0, 0, 0, 244, 0, 0, 0, 244}
+    // 1254134
+    byteNumber := []byte{49, 50, 53, 52, 49, 51, 52}
     for i := 0; i < b.N; i++ {
-        fmt.Println(read_int32(byteNumber))
+        read_int32(byteNumber)
     }
 
 }
 
 func BenchmarkCalculateB(b *testing.B) {
 
-    byteNumber := []byte{0, 0, 0, 244, 0, 0, 0, 244}
+    byteNumber := []byte{49, 50, 53, 52, 49, 51, 52}
     for i := 0; i < b.N; i++ {
-        if len(byteNumber) > 7 {
-            data := binary.BigEndian.Uint64(byteNumber)
-            data++
-        }
+        read_int32b(byteNumber)
     }
 
 }
 
-func Calculate(x int) (result int) {
-    return x + 2
-}
