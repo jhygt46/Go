@@ -28,12 +28,15 @@ type Evals struct {
 
 
 func main() {
-
+	/*
 	newpath := filepath.Join("/var/Go/pruebas/utils/filtros", "1")
 	err := os.MkdirAll(newpath, os.ModePerm)
 	if err != nil {
 		fmt.Println(err)
 	}
+	*/
+
+	
 
 	pass := &MyHandler {}
 	fasthttp.ListenAndServe(":80", pass.HandleFastHTTP)

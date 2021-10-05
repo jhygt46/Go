@@ -1,6 +1,7 @@
 package main
 
 import (
+    "os"
     "testing"
 	"fmt"
     "strconv"
@@ -12,24 +13,23 @@ func main() {
 
 
 func BenchmarkCalculateA(b *testing.B) {
-    /*
-    file := "catcuad/"+cat+"/"+cuad+".json"
-	jsonFile, err := os.Open(file)
-	if err != nil {
-		fmt.Println(err)
-	}
-	defer jsonFile.Close()
-    */
+
+    d1 := []byte("hello\ngo\n")
     for i := 0; i < b.N; i++ {
-        
+        err := os.WriteFile("/var/Go/pruebas/utils/filtros/"+strconv.Itoa(i), d1, 0644)
+        if err != nil {
+            fmt.Println(err)
+        }
     }
 
 }
-
+/*
 func BenchmarkCalculateB(b *testing.B) {
-
+    for i := 0; i < b.N; i++ {
+        
+    }
 }
-
+*/
 
 
 
