@@ -3,7 +3,6 @@ package main
 import (
 	"fmt"
 	"time"
-	"encoding/binary"
     "github.com/valyala/fasthttp"
 )
 
@@ -30,6 +29,7 @@ func (h *MyHandler) HandleFastHTTP(ctx *fasthttp.RequestCtx) {
 	id := read_int32(ctx.QueryArgs().Peek("id"))
 	fmt.Fprintf(ctx, "HOLA");
 	printelaped(time, "HTTP")
+	fmt.Println(id)
 
 }
 
