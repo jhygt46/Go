@@ -17,24 +17,19 @@ func main() {
 	fasthttp.ListenAndServe(":80", pass.HandleFastHTTP)
 	
 }
-
+func read_int32(data []byte) int32 {
+    var x int32
+    for _, c := range data {
+        x = x * 10 + int32(c - '0')
+    }
+    return x
+}
 func (h *MyHandler) HandleFastHTTP(ctx *fasthttp.RequestCtx) {
 
-	id := ctx.QueryArgs().Peek("id")
-	fmt.Println(id)
-
-	if len(id) > 7 {
-		ids := binary.BigEndian.Uint64(id)
-		fmt.Println(ids)
-	}else{
-		ids := uint64(6)
-		fmt.Println(ids)
-	}
-	
 	time := time.Now()
+	id := read_int32(ctx.QueryArgs().Peek("id"))
 	fmt.Fprintf(ctx, "HOLA");
 	printelaped(time, "HTTP")
-	
 
 }
 
