@@ -20,11 +20,17 @@ func main() {
 
 func (h *MyHandler) HandleFastHTTP(ctx *fasthttp.RequestCtx) {
 
-	id := binary.BigEndian.Uint64(ctx.QueryArgs().Peek("id"))
+	id := ctx.QueryArgs().Peek("id")
+	if len(id) > 7 {
+		ids := binary.BigEndian.Uint64(id)
+	}else{
+		ids := 6
+	}
+	
 	time := time.Now()
 	fmt.Fprintf(ctx, "HOLA");
 	printelaped(time, "HTTP")
-	fmt.Println(id)
+	fmt.Println(ids)
 
 }
 
