@@ -2,6 +2,7 @@ package main
 
 import (
     "os"
+    "bufio"
     "testing"
 	"fmt"
     "strconv"
@@ -16,20 +17,69 @@ func BenchmarkCalculateA(b *testing.B) {
 
     d1 := []byte("hello\ngo\n")
     for i := 0; i < b.N; i++ {
-        err := os.WriteFile("/var/Go/pruebas/utils/filtros/"+strconv.Itoa(i), d1, 0644)
+        err := os.WriteFile("/var/Go/pruebas/utils/filtros/1/"+strconv.Itoa(i), d1, 0644)
         if err != nil {
             fmt.Println(err)
         }
     }
 
 }
-/*
+
 func BenchmarkCalculateB(b *testing.B) {
+
+    d1 := []byte{115, 111, 109, 101, 10}
+
     for i := 0; i < b.N; i++ {
-        
+        f, err := os.Create("/var/Go/pruebas/utils/filtros/2/"+strconv.Itoa(i))
+        if err != nil {
+            fmt.Println(err)
+        }
+        defer f.Close()
+        n2, err := f.Write(d1)
+        if err != nil {
+            fmt.Println(err)
+            fmt.Println(n2)
+        }
+        f.Sync()
     }
+    
 }
-*/
+func BenchmarkCalculateC(b *testing.B) {
+
+    for i := 0; i < b.N; i++ {
+        f, err := os.Create("/var/Go/pruebas/utils/filtros/3/"+strconv.Itoa(i))
+        if err != nil {
+            fmt.Println(err)
+        }
+        defer f.Close()
+        n2, err := f.WriteString("writes\n")
+        if err != nil {
+            fmt.Println(err)
+            fmt.Println(n2)
+        }
+        f.Sync()
+    }
+    
+}
+func BenchmarkCalculateD(b *testing.B) {
+
+    for i := 0; i < b.N; i++ {
+        f, err := os.Create("/var/Go/pruebas/utils/filtros/4/"+strconv.Itoa(i))
+        if err != nil {
+            fmt.Println(err)
+        }
+        defer f.Close()
+        w := bufio.NewWriter(f)
+        n4, err := w.WriteString("buffered\n")
+        if err != nil {
+            fmt.Println(err)
+            fmt.Println(n4)
+        }
+        w.Flush()
+    }
+    
+}
+
 
 
 
