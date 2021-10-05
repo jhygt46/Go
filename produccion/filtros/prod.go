@@ -30,6 +30,8 @@ func (h *MyHandler) HandleFastHTTP(ctx *fasthttp.RequestCtx) {
 	fmt.Fprintf(ctx, "HOLA");
 	printelaped(time, "HTTP")
 	fmt.Println(id)
+	fmt.Println(ctx.Path())
+	
 
 }
 
