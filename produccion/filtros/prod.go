@@ -21,6 +21,8 @@ func main() {
 func (h *MyHandler) HandleFastHTTP(ctx *fasthttp.RequestCtx) {
 
 	id := ctx.QueryArgs().Peek("id")
+	fmt.Println(id)
+
 	if len(id) > 7 {
 		ids := binary.BigEndian.Uint64(id)
 		fmt.Println(ids)
