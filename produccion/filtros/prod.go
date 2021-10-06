@@ -49,7 +49,7 @@ func main() {
 		fmt.Println("CARPETA: "+folder+" // CANTIDAD: "+cantidad)
 
 		time1 := time.Now()
-		for i := 1; i <= v; i++ {
+		for i := 0; i < v; i++ {
 			err := os.WriteFile("/var/Go/pruebas/utils/filtros/"+folder+"/"+strconv.Itoa(i), d1, 0644)
 			if err != nil {
 				fmt.Println(err)
@@ -58,7 +58,7 @@ func main() {
 		printelaped(time1, "WRITE")
 
 		time2 := time.Now()
-		for i := 1; i <= v; i++ {
+		for i := 0; i < v; i++ {
 			jsonFile, err := os.Open("/var/Go/pruebas/utils/filtros/"+folder+"/"+strconv.Itoa(i))
 			if err == nil{
 				byteValue, _ := ioutil.ReadAll(jsonFile)
