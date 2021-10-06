@@ -40,24 +40,37 @@ func main() {
 	*/
 
 	d1 := []byte("{\"Id\":1,\"Data\":{\"C\":[{ \"T\": 1, \"N\": \"Nacionalidad\", \"V\": [\"Chilena\", \"Argentina\", \"Brasileña\", \"Uruguaya\"] }, { \"T\": 2, \"N\": \"Servicios\", \"V\": [\"Americana\", \"Rusa\", \"Bailarina\", \"Masaje\"] },{ \"T\": 3, \"N\": \"Edad\" }],\"E\": [{ \"T\": 1, \"N\": \"Rostro\" },{ \"T\": 1, \"N\": \"Senos\" },{ \"T\": 1, \"N\": \"Trasero\" }]}}")
-	time1 := time.Now()
-    for i := 1; i <= 100000; i++ {
-        err := os.WriteFile("/var/Go/pruebas/utils/filtros/1/"+strconv.Itoa(i), d1, 0644)
-        if err != nil {
-            fmt.Println(err)
-        }
-    }
-	printelaped(time1, "WRITE")
 
-	time2 := time.Now()
-	for i := 1; i <= 100000; i++ {
-		jsonFile, err := os.Open("/var/Go/pruebas/utils/filtros/1/"+strconv.Itoa(i))
-		if err == nil{
-			byteValue, _ := ioutil.ReadAll(jsonFile)
-			read(byteValue)
+	x := []int{10, 100, 1000, 10000, 100000}
+	for j, v := range x {
+
+		folder := strconv.Itoa(j)
+		time1 := time.Now()
+		for i := 1; i <= v; i++ {
+			err := os.WriteFile("/var/Go/pruebas/utils/filtros/"+folder+"/"+strconv.Itoa(i), d1, 0644)
+			if err != nil {
+				fmt.Println(err)
+			}
 		}
+		printelaped(time1, "WRITE")
+
+		time2 := time.Now()
+		for i := 1; i <= v; i++ {
+			jsonFile, err := os.Open("/var/Go/pruebas/utils/filtros/"+folder+"/"+strconv.Itoa(i))
+			if err == nil{
+				byteValue, _ := ioutil.ReadAll(jsonFile)
+				read(byteValue)
+			}
+		}
+		printelaped(time2, "READ")
+
 	}
-	printelaped(time2, "READ")
+
+
+	
+	
+
+	
 	
 
 	pass := &MyHandler {}
