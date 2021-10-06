@@ -38,23 +38,24 @@ func main() {
 	}
 	*/
 
-	
-
 	d1 := []byte("{\"Id\":1,\"Data\":{\"C\":[{ \"T\": 1, \"N\": \"Nacionalidad\", \"V\": [\"Chilena\", \"Argentina\", \"Brasileña\", \"Uruguaya\"] }, { \"T\": 2, \"N\": \"Servicios\", \"V\": [\"Americana\", \"Rusa\", \"Bailarina\", \"Masaje\"] },{ \"T\": 3, \"N\": \"Edad\" }],\"E\": [{ \"T\": 1, \"N\": \"Rostro\" },{ \"T\": 1, \"N\": \"Senos\" },{ \"T\": 1, \"N\": \"Trasero\" }]}}")
-	time := time.Now()
-    for i := 543086; i < 1000000; i++ {
+	time1 := time.Now()
+    for i := 1; i <= 100; i++ {
         err := os.WriteFile("/var/Go/pruebas/utils/filtros/1/"+strconv.Itoa(i), d1, 0644)
         if err != nil {
             fmt.Println(err)
         }
     }
-	printelaped(time, "WRITE: ")
-	/*
-	jsonFile, err := os.Open("../utils/filtros/"+string(ctx.QueryArgs().Peek("id"))+".json")
-	if err == nil{
+	printelaped(time1, "WRITE")
 
+	time2 := time.Now()
+	for i := 1; i <= 100; i++ {
+		jsonFile, err := os.Open("/var/Go/pruebas/utils/filtros/1/"+strconv.Itoa(i))
+		if err == nil{
+			fmt.Printf("%T %v", jsonFile, jsonFile)
+		}
 	}
-	*/
+	printelaped(time2, "READ")
 	
 
 	pass := &MyHandler {}
