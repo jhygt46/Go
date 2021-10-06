@@ -60,11 +60,11 @@ func main() {
 		time2 := time.Now()
 		for i := 0; i < v; i++ {
 			jsonFile, err := os.Open("/var/Go/pruebas/utils/filtros/"+folder+"/"+strconv.Itoa(i))
+			defer jsonFile.Close()
 			if err == nil{
 				byteValue, _ := ioutil.ReadAll(jsonFile)
 				read(byteValue)
 			}
-			defer jsonFile.Close()
 		}
 		printelaped(time2, "READ")
 
