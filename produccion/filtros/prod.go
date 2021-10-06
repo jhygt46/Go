@@ -61,6 +61,7 @@ func main() {
 				byteValue, _ := ioutil.ReadAll(jsonFile)
 				read(byteValue)
 			}
+			defer jsonFile.Close()
 		}
 		printelaped(time2, "READ")
 
