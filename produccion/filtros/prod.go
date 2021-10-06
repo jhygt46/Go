@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"time"
 	"strconv"
+	"io/ioutil"
 	//"path/filepath"
 	"encoding/json"
     "github.com/valyala/fasthttp"
@@ -52,7 +53,8 @@ func main() {
 	for i := 1; i <= 100; i++ {
 		jsonFile, err := os.Open("/var/Go/pruebas/utils/filtros/1/"+strconv.Itoa(i))
 		if err == nil{
-			fmt.Printf("%T %v", jsonFile, jsonFile)
+			byteValue, _ := ioutil.ReadAll(jsonFile)
+			read(byteValue)
 		}
 	}
 	printelaped(time2, "READ")
@@ -61,6 +63,9 @@ func main() {
 	pass := &MyHandler {}
 	fasthttp.ListenAndServe(":80", pass.HandleFastHTTP)
 	
+}
+func read(x []byte){
+
 }
 func read_int32(data []byte) uint32 {
     var x uint32
