@@ -45,6 +45,9 @@ func main() {
 	for j, v := range x {
 
 		folder := strconv.Itoa(j)
+		fmt.Println("CARPETA: "+folder)
+
+
 		time1 := time.Now()
 		for i := 1; i <= v; i++ {
 			err := os.WriteFile("/var/Go/pruebas/utils/filtros/"+folder+"/"+strconv.Itoa(i), d1, 0644)
