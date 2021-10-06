@@ -46,7 +46,6 @@ func main() {
 
 		folder := strconv.Itoa(j)
 		cantidad := strconv.Itoa(v)
-		fmt.Println("CARPETA: "+folder+" // CANTIDAD: "+cantidad)
 
 		time1 := time.Now()
 		for i := 0; i < v; i++ {
@@ -55,7 +54,8 @@ func main() {
 				fmt.Println(err)
 			}
 		}
-		printelaped(time1, "WRITE")
+		elapsed1 := time.Since(time1)
+
 
 		time2 := time.Now()
 		for i := 0; i < v; i++ {
@@ -67,7 +67,8 @@ func main() {
 			byteValue, _ := ioutil.ReadAll(file)
 			read(byteValue)
 		}
-		printelaped(time2, "READ")
+		elapsed2 := time.Since(time2)
+		fmt.Printf("Cantidad [%v] / TiempoEscritura [%v] / TiempoLectura [%v]\n", cantidad, elapsed1, elapsed2)
 
 	}
 
