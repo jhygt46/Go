@@ -45,8 +45,8 @@ func main() {
 	for j, v := range x {
 
 		folder := strconv.Itoa(j)
-		fmt.Println("CARPETA: "+folder)
-
+		cantidad := strconv.Itoa(v)
+		fmt.Println("CARPETA: "+folder+" // CANTIDAD: "+cantidad)
 
 		time1 := time.Now()
 		for i := 1; i <= v; i++ {
