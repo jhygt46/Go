@@ -4,7 +4,8 @@ import (
 	"os"
 	"fmt"
 	"time"
-	"path/filepath"
+	"strconv"
+	//"path/filepath"
 	"encoding/json"
     "github.com/valyala/fasthttp"
 )
@@ -28,6 +29,7 @@ type Evals struct {
 
 
 func main() {
+
 	/*
 	newpath := filepath.Join("/var/Go/pruebas/utils/filtros", "1")
 	err := os.MkdirAll(newpath, os.ModePerm)
@@ -36,6 +38,24 @@ func main() {
 	}
 	*/
 
+	
+
+	d1 := []byte("{\"Id\":1,\"Data\":{\"C\":[{ \"T\": 1, \"N\": \"Nacionalidad\", \"V\": [\"Chilena\", \"Argentina\", \"Brasileña\", \"Uruguaya\"] }, { \"T\": 2, \"N\": \"Servicios\", \"V\": [\"Americana\", \"Rusa\", \"Bailarina\", \"Masaje\"] },{ \"T\": 3, \"N\": \"Edad\" }],\"E\": [{ \"T\": 1, \"N\": \"Rostro\" },{ \"T\": 1, \"N\": \"Senos\" },{ \"T\": 1, \"N\": \"Trasero\" }]}}")
+
+	//d1 := []byte{115, 111, 109, 101, 10}
+    for i := 0; i < 1000000; i++ {
+        err := os.WriteFile("/var/Go/pruebas/utils/filtros/1/"+strconv.Itoa(i), d1, 0644)
+        if err != nil {
+            fmt.Println(err)
+        }
+    }
+
+	/*
+	jsonFile, err := os.Open("../utils/filtros/"+string(ctx.QueryArgs().Peek("id"))+".json")
+	if err == nil{
+
+	}
+	*/
 	
 
 	pass := &MyHandler {}

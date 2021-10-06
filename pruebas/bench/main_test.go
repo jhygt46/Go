@@ -2,8 +2,6 @@ package main
 
 import (
     "os"
-    "io/ioutil"
-    "bufio"
     "testing"
 	"fmt"
     "strconv"
@@ -26,32 +24,7 @@ func BenchmarkCalculateA(b *testing.B) {
 
 }
 
-func BenchmarkCalculateB(b *testing.B) {
 
-    d1 := []byte{115, 111, 109, 101, 10}
-    for i := 0; i < b.N; i++ {
-        ioutil.WriteFile("/var/Go/pruebas/utils/filtros/2/"+strconv.Itoa(i), d1, 0644);
-    }
-    
-}
-
-func BenchmarkCalculateD(b *testing.B) {
-
-    for i := 0; i < b.N; i++ {
-        file, err := os.Create("/var/Go/pruebas/utils/filtros/3/"+strconv.Itoa(i))
-        if err != nil {
-            fmt.Println(err)
-        }
-        writer := bufio.NewWriter(file)
-        bytesWritten, err := writer.WriteString("This is an example\n")
-        if err != nil {
-            fmt.Println(err)
-            fmt.Println(bytesWritten)
-        }
-        writer.Flush()
-    }
-    
-}
 
 
 
