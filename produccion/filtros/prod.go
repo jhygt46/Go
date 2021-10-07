@@ -53,6 +53,7 @@ func main() {
 		if err != nil {
 			fmt.Println(err)
 		}
+		fmt.Printf("Carpeta %v creada...\n", folder)
 
 		time1 := time.Now()
 		for i := 0; i < v; i++ {
