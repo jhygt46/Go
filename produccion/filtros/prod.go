@@ -46,6 +46,7 @@ func main() {
 
 		folder := strconv.Itoa(j)
 		cantidad := strconv.Itoa(v)
+		cant := uint64(v)
 
 		newpath := filepath.Join("/var/Go/pruebas/utils/filtros", folder)
 		err := os.MkdirAll(newpath, os.ModePerm)
@@ -60,7 +61,7 @@ func main() {
 				fmt.Println(err)
 			}
 		}
-		elapsed1 := time.Since(time1)
+		elapsed1 := uint64(time.Since(time1) / time.Nanosecond) / cant
 
 
 		time2 := time.Now()
@@ -73,8 +74,8 @@ func main() {
 			byteValue, _ := ioutil.ReadAll(file)
 			read(byteValue)
 		}
-		elapsed2 := time.Since(time2)
-		fmt.Printf("DuracionEscritura c/u [%v] / DuracionLectura c/u [%v] \n", elapsed1/cantidad, elapsed2/cantidad)
+		elapsed2 := uint64(time.Since(time2) / time.Nanosecond) / cant
+		fmt.Printf("DuracionEscritura c/u [%v] / DuracionLectura c/u [%v] / Cantidad [%v] \n", elapsed1, elapsed2, cantidad)
 
 	}
 
