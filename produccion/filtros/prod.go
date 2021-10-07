@@ -41,11 +41,17 @@ func main() {
 
 	d1 := []byte("{\"Id\":1,\"Data\":{\"C\":[{ \"T\": 1, \"N\": \"Nacionalidad\", \"V\": [\"Chilena\", \"Argentina\", \"Brasileña\", \"Uruguaya\"] }, { \"T\": 2, \"N\": \"Servicios\", \"V\": [\"Americana\", \"Rusa\", \"Bailarina\", \"Masaje\"] },{ \"T\": 3, \"N\": \"Edad\" }],\"E\": [{ \"T\": 1, \"N\": \"Rostro\" },{ \"T\": 1, \"N\": \"Senos\" },{ \"T\": 1, \"N\": \"Trasero\" }]}}")
 
-	x := []int{10, 100, 1000, 10000, 100000}
+	x := []int{10, 100, 1000, 10000, 100000, 200000, 300000}
 	for j, v := range x {
 
 		folder := strconv.Itoa(j)
 		cantidad := strconv.Itoa(v)
+
+		newpath := filepath.Join("/var/Go/pruebas/utils/filtros", folder)
+		err := os.MkdirAll(newpath, os.ModePerm)
+		if err != nil {
+			fmt.Println(err)
+		}
 
 		time1 := time.Now()
 		for i := 0; i < v; i++ {
@@ -68,7 +74,7 @@ func main() {
 			read(byteValue)
 		}
 		elapsed2 := time.Since(time2)
-		fmt.Printf("Cantidad [%v] / TiempoEscritura [%v] / TiempoLectura [%v]\n", cantidad, elapsed1, elapsed2)
+		fmt.Printf("DuracionEscritura c/u [%v] / DuracionLectura c/u [%v] \n", elapsed1/cantidad, elapsed2/cantidad)
 
 	}
 
