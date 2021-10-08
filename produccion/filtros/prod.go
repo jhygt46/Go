@@ -31,24 +31,15 @@ type Evals struct {
 
 func main() {
 
-	/*
-	newpath := filepath.Join("/var/Go/pruebas/utils/filtros", "1")
-	err := os.MkdirAll(newpath, os.ModePerm)
-	if err != nil {
-		fmt.Println(err)
-	}
-	*/
-
 	d1 := []byte("{\"Id\":1,\"Data\":{\"C\":[{ \"T\": 1, \"N\": \"Nacionalidad\", \"V\": [\"Chilena\", \"Argentina\", \"Brasileña\", \"Uruguaya\"] }, { \"T\": 2, \"N\": \"Servicios\", \"V\": [\"Americana\", \"Rusa\", \"Bailarina\", \"Masaje\"] },{ \"T\": 3, \"N\": \"Edad\" }],\"E\": [{ \"T\": 1, \"N\": \"Rostro\" },{ \"T\": 1, \"N\": \"Senos\" },{ \"T\": 1, \"N\": \"Trasero\" }]}}")
 
-	x := make([]int, 2500)
+	x := make([]int, 2)
 
-	//x := []int{1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000}
 	for j, _ := range x {
 
 		v := 1000
-		folder := strconv.Itoa(j)
-		cantidad := strconv.Itoa(v)
+		folder := getFolder(j)
+		fmt.Println(filder)
 		cant := uint64(v)
 
 		newpath := filepath.Join("/var/Go/pruebas/utils/filtros", folder)
@@ -79,6 +70,7 @@ func main() {
 			read(byteValue)
 		}
 		elapsed2 := uint64(time.Since(time2) / time.Nanosecond) / cant
+		cantidad := strconv.Itoa(v)
 		fmt.Printf("DuracionEscritura c/u [%v] / DuracionLectura c/u [%v] / Cantidad [%v] \n", elapsed1, elapsed2, cantidad)
 
 	}
@@ -97,6 +89,12 @@ func main() {
 func read(x []byte){
 
 }
+func getFolder(num int) string {
+
+	return strconv.Itoa(num%1000000)+"/"+strconv.Itoa(num%10000)+"/"+strconv.Itoa(num%100)
+}
+
+
 func read_int32(data []byte) uint32 {
     var x uint32
     for _, c := range data {
