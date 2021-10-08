@@ -33,13 +33,12 @@ func main() {
 
 	d1 := []byte("{\"Id\":1,\"Data\":{\"C\":[{ \"T\": 1, \"N\": \"Nacionalidad\", \"V\": [\"Chilena\", \"Argentina\", \"Brasileña\", \"Uruguaya\"] }, { \"T\": 2, \"N\": \"Servicios\", \"V\": [\"Americana\", \"Rusa\", \"Bailarina\", \"Masaje\"] },{ \"T\": 3, \"N\": \"Edad\" }],\"E\": [{ \"T\": 1, \"N\": \"Rostro\" },{ \"T\": 1, \"N\": \"Senos\" },{ \"T\": 1, \"N\": \"Trasero\" }]}}")
 
-	x := make([]int, 2)
-	x = append(x, 1000000)
+	x := make([]int, 200)
 
-	for _, m := range x {
+	for j, _ := range x {
 
 		v := 100
-		folder := getFolder(m)
+		folder := getFolder(j)
 		cant := uint64(v)
 
 		newpath := filepath.Join("/var/Go/pruebas/utils/filtros", folder)
