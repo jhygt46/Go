@@ -39,7 +39,7 @@ func main() {
 
 		v := 1000
 		folder := getFolder(j)
-		fmt.Println(filder)
+		fmt.Println(folder)
 		cant := uint64(v)
 
 		newpath := filepath.Join("/var/Go/pruebas/utils/filtros", folder)
