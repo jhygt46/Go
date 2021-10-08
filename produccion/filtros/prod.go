@@ -91,7 +91,13 @@ func read(x []byte){
 }
 func getFolder(num int) string {
 
-	return strconv.Itoa(num%1000000)+"/"+strconv.Itoa(num%10000)+"/"+strconv.Itoa(num%100)
+	c1 := num % 1000000
+	c2 := num % 10000
+	c3 := num % 100
+
+	fmt.Printf("num[%v] c1[%v] c2[%v]", num, c1, c2)
+
+	return strconv.Itoa(c1)+"/"+strconv.Itoa(c2)+"/"+strconv.Itoa(c3)
 }
 
 
