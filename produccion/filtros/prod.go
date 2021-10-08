@@ -37,6 +37,7 @@ func main() {
 
 	for j, _ := range x {
 
+		j = j + 1863100
 		v := 100
 		folder := getFolder(j)
 		//cant := uint64(v)
