@@ -46,7 +46,7 @@ func main() {
 		if err != nil {
 			fmt.Println(err)
 		}
-		fmt.Printf("Carpeta %v creada...\n", folder)
+		fmt.Printf("/var/Go/pruebas/utils/filtros/%v creada...\n", folder)
 
 		time1 := time.Now()
 		for i := 0; i < v; i++ {
@@ -69,8 +69,8 @@ func main() {
 			read(byteValue)
 		}
 		elapsed2 := uint64(time.Since(time2) / time.Nanosecond) / cant
-		cantidad := strconv.Itoa(v)
-		fmt.Printf("DuracionEscritura c/u [%v] / DuracionLectura c/u [%v] / Cantidad [%v] \n", elapsed1, elapsed2, cantidad)
+		//cantidad := strconv.Itoa(v)
+		//fmt.Printf("DuracionEscritura c/u [%v] / DuracionLectura c/u [%v] / Cantidad [%v] \n", elapsed1, elapsed2, cantidad)
 
 	}
 
@@ -94,7 +94,7 @@ func getFolder(num int) string {
 	var c2 int = num / 10000
 	var c3 int = num / 100
 
-	fmt.Printf("num[%v] c1[%v] c2[%v]", num, c1, c2)
+	//fmt.Printf("num[%v] c1[%v] c2[%v]", num, c1, c2)
 	return strconv.Itoa(c1)+"/"+strconv.Itoa(c2)+"/"+strconv.Itoa(c3)
 }
 
