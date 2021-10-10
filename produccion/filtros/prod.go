@@ -59,7 +59,7 @@ func escribirArchivos(){
 		folder := getFolder(j)
 		//cant := uint64(v)
 
-		newpath := filepath.Join("/home/admin/Go/pruebas/utils/filtros", folder)
+		newpath := filepath.Join("/tmp/utils/filtros", folder)
 		err := os.MkdirAll(newpath, os.ModePerm)
 		if err != nil {
 			fmt.Println(err)
@@ -68,7 +68,7 @@ func escribirArchivos(){
 
 		//time1 := time.Now()
 		for i := 0; i < v; i++ {
-			err := os.WriteFile("/home/admin/Go/pruebas/utils/filtros/"+folder+"/"+strconv.Itoa(i), d1, 0644)
+			err := os.WriteFile("/tmp/utils/filtros/"+folder+"/"+strconv.Itoa(i), d1, 0644)
 			if err != nil {
 				fmt.Println(err)
 			}
