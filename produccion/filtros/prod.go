@@ -49,32 +49,36 @@ func escribirArchivos(){
 	d1 := []byte("{\"Id\":1,\"Data\":{\"C\":[{ \"T\": 1, \"N\": \"Nacionalidad\", \"V\": [\"Chilena\", \"Argentina\", \"Brasileña\", \"Uruguaya\"] }, { \"T\": 2, \"N\": \"Servicios\", \"V\": [\"Americana\", \"Rusa\", \"Bailarina\", \"Masaje\"] },{ \"T\": 3, \"N\": \"Edad\" }],\"E\": [{ \"T\": 1, \"N\": \"Rostro\" },{ \"T\": 1, \"N\": \"Senos\" },{ \"T\": 1, \"N\": \"Trasero\" }]}}")
 
 	x := make([]int, 10000)
+	c := 0
+	time1 := time.Now()
 
 	for j, _ := range x {
 
 		//j = j + 1863100
 		v := 100
 		folder := getFolder(j)
-		cant := uint64(v)
+		//cant := uint64(v)
 
 		newpath := filepath.Join("/home/admin/Go/pruebas/utils/filtros", folder)
 		err := os.MkdirAll(newpath, os.ModePerm)
 		if err != nil {
 			fmt.Println(err)
+			fmt.Println("FOLDER ERROR: ", err)
 		}
 
-		time1 := time.Now()
+		//time1 := time.Now()
 		for i := 0; i < v; i++ {
 			err := os.WriteFile("/home/admin/Go/pruebas/utils/filtros/"+folder+"/"+strconv.Itoa(i), d1, 0644)
 			if err != nil {
 				fmt.Println(err)
 			}
 		}
-		elapsed1 := uint64(time.Since(time1) / time.Nanosecond) / cant
-		fmt.Printf("utils/filtros/%v [%v] [%v]\n", folder, j, elapsed1)
-
+		//elapsed1 := uint64(time.Since(time1) / time.Nanosecond) / cant
+		//fmt.Printf("utils/filtros/%v [%v] [%v]\n", folder, j, elapsed1)
+		c++
 	}
-
+	elapsed1 := time.Since(time1)
+	fmt.Printf("Cantidad %v / Tiempo: [%v]\n", c, elapsed1)
 
 }
 
