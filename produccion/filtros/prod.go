@@ -48,7 +48,7 @@ func escribirArchivos(){
 
 	d1 := []byte("{\"Id\":1,\"Data\":{\"C\":[{ \"T\": 1, \"N\": \"Nacionalidad\", \"V\": [\"Chilena\", \"Argentina\", \"Brasileña\", \"Uruguaya\"] }, { \"T\": 2, \"N\": \"Servicios\", \"V\": [\"Americana\", \"Rusa\", \"Bailarina\", \"Masaje\"] },{ \"T\": 3, \"N\": \"Edad\" }],\"E\": [{ \"T\": 1, \"N\": \"Rostro\" },{ \"T\": 1, \"N\": \"Senos\" },{ \"T\": 1, \"N\": \"Trasero\" }]}}")
 
-	x := make([]int, 70000)
+	x := make([]int, 10000)
 
 	for j, _ := range x {
 
@@ -62,7 +62,6 @@ func escribirArchivos(){
 		if err != nil {
 			fmt.Println(err)
 		}
-		fmt.Printf("/home/admin/Go/pruebas/utils/filtros/%v creada...\n", folder)
 
 		time1 := time.Now()
 		for i := 0; i < v; i++ {
@@ -72,7 +71,7 @@ func escribirArchivos(){
 			}
 		}
 		elapsed1 := uint64(time.Since(time1) / time.Nanosecond) / cant
-		fmt.Printf("/home/admin/Go/pruebas/utils/filtros/%v creada... Tiempo [%v]\n", folder, elapsed1)
+		fmt.Printf("utils/filtros/%v [%v] [%v]\n", folder, j, elapsed1)
 
 	}
 
