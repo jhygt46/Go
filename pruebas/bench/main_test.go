@@ -1,10 +1,12 @@
 package main
 
 import (
-    "os"
+    //"os"
     "testing"
 	"fmt"
-    "strconv"
+    //"strconv"
+    "crypto/rand"
+    "math/big"
 )
 
 func main() {
@@ -13,6 +15,15 @@ func main() {
 
 
 func BenchmarkCalculateA(b *testing.B) {
+
+    for i := 0; i < b.N; i++ {
+        n, _ := rand.Int(rand.Reader, big.NewInt(1000000))
+        n.Int64()
+    }
+
+}
+/*
+func BenchmarkCalculateB(b *testing.B) {
 
     d1 := []byte{115, 111, 109, 101, 10}
     for i := 0; i < b.N; i++ {
@@ -23,8 +34,7 @@ func BenchmarkCalculateA(b *testing.B) {
     }
 
 }
-
-
+*/
 
 
 
