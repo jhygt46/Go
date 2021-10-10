@@ -57,22 +57,22 @@ func escribirArchivos(){
 		folder := getFolder(j)
 		cant := uint64(v)
 
-		newpath := filepath.Join("/var/Go/pruebas/utils/filtros", folder)
+		newpath := filepath.Join("/home/admin/Go/pruebas/utils/filtros", folder)
 		err := os.MkdirAll(newpath, os.ModePerm)
 		if err != nil {
 			fmt.Println(err)
 		}
-		fmt.Printf("/var/Go/pruebas/utils/filtros/%v creada...\n", folder)
+		fmt.Printf("/home/admin/Go/pruebas/utils/filtros/%v creada...\n", folder)
 
 		time1 := time.Now()
 		for i := 0; i < v; i++ {
-			err := os.WriteFile("/var/Go/pruebas/utils/filtros/"+folder+"/"+strconv.Itoa(i), d1, 0644)
+			err := os.WriteFile("/home/admin/Go/pruebas/utils/filtros/"+folder+"/"+strconv.Itoa(i), d1, 0644)
 			if err != nil {
 				fmt.Println(err)
 			}
 		}
 		elapsed1 := uint64(time.Since(time1) / time.Nanosecond) / cant
-		fmt.Printf("/var/Go/pruebas/utils/filtros/%v creada... Tiempo [%v]\n", folder, elapsed1)
+		fmt.Printf("/home/admin/Go/pruebas/utils/filtros/%v creada... Tiempo [%v]\n", folder, elapsed1)
 
 	}
 
@@ -87,7 +87,7 @@ func leerArchivos(){
 
 		n, _ := rand.Int(rand.Reader, big.NewInt(1000000))
 		folder := getFolder(int(n.Int64()))
-		file, err := os.Open("/var/Go/pruebas/utils/filtros/"+folder)
+		file, err := os.Open("/home/admin/Go/pruebas/utils/filtros/"+folder)
 		if err != nil{
 			fmt.Println(err)
 		}
