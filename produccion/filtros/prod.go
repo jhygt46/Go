@@ -33,8 +33,8 @@ type Evals struct {
 
 func main() {
 
-	escribirArchivos()
-	leerArchivos()
+	//escribirArchivos()
+	//leerArchivos()
 
 	pass := &MyHandler {}
 	fasthttp.ListenAndServe(":80", pass.HandleFastHTTP)
