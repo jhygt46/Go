@@ -121,7 +121,8 @@ func (h *MyHandler) HandleFastHTTP(ctx *fasthttp.RequestCtx) {
 
 		}
 	default:
-		ctx.Error("Not Found", fasthttp.StatusNotFound)
+		//ctx.Error("Not Found", fasthttp.StatusNotFound)
+		fmt.Fprintf(ctx, "ok");
 	}
 
 	//printelaped(time, "HTTP")
