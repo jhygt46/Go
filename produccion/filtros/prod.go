@@ -109,7 +109,7 @@ func leerArchivos(){
 
 func (h *MyHandler) HandleFastHTTP(ctx *fasthttp.RequestCtx) {
 
-	time := time.Now()
+	//time := time.Now()
 	
 	switch string(ctx.Path()) {
 	case "/filtro":
@@ -124,7 +124,7 @@ func (h *MyHandler) HandleFastHTTP(ctx *fasthttp.RequestCtx) {
 		ctx.Error("Not Found", fasthttp.StatusNotFound)
 	}
 
-	printelaped(time, "HTTP")
+	//printelaped(time, "HTTP")
 	
 
 }
