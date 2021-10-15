@@ -11,6 +11,8 @@ import (
 	"path/filepath"
 	"encoding/json"
     "github.com/valyala/fasthttp"
+	"github.com/aws/aws-sdk-go/aws"
+    "github.com/aws/aws-sdk-go/aws/session"
 )
 
 type MyHandler struct {
@@ -32,6 +34,16 @@ type Evals struct {
 
 
 func main() {
+
+	sess, err := session.NewSession(&aws.Config{
+		Region: aws.String("us-west-2")},
+	)
+
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	fmt.Println(sess)
 
 	//escribirArchivos()
 	//leerArchivos()
