@@ -35,14 +35,14 @@ type Evals struct {
 
 func main() {
 
+	//https://docs.aws.amazon.com/sdk-for-go/api/service/imagebuilder/#New
+
 	sess, err := session.NewSession(&aws.Config{
 		Region: aws.String("us-west-2")},
 	)
 
 	if err != nil {
 		fmt.Println(err)
-	}else{
-		fmt.Println(sess)
 	}
 
 	//escribirArchivos()
