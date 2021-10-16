@@ -17,7 +17,7 @@ func main() {
 func create_instance(ImageId string){
 
 	sess, err := session.NewSession(&aws.Config{
-        Region: aws.String("us-west-2")},
+        Region: aws.String("us-east-2")},
     )
 
     // Create EC2 service client
