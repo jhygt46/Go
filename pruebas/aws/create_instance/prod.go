@@ -11,10 +11,10 @@ import (
 //https://docs.aws.amazon.com/code-samples/latest/catalog/go-ec2-create_instance.go.html
 
 func main() {
-    create_instance("ami-e7527ed7")
+    create_instance()
 }
 
-func create_instance(ImageId string){
+func create_instance(){
 
 	sess, err := session.NewSession(&aws.Config{
         Region: aws.String("us-east-2")},
@@ -26,7 +26,7 @@ func create_instance(ImageId string){
     // Specify the details of the instance that you want to create.
     runResult, err := svc.RunInstances(&ec2.RunInstancesInput{
         // An Amazon Linux AMI ID for t2.micro instances in the us-west-2 region
-        ImageId:      aws.String(imageId),
+        ImageId:      aws.String("ami-e7527ed7"),
         InstanceType: aws.String("t2.micro"),
         MinCount:     aws.Int64(1),
         MaxCount:     aws.Int64(1),
