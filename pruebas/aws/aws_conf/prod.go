@@ -1,3 +1,80 @@
+// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// SPDX - License - Identifier: Apache - 2.0
+package main
+
+import (
+	"context"
+	"fmt"
+
+	"github.com/aws/aws-sdk-go-v2/aws"
+	"github.com/aws/aws-sdk-go-v2/config"
+	"github.com/aws/aws-sdk-go-v2/service/ec2"
+	"github.com/aws/aws-sdk-go-v2/service/ec2/types"
+)
+
+// EC2CreateImageAPI defines the interface for the CreateImage function.
+// We use this interface to test the function using a mocked service.
+type EC2CreateImageAPI interface {
+	CreateImage(ctx context.Context,
+		params *ec2.CreateImageInput,
+		optFns ...func(*ec2.Options)) (*ec2.CreateImageOutput, error)
+}
+
+// MakeImage creates an Amazon Elastic Compute Cloud (Amazon EC2) image.
+// Inputs:
+//     c is the context of the method call, which includes the AWS Region.
+//     api is the interface that defines the method call.
+//     input defines the input arguments to the service call.
+// Output:
+//     If success, a CreateImageOutput object containing the result of the service call and nil.
+//     Otherwise, nil and an error from the call to CreateImage.
+func MakeImage(c context.Context, api EC2CreateImageAPI, input *ec2.CreateImageInput) (*ec2.CreateImageOutput, error) {
+	return api.CreateImage(c, input)
+}
+
+func main() {
+	description := "fwefwef"
+	instanceID := "i-0f1afaf7e9156a147"
+	name := "ergerg"
+
+
+	cfg, err := config.LoadDefaultConfig(context.TODO())
+	if err != nil {
+		panic("configuration error, " + err.Error())
+	}
+
+	client := ec2.NewFromConfig(cfg)
+
+	input := &ec2.CreateImageInput{
+		Description: description,
+		InstanceId:  instanceID,
+		Name:        name,
+		BlockDeviceMappings: []types.BlockDeviceMapping{
+			{
+				DeviceName: aws.String("/dev/sda1"),
+				NoDevice:   aws.String(""),
+			},
+			{
+				DeviceName: aws.String("/dev/sdb"),
+				NoDevice:   aws.String(""),
+			},
+			{
+				DeviceName: aws.String("/dev/sdc"),
+				NoDevice:   aws.String(""),
+			},
+		},
+	}
+
+	resp, err := MakeImage(context.TODO(), client, input)
+	if err != nil {
+		fmt.Println("Got an error createing image:")
+		fmt.Println(err)
+		return
+	}
+
+	fmt.Println("ID: ", resp.ImageId)
+}
+/*
 package main
 
 import (
@@ -20,7 +97,7 @@ func main() {
 
 	// Get the first page of results for ListObjectsV2 for a bucket
 	output, err := client.ListObjectsV2(context.TODO(), &s3.ListObjectsV2Input{
-		Bucket: aws.String("my-bucket"),
+		Bucket: aws.String("config-bucket-520286683812"),
 	})
 	if err != nil {
 		log.Fatal(err)
@@ -31,3 +108,4 @@ func main() {
 		log.Printf("key=%s size=%d", aws.ToString(object.Key), object.Size)
 	}
 }
+*/
