@@ -11,11 +11,7 @@ import (
 //https://docs.aws.amazon.com/code-samples/latest/catalog/go-ec2-create_instance.go.html
 
 func main() {
-    create_instance()
-}
-
-func create_instance(){
-
+    
 	sess, err := session.NewSession(&aws.Config{
         Region: aws.String("us-east-2")},
     )
