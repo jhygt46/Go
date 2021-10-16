@@ -27,7 +27,7 @@ func create_instance(ImageId string){
     runResult, err := svc.RunInstances(&ec2.RunInstancesInput{
         // An Amazon Linux AMI ID for t2.micro instances in the us-west-2 region
         ImageId:      aws.String(imageId),
-        InstanceType: aws.String("t2.nano"),
+        InstanceType: aws.String("t2.micro"),
         MinCount:     aws.Int64(1),
         MaxCount:     aws.Int64(1),
     })
