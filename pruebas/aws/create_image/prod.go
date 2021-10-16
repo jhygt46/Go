@@ -10,7 +10,7 @@ import (
 //https://docs.aws.amazon.com/code-samples/latest/catalog/go-ec2-create_image_no_block_device.go.html
 
 func main() {
-    create_image("i-0f1afaf7e9156a147")
+    create_image("i-01eff4eac265d7588")
 }
 
 func create_image(InstanceId string){
