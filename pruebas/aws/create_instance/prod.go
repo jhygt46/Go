@@ -8,6 +8,8 @@ import (
     "log"
 )
 
+//https://docs.aws.amazon.com/code-samples/latest/catalog/go-ec2-create_instance.go.html
+
 func main() {
     create_instance("ami-e7527ed7")
 }
