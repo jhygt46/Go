@@ -15,6 +15,8 @@ func main() {
 	sess, err := session.NewSession(&aws.Config{
         Region: aws.String("us-east-2")},
     )
+	fmt.Println(sess)
+	fmt.Println(err)
 
     // Create EC2 service client
     svc := ec2.New(sess)
