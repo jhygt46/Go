@@ -22,6 +22,7 @@ func create_instance(){
 
     // Create EC2 service client
     svc := ec2.New(sess)
+	fmt.Println(svc)
 
     // Specify the details of the instance that you want to create.
     runResult, err := svc.RunInstances(&ec2.RunInstancesInput{
