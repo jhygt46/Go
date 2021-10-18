@@ -13,6 +13,9 @@ import (
 	"github.com/aws/aws-sdk-go-v2/service/ec2/types"
 )
 
+//https://aws.github.io/aws-sdk-go-v2/docs/
+//https://docs.aws.amazon.com/code-samples/latest/catalog/gov2-ec2-CreateInstance-CreateInstancev2.go.html
+
 // EC2CreateImageAPI defines the interface for the CreateImage function.
 // We use this interface to test the function using a mocked service.
 type EC2CreateImageAPI interface {
@@ -45,7 +48,7 @@ func main() {
 		return
 	}
 
-	cfg, err := config.LoadDefaultConfig(context.TODO())
+	cfg, err := config.LoadDefaultConfig(context.TODO(), config.WithRegion("us-east-2"))
 	if err != nil {
 		panic("configuration error, " + err.Error())
 	}
@@ -81,6 +84,12 @@ func main() {
 
 	fmt.Println("ID: ", resp.ImageId)
 }
+
+
+func CreateImage(ImageId string) string {
+	return "hola"
+}
+
 /*
 package main
 
@@ -116,3 +125,6 @@ func main() {
 	}
 }
 */
+
+//aws configure
+//aws ec2 create-image --instance-id i-0f1afaf7e9156a147 --name "My server" --description "An AMI for my server"
