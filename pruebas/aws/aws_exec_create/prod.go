@@ -16,7 +16,7 @@ func main(){
 }
 
 func ExampleCmd_StdoutPipe() {
-	cmd := exec.Command("bash", "-c", "aws ec2 create-image --instance-id i-0f1afaf7e9156a147 --name 'My server' --description 'An AMI for my server'")
+	cmd := exec.Command("bash", "-c", "aws ec2 create-image --instance-id i-0f1afaf7e9156a147 --name My server --description An AMI for my server")
 	_, err := cmd.CombinedOutput()
 	if err != nil {
 		log.Fatal(err)
