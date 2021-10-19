@@ -2,9 +2,9 @@ package main
 
 import (
 	"log"
-	"fmt"
+	//"fmt"
 	"os/exec"
-	"encoding/json"
+	//"encoding/json"
 )
 
 var image struct {
@@ -17,7 +17,7 @@ func main(){
 
 func ExampleCmd_StdoutPipe() {
 	cmd := exec.Command("bash", "-c", "aws ec2 create-image --instance-id i-0f1afaf7e9156a147 --name 'My server' --description 'An AMI for my server'")
-	stdoutStderr, err := cmd.CombinedOutput()
+	_, err := cmd.CombinedOutput()
 	if err != nil {
 		log.Fatal(err)
 	}
