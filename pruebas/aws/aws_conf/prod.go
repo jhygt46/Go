@@ -127,4 +127,4 @@ func main() {
 */
 
 //aws configure
-//aws ec2 create-image --instance-id i-0f1afaf7e9156a147 --name "My server" --description "An AMI for my server"
+//aws ec2 create-image --instance-id i-07f96abb2dd303e22 --name "My server" --description "An AMI for my server"
