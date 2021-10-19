@@ -2,11 +2,9 @@ package main
 
 import (
 	"log"
-	//"fmt"
-	"time"
+	"fmt"
 	"os/exec"
-	"context"
-	//"encoding/json"
+	"encoding/json"
 )
 
 var image struct {
@@ -14,8 +12,7 @@ var image struct {
 }
 
 func main(){
-	ExampleCmd_StdoutPipe()
-	ExampleCommandContext()
+	ExampleCmd_StdoutPipe2()
 }
 
 func ExampleCmd_StdoutPipe() {
@@ -26,12 +23,20 @@ func ExampleCmd_StdoutPipe() {
 	}
 }
 
-func ExampleCommandContext() {
-	ctx, cancel := context.WithTimeout(context.Background(), 100*time.Millisecond)
-	defer cancel()
-
-	if err := exec.CommandContext(ctx, "aws ec2 create-image --instance-id i-07f96abb2dd303e22 --name Mys2 --description Ans2").Run(); err != nil {
-		// This will fail after 100 milliseconds. The 5 second sleep
-		// will be interrupted.
+func ExampleCmd_StdoutPipe2() {
+	cmd := exec.Command("bash", "-c", "aws ec2 create-image --instance-id i-07f96abb2dd303e22 --name Mys1 --description Ans1")
+	stdout, err := cmd.StdoutPipe()
+	if err != nil {
+		log.Fatal(err)
 	}
+	if err := cmd.Start(); err != nil {
+		log.Fatal(err)
+	}
+	if err := json.NewDecoder(stdout).Decode(&image); err != nil {
+		log.Fatal(err)
+	}
+	if err := cmd.Wait(); err != nil {
+		log.Fatal(err)
+	}
+	fmt.Printf("ImageId: %s\n", image.ImageId)
 }
