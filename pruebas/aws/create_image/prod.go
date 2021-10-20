@@ -48,6 +48,7 @@ func create_image(InstanceId string){
         return
     }
 
-    fmt.Println("ID: ", resp.ImageId)
+    fmt.Println(resp)
+    fmt.Println(*resp)
 
 }
