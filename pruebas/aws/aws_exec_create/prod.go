@@ -65,8 +65,9 @@ func CreateImageCmd(id string) string {
 	if err := cmd.Wait(); err != nil {
 		log.Fatal(err)
 	}
-	return image.ImageId
-	
+	//return image.ImageId
+	return result
+
 }
 
 func CreateInstanceCmd(id string) string {
