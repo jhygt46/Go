@@ -50,6 +50,7 @@ func main(){
 func CreateImageCmd(id string) string {
 
 	result := fmt.Sprintf("aws ec2 create-image --instance-id %s --name Mys1 --description Ans1", id)
+	fmt.Println(result)
 
 	cmd := exec.Command("bash", "-c", result)
 	stdout, err := cmd.StdoutPipe()
