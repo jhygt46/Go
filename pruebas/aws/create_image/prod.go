@@ -10,23 +10,22 @@ import (
 //https://docs.aws.amazon.com/code-samples/latest/catalog/go-ec2-create_image_no_block_device.go.html
 
 func main() {
-    create_image("i-080a8dad14046e40c")
+    ImageId := create_image("i-080a8dad14046e40c", "Name1", "Desc1")
+    fmt.Println(ImageId)
 }
 
-func create_image(InstanceId string){
+func create_image(InstanceId string, Nombre string, Descripcion string) string {
 
-	// Load session from shared config
     sess := session.Must(session.NewSessionWithOptions(session.Options{
         SharedConfigState: session.SharedConfigEnable,
     }))
 
-    // Create EC2 service client
     svc := ec2.New(sess)
 
     opts := &ec2.CreateImageInput{
-        Description: aws.String("ImageTest"),
+        Description: aws.String(Descripcion),
         InstanceId:  aws.String(InstanceId),
-        Name:        aws.String("ImageTest"),
+        Name:        aws.String(Nombre),
         BlockDeviceMappings: []*ec2.BlockDeviceMapping{
             {
                 DeviceName: aws.String("/dev/sda1"),
@@ -44,11 +43,9 @@ func create_image(InstanceId string){
     }
     resp, err := svc.CreateImage(opts)
     if err != nil {
-        fmt.Println(err)
-        return
+        return "0"
     }
 
-    fmt.Println(resp)
-    fmt.Println(*resp)
+    return *resp.ImageId
 
 }
