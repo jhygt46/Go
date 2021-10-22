@@ -25,7 +25,7 @@ func MakeTags(c context.Context, api EC2CreateInstanceAPI, input *ec2.CreateTags
 func main() {
 
 	instanceId := create_instance("ami-01fc81cf27918dbe6 ", "NomImg1", "DescImg1")
-	fmt.Println("imageId", instanceId)
+	fmt.Println("instanceId: ", instanceId)
 
 }
 
