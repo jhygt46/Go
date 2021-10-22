@@ -41,11 +41,14 @@ func create_instance(ImageId string, TagName string, TagValue string) string {
 	min := int32(1)
 	max := int32(1)
 
+	SecurityGroupId := []string{"sg-0dbcca3589e78cefd"}
+
 	input := &ec2.RunInstancesInput{
 		ImageId:      &ImageId,
 		InstanceType: types.InstanceTypeT2Micro,
 		MinCount:     &min,
 		MaxCount:     &max,
+		SecurityGroupIds: SecurityGroupId,
 	}
 
 	result, err := MakeInstance(context.TODO(), client, input)
@@ -76,3 +79,6 @@ func create_instance(ImageId string, TagName string, TagValue string) string {
 	return *result.Instances[0].InstanceId
 	
 }
+
+// ADD SECURITY GROUP
+//https://github.com/aws/aws-sdk-go-v2/blob/main/service/ec2/api_op_RunInstances.go
