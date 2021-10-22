@@ -3,7 +3,7 @@ package main
 import (
 	"context"
 	"fmt"
-	"github.com/aws/aws-sdk-go-v2/aws"
+	//"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/config"
 	"github.com/aws/aws-sdk-go-v2/service/ec2"
 	"github.com/aws/aws-sdk-go-v2/service/ec2/types"
@@ -38,11 +38,14 @@ func create_instance(ImageId string, TagName string, TagValue string) string {
 
 	client := ec2.NewFromConfig(cfg)
 
+	min := int32(1)
+	max := int32(1)
+
 	input := &ec2.RunInstancesInput{
 		ImageId:      &ImageId,
 		InstanceType: types.InstanceTypeT2Micro,
-		MinCount:     1,
-		MaxCount:     1,
+		MinCount:     &min,
+		MaxCount:     &max,
 	}
 
 	result, err := MakeInstance(context.TODO(), client, input)
@@ -56,8 +59,8 @@ func create_instance(ImageId string, TagName string, TagValue string) string {
 		Resources: []string{*result.Instances[0].InstanceId},
 		Tags: []types.Tag{
 			{
-				Key:   name,
-				Value: value,
+				Key:   &TagName,
+				Value: &TagValue,
 			},
 		},
 	}
