@@ -5,6 +5,7 @@ package main
 import (
 	"context"
 	"fmt"
+	//"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/config"
 	"github.com/aws/aws-sdk-go-v2/service/ec2"
 )
@@ -27,6 +28,7 @@ func terminate_instance() {
 	}
 
 	client := ec2.NewFromConfig(cfg)
+
 
 	input := &ec2.TerminateInstancesInput{
 		InstanceIds: []string{"i-080a8dad14046e40c"},
