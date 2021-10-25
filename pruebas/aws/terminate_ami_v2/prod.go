@@ -15,7 +15,7 @@ type EC2DeleteImageAPI interface {
 
 func main() {
 
-	delete_image("i-080a8dad14046e40c")
+	delete_image("ami-096618d7e0b0294bf")
 
 }
 
