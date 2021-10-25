@@ -27,11 +27,11 @@ func delete_image(ImageId string) {
 	}
 
 	client := ec2.NewFromConfig(cfg)
-	DryRun := true
+	//DryRun := true
 
 	input := &ec2.DeregisterImageInput{
 		ImageId: &ImageId,
-		DryRun:  &DryRun,
+		//DryRun:  &DryRun,
 	}
 
 	resp, err := DelImage(context.TODO(), client, input)

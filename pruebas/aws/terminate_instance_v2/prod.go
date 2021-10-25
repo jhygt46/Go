@@ -27,11 +27,11 @@ func terminate_instance(InstanceId string) {
 	}
 
 	client := ec2.NewFromConfig(cfg)
-	DryRun := true
+	//DryRun := true
 
 	input := &ec2.TerminateInstancesInput{
 		InstanceIds: []string{InstanceId},
-		DryRun:  &DryRun,
+		//DryRun:  &DryRun,
 	}
 
 	resp, err := DelInstance(context.TODO(), client, input)
