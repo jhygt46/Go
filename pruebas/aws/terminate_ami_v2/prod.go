@@ -5,7 +5,7 @@ package main
 import (
 	"context"
 	"fmt"
-	"github.com/aws/aws-sdk-go-v2/aws"
+	//"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/config"
 	"github.com/aws/aws-sdk-go-v2/service/ec2"
 )
@@ -16,22 +16,23 @@ type EC2DeleteImageAPI interface {
 
 func main() {
 
-	delete_image("ami-096618d7e0b0294bf")
+	delete_image()
 
 }
 
-func delete_image(ImageId string) {
+func delete_image() {
 
 	cfg, err := config.LoadDefaultConfig(context.TODO())
 	if err != nil {
 		panic("configuration error, " + err.Error())
 	}
-
 	client := ec2.NewFromConfig(cfg)
+
+	image := "ami-096618d7e0b0294bf"
 
 	input := &ec2.DeregisterImageInput{
 		//ImageId: &ImageId,
-		ImageId: aws.String(ImageId),
+		ImageId: &image,
 	}
 
 	resp, err := DelImage(context.TODO(), client, input)
