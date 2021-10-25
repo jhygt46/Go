@@ -1,4 +1,4 @@
-module allinapp.com/prodcreateinst
+module allinapp.com/prodtermami
 
 go 1.16
 

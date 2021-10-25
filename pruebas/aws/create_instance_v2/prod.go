@@ -82,3 +82,4 @@ func create_instance(ImageId string, TagName string, TagValue string) string {
 
 // ADD SECURITY GROUP
 //https://github.com/aws/aws-sdk-go-v2/blob/main/service/ec2/api_op_RunInstances.go
+//https://aws.github.io/aws-sdk-go-v2/docs/code-examples/ec2/stopinstances/

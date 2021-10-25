@@ -1,4 +1,4 @@
-module allinapp.com/prod
+module allinapp.com/prodcreateimg
 
 go 1.16
 
