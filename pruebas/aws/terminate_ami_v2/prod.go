@@ -15,11 +15,11 @@ type EC2DeleteImageAPI interface {
 
 func main() {
 
-	delete_image("ami-096618d7e0b0294bf")
+	delete_image()
 
 }
 
-func delete_image(ImageId string) {
+func delete_image() {
 
 	cfg, err := config.LoadDefaultConfig(context.TODO())
 	if err != nil {
@@ -27,11 +27,11 @@ func delete_image(ImageId string) {
 	}
 
 	client := ec2.NewFromConfig(cfg)
-	//DryRun := true
+
+	ImageId := "ami-096618d7e0b0294bf"
 
 	input := &ec2.DeregisterImageInput{
 		ImageId: &ImageId,
-		//DryRun:  &DryRun,
 	}
 
 	resp, err := DelImage(context.TODO(), client, input)

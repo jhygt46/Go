@@ -15,11 +15,11 @@ type EC2DeleteImageAPI interface {
 
 func main() {
 
-	terminate_instance("i-080a8dad14046e40c")
+	terminate_instance()
 
 }
 
-func terminate_instance(InstanceId string) {
+func terminate_instance() {
 
 	cfg, err := config.LoadDefaultConfig(context.TODO())
 	if err != nil {
@@ -27,11 +27,9 @@ func terminate_instance(InstanceId string) {
 	}
 
 	client := ec2.NewFromConfig(cfg)
-	//DryRun := true
 
 	input := &ec2.TerminateInstancesInput{
-		InstanceIds: []string{InstanceId},
-		//DryRun:  &DryRun,
+		InstanceIds: []string{"i-080a8dad14046e40c"},
 	}
 
 	resp, err := DelInstance(context.TODO(), client, input)
