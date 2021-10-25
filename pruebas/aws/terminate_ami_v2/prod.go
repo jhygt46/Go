@@ -5,7 +5,7 @@ package main
 import (
 	"context"
 	"fmt"
-	//"github.com/aws/aws-sdk-go-v2/aws"
+	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/config"
 	"github.com/aws/aws-sdk-go-v2/service/ec2"
 )
@@ -32,7 +32,7 @@ func delete_image() {
 
 	input := &ec2.DeregisterImageInput{
 		//ImageId: &ImageId,
-		ImageId: &image,
+		ImageId: aws.String(image),
 	}
 
 	resp, err := DelImage(context.TODO(), client, input)
