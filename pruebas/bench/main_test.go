@@ -22,7 +22,7 @@ func BenchmarkCalculateA(b *testing.B) {
     }
 
 }
-/*
+
 func BenchmarkCalculateB(b *testing.B) {
 
     d1 := []byte{115, 111, 109, 101, 10}
@@ -34,7 +34,7 @@ func BenchmarkCalculateB(b *testing.B) {
     }
 
 }
-*/
+
 
 
 
