@@ -45,7 +45,7 @@ func create_instance(ImageId string, TagName string, TagValue string) string {
 
 	input := &ec2.RunInstancesInput{
 		ImageId:      &ImageId,
-		InstanceType: types.InstanceTypeT2Micro,
+		InstanceType: types.InstanceTypeT2Nano,
 		MinCount:     &min,
 		MaxCount:     &max,
 		SecurityGroupIds: SecurityGroupId,
@@ -83,3 +83,5 @@ func create_instance(ImageId string, TagName string, TagValue string) string {
 // ADD SECURITY GROUP
 //https://github.com/aws/aws-sdk-go-v2/blob/main/service/ec2/api_op_RunInstances.go
 //https://aws.github.io/aws-sdk-go-v2/docs/code-examples/ec2/stopinstances/
+//https://pkg.go.dev/github.com/aws/aws-sdk-go-v2/internal/awsutil
+//https://pkg.go.dev/github.com/datacratic/aws-sdk-go/service/ec2#DeregisterImageOutput

@@ -3,6 +3,7 @@ package main
 import (
 	"os"
 	"fmt"
+	"net"
 	"time"
 	"strconv"
 	"math/big"
@@ -11,8 +12,7 @@ import (
 	"path/filepath"
 	"encoding/json"
     "github.com/valyala/fasthttp"
-	"github.com/aws/aws-sdk-go/aws"
-    "github.com/aws/aws-sdk-go/aws/session"
+	"github.com/hashicorp/consul/api"
 )
 
 type MyHandler struct {
@@ -32,30 +32,140 @@ type Evals struct {
 	N string `json:"N"`
 }
 
+type ConsulRegister struct {
+	Address                        string
+	Name                           string
+	Tag                            []string
+	Port                           int
+	DeregisterCriticalServiceAfter time.Duration
+	Interval                       time.Duration
+}
 
 func main() {
 
-	//https://docs.aws.amazon.com/sdk-for-go/api/service/imagebuilder/#New
-
-	sess, err := session.NewSession(&aws.Config{
-		Region: aws.String("us-west-2")},
-	)
-
-	if err != nil {
-		fmt.Println(err)
+	if consulRegister("BuenaNelson", "10.128.0.4:8500") {
+		fmt.Println("Consul Register OK")
+	}else{
+		fmt.Println("Consul Register ERROR")
 	}
 
-	//escribirArchivos()
-	//leerArchivos()
-
-	pass := &MyHandler {}
+	pass := &MyHandler{}
 	fasthttp.ListenAndServe(":80", pass.HandleFastHTTP)
 	
 }
-func read(x []byte){
 
+func (h *MyHandler) HandleFastHTTP(ctx *fasthttp.RequestCtx) {
+
+	//time := time.Now()
+	
+	switch string(ctx.Path()) {
+	case "/filtro":
+		ctx.Response.Header.Set("Content-Type", "application/json")
+		id := read_int32(ctx.QueryArgs().Peek("id"))
+		if res, found := h.minicache[id]; found {
+			json.NewEncoder(ctx).Encode(res)
+		}else{
+
+		}
+	default:
+		//ctx.Error("Not Found", fasthttp.StatusNotFound)
+		fmt.Fprintf(ctx, "ok");
+	}
+
+	//printelaped(time, "HTTP")
+	
 }
 
+
+
+
+
+
+
+// UTILS //
+func read_int32(data []byte) uint32 {
+    var x uint32
+    for _, c := range data {
+        x = x * 10 + uint32(c - '0')
+    }
+    return x
+}
+// UTILS //
+
+// CONSUL //
+func consulRegister(name string, consuladress string) bool {
+
+	s := NewConsulRegister(name, consuladress)
+	config := api.DefaultConfig()
+	config.Address = s.Address
+	client, err := api.NewClient(config)
+	if err != nil {
+		fmt.Println(err)
+	}
+	agent := client.Agent()
+
+	IP := LocalIP()
+	reg := &api.AgentServiceRegistration{
+		 ID: fmt.Sprintf("%v-%v-%v", s.Name, IP, s.Port), // Name of the service node
+		 Name: s.Name, // service name
+		 Tags: s.Tag, // tag, can be empty
+		 Port: s.Port, // service port
+		 Address: IP, // Service IP
+		 Check: &api.AgentServiceCheck{ // Health Check
+			 Interval: s.Interval.String(), // Health check interval
+			 HTTP: fmt.Sprintf("http://%s:%d/%s", IP, s.Port, s.Name), // grpc support, address to perform health check, service will be passed to Health.Check function
+			 DeregisterCriticalServiceAfter: s.DeregisterCriticalServiceAfter.String(), // Deregistration time, equivalent to expiration time
+		},
+	}
+
+	if err := agent.ServiceRegister(reg); err != nil {
+		return false
+	}else{
+		return true
+	}
+
+}
+func NewConsulRegister(name string, consuladress string) *ConsulRegister {
+	return &ConsulRegister{
+		Address:                        consuladress, //consul address
+		Name:                           name,
+		Tag:                            []string{},
+		Port:                           80,
+		DeregisterCriticalServiceAfter: time.Duration(1) * time.Minute,
+		Interval:                       time.Duration(10) * time.Second,
+	}
+}
+func LocalIP() string {
+	addrs, err := net.InterfaceAddrs()
+	if err != nil {
+		return ""
+	}
+	for _, address := range addrs {
+		if ipnet, ok := address.(*net.IPNet); ok && !ipnet.IP.IsLoopback() {
+			if ipnet.IP.To4() != nil {
+				return ipnet.IP.String()
+			}
+		}
+	}
+	return ""
+}
+// CONSUL //
+
+// ARCHIVOS //
+func getFolder(num int) string {
+
+	var c1 int = num / 1000000
+	var n1 int = num - c1 * 1000000
+
+	var c2 int = n1 / 10000
+	n1 = n1 - c2 * 10000
+
+	var c3 int = n1 / 100
+	var c4 int = n1 % 100
+
+	//fmt.Printf("num[%v] c1[%v] c2[%v]", num, c1, c2)
+	return strconv.Itoa(c1)+"/"+strconv.Itoa(c2)+"/"+strconv.Itoa(c3)+"/"+strconv.Itoa(c4)
+}
 func escribirArchivos(){
 
 	d1 := []byte("{\"Id\":1,\"Data\":{\"C\":[{ \"T\": 1, \"N\": \"Nacionalidad\", \"V\": [\"Chilena\", \"Argentina\", \"Brasileña\", \"Uruguaya\"] }, { \"T\": 2, \"N\": \"Servicios\", \"V\": [\"Americana\", \"Rusa\", \"Bailarina\", \"Masaje\"] },{ \"T\": 3, \"N\": \"Edad\" }],\"E\": [{ \"T\": 1, \"N\": \"Rostro\" },{ \"T\": 1, \"N\": \"Senos\" },{ \"T\": 1, \"N\": \"Trasero\" }]}}")
@@ -93,7 +203,6 @@ func escribirArchivos(){
 	fmt.Printf("Cantidad %v / Tiempo: [%v]\n", c, elapsed1)
 
 }
-
 func leerArchivos(){
 	
 	time1 := time.Now()
@@ -117,52 +226,14 @@ func leerArchivos(){
 	fmt.Printf("DuracionLectura [%v]", elapsed1)
 
 }
-
-
-func (h *MyHandler) HandleFastHTTP(ctx *fasthttp.RequestCtx) {
-
-	//time := time.Now()
-	
-	switch string(ctx.Path()) {
-	case "/filtro":
-		ctx.Response.Header.Set("Content-Type", "application/json")
-		id := read_int32(ctx.QueryArgs().Peek("id"))
-		if res, found := h.minicache[id]; found {
-			json.NewEncoder(ctx).Encode(res)
-		}else{
-
-		}
-	default:
-		//ctx.Error("Not Found", fasthttp.StatusNotFound)
-		fmt.Fprintf(ctx, "ok");
-	}
-
-	//printelaped(time, "HTTP")
-	
-
+func read(x []byte){
+	//
 }
-func read_int32(data []byte) uint32 {
-    var x uint32
-    for _, c := range data {
-        x = x * 10 + uint32(c - '0')
-    }
-    return x
-}
+// ARCHIVOS //
+
+// TIME LAPSED //
 func printelaped(start time.Time, str string){
 	elapsed := time.Since(start)
 	fmt.Printf("%s / Tiempo [%v]\n", str, elapsed)
 }
-func getFolder(num int) string {
-
-	var c1 int = num / 1000000
-	var n1 int = num - c1 * 1000000
-
-	var c2 int = n1 / 10000
-	n1 = n1 - c2 * 10000
-
-	var c3 int = n1 / 100
-	var c4 int = n1 % 100
-
-	//fmt.Printf("num[%v] c1[%v] c2[%v]", num, c1, c2)
-	return strconv.Itoa(c1)+"/"+strconv.Itoa(c2)+"/"+strconv.Itoa(c3)+"/"+strconv.Itoa(c4)
-}
+// TIME LAPSED //

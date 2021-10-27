@@ -66,6 +66,8 @@ func MakeImage(c context.Context, api EC2CreateImageAPI, input *ec2.CreateImageI
 
 //https://aws.github.io/aws-sdk-go-v2/docs/
 //https://docs.aws.amazon.com/code-samples/latest/catalog/gov2-ec2-CreateInstance-CreateInstancev2.go.html
+//https://github.com/gruntwork-io/cloud-nuke/blob/master/aws/ami.go
+//https://pkg.go.dev/search?page=5&q=aws-sdk-go-v2
 
 //aws configure
 //aws ec2 create-image --instance-id i-07f96abb2dd303e22 --name "My server" --description "An AMI for my server"
