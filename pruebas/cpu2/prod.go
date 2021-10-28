@@ -4,7 +4,6 @@ import (
 	"bitbucket.org/bertimus9/systemstat"
 	"bytes"
 	"encoding/json"
-	"flag"
 	"fmt"
 	"math"
 	"runtime"
@@ -116,34 +115,11 @@ func (s *stats) GatherStats(percent bool) {
 }
 
 func main() {
-	// get command line flags
-	coresToPegPtr = flag.Int64("coresToPeg", 0, "how many CPU cores would you like to artificially peg to 100% usage")
 
-	flag.Parse()
-
-	// this will help us poll the OS to get system statistics
 	stats := NewStats()
+	stats.GatherStats(true)
+	stats.PrintStats()
 
-	runtime.GOMAXPROCS(runtime.NumCPU())
-
-	// WARNING: each call to burnCPU() will peg one core
-	// of your machine to 100%
-	// If you have code you'd like to drop in to this example,
-	// just run "go yourCode()" instead of "go burnCPU()
-	for i := *coresToPegPtr; i > 0; i-- {
-		fmt.Println("pegging one more CPU core.")
-		go burnCPU()
-	}
-
-	for {
-		stats.GatherStats(true)
-		stats.PrintStats()
-
-		// This next line lets out see the jsonified object
-		// produced by systemstat
-		//	printJson(stats, false)
-		time.Sleep(3 * time.Second)
-	}
 }
 
 func printJson(s *stats, indent bool) {
