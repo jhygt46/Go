@@ -1,0 +1,40 @@
+{
+ "Servicios": [
+  {
+   "Servers": [
+    {
+     "Ip": "140.0.0.1",
+     "Nombre": "Server1",
+     "Acciones": [
+      {
+       "Fecha": "0001-01-01T00:00:00Z",
+       "Nombre": "NELSON",
+       "Tipo": 1
+      }
+     ]
+    },
+    {
+     "Ip": "140.0.0.1",
+     "Nombre": "Server1",
+     "Acciones": [
+      {
+       "Fecha": "0001-01-01T00:00:00Z",
+       "Nombre": "NELSON",
+       "Tipo": 1
+      }
+     ]
+    }
+   ],
+   "Alertas": [
+    {
+     "Tipo": 1,
+     "Fecha": "2021-07-28T02:43:56.3292363-04:00"
+    }
+   ],
+   "Info": {
+    "Nombre": "BUE",
+    "Fecha": "0001-01-01T00:00:00Z"
+   }
+  }
+ ]
+}
