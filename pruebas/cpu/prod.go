@@ -13,6 +13,8 @@ func main() {
 	}
 
 	for _, s := range stat.CPUStats {
+
+		fmt.Println(s.User)
 		// s.User
 		// s.Nice
 		// s.System
