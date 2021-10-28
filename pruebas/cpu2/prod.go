@@ -2,11 +2,7 @@ package main
 
 import (
 	"bitbucket.org/bertimus9/systemstat"
-	"bytes"
-	"encoding/json"
 	"fmt"
-	"math"
-	"runtime"
 	"time"
 )
 
@@ -122,38 +118,3 @@ func main() {
 
 }
 
-func printJson(s *stats, indent bool) {
-	b, err := json.Marshal(s)
-	if err != nil {
-		fmt.Println("error:", err)
-	}
-	dst := new(bytes.Buffer)
-	if indent {
-		json.Indent(dst, b, "", "   ")
-	} else {
-		dst.Write(b)
-	}
-	fmt.Println(dst.String())
-	time.Sleep(time.Second * 3)
-}
-
-func burnCPU() {
-	time.Sleep(4 * time.Second)
-	for {
-		b := 1.0
-		c := 1.0
-		d := 1.0
-		for j := 1; j < 1000; j++ {
-			b *= float64(j)
-			for k := 1; k < 700000; k++ {
-
-				c *= float64(k)
-				d = (28 + b*b/3.23412) / math.Sqrt(c*c)
-				c *= d
-			}
-			time.Sleep(500 * time.Nanosecond)
-			runtime.Gosched()
-		}
-		time.Sleep(10 * time.Second)
-	}
-}
