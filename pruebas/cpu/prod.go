@@ -23,10 +23,10 @@ func main() {
 
 	}
 
-	// stat.CPUStatAll
-	// stat.CPUStats
-	// stat.Processes
-	// stat.BootTime
+	fmt.Println("CPUStatAll", stat.CPUStatAll)
+	fmt.Println("CPUStats", stat.CPUStats)
+	fmt.Println("Processes", stat.Processes)
+	fmt.Println("BootTime", stat.BootTime)
 
 }
 
