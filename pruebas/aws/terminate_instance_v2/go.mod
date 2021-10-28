@@ -1,4 +1,4 @@
-module allinapp.com/prodterminst
+module example.com/prodterminst
 
 go 1.16
 

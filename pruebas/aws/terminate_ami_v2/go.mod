@@ -1,4 +1,4 @@
-module allinapp.com/prodtermami
+module example.com/prodtermami
 
 go 1.16
 

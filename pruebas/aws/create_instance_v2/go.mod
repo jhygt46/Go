@@ -1,4 +1,4 @@
-module allinapp.com/prodcreateinst
+module example.com/prodcreateinst
 
 go 1.16
 

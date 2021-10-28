@@ -1,4 +1,4 @@
-module allinapp.com
+module example.com/rpod
 
 go 1.16
 
