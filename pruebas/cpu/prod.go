@@ -2,6 +2,7 @@ package main
 
 import (
 	"log"
+	"fmt"
 	linuxproc "github.com/c9s/goprocinfo/linux"
 )
 
