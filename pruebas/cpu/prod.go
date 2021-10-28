@@ -15,12 +15,12 @@ func main() {
 
 	for _, s := range stat.CPUStats {
 
-		fmt.Println(s.User)
-		// s.User
-		// s.Nice
-		// s.System
-		// s.Idle
-		// s.IOWait
+		fmt.Println("User", s.User)
+		fmt.Println("Nice", s.Nice)
+		fmt.Println("System", s.System)
+		fmt.Println("Idle", s.Idle)
+		fmt.Println("IOWait", s.IOWait)
+
 	}
 
 	// stat.CPUStatAll
