@@ -110,9 +110,9 @@ func main() {
 
 func (h *MyHandler) HandleFastHTTP(ctx *fasthttp.RequestCtx) {
 
-	fmt.Println(h.Conf)
-	fmt.Println(*h.Dae)
-	fmt.Fprintf(ctx, "ERROR DDos");
+	//fmt.Println(h.Conf)
+	//fmt.Println(*h.Dae)
+	fmt.Fprintf(ctx, "{ 'consulname': 'filtro1', 'consulip': '10.128.0.4:8500' }");
 
 }
 

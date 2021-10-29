@@ -81,6 +81,9 @@ func (h *MyHandler) initServer() (string, string, bool) {
 		log.Fatalln(err)
 		return "", "", false
    	}
+
+	fmt.Println(string(body))
+
 	if string(body) == "OK" {
 		return "filtro1", "10.128.0.4:8500", true
 	}else{
