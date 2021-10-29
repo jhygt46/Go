@@ -45,23 +45,52 @@ type ConsulRegister struct {
 
 func main() {
 
-	if consulRegister("BuenaNelson", "10.128.0.4:8500") {
-		fmt.Println("Consul Register OK")
+	h := &MyHandler{}
+	h.initServer()
+
+	/*
+	time1 := time.Now()
+	if consulname, consulhost, err := initServer(); err {
+		printelaped(time1, "SERVER INICIADO...")
+		time2 := time.Now()
+		if consulRegister(consulname, consulhost) {
+			printelaped(time2, "CONSUL INICIADO...")
+			
+			fasthttp.ListenAndServe(":80", h.HandleFastHTTP)
+		}else{
+			fmt.Println("Consul Register ERROR")
+		}
 	}else{
-		fmt.Println("Consul Register ERROR")
+		fmt.Println("ERROR AL INICIAR SERVIDOR")
+	}
+	*/
+	
+}
+
+func (h *MyHandler) initServer() (string, string, bool) {
+
+	id := getInstanceId()
+	ip := LocalIP()
+	resp, err := http.Get("http://18.118.129.19/init/?id="+id+"&ip="+ip)
+	if err != nil {
+		log.Fatalln(err)
+		return "", "", false
+	}
+	body, err := ioutil.ReadAll(resp.Body)
+   	if err != nil {
+		log.Fatalln(err)
+		return "", "", false
+   	}
+	if string(body) == "OK" {
+		return "filtro1", "10.128.0.4:8500", true
+	}else{
+		return "", "", false
 	}
 
-	fmt.Println("INSTANCE ID", getId())
-
-	pass := &MyHandler{}
-	fasthttp.ListenAndServe(":80", pass.HandleFastHTTP)
-	
 }
 
 func (h *MyHandler) HandleFastHTTP(ctx *fasthttp.RequestCtx) {
 
-	//time := time.Now()
-	
 	switch string(ctx.Path()) {
 	case "/filtro":
 		ctx.Response.Header.Set("Content-Type", "application/json")
@@ -75,13 +104,13 @@ func (h *MyHandler) HandleFastHTTP(ctx *fasthttp.RequestCtx) {
 		//ctx.Error("Not Found", fasthttp.StatusNotFound)
 		fmt.Fprintf(ctx, "ok");
 	}
-
-	//printelaped(time, "HTTP")
 	
 }
 
+
+
 // AWS METADATA //
-func getId() string {
+func getInstanceId() string {
 
 	resp, err := http.Get("http://169.254.169.254/latest/meta-data/instance-id")
 	if err != nil {
@@ -94,7 +123,7 @@ func getId() string {
 	return string(body)
     
 }
-
+// AWS METADATA //
 
 // UTILS //
 func read_int32(data []byte) uint32 {
