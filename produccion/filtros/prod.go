@@ -4,9 +4,11 @@ import (
 	"os"
 	"fmt"
 	"net"
+	"log"
 	"time"
 	"strconv"
 	"math/big"
+	"net/http"
 	"io/ioutil"
 	"crypto/rand"
 	"path/filepath"
@@ -49,6 +51,8 @@ func main() {
 		fmt.Println("Consul Register ERROR")
 	}
 
+	fmt.Println("INSTANCE ID", getId())
+
 	pass := &MyHandler{}
 	fasthttp.ListenAndServe(":80", pass.HandleFastHTTP)
 	
@@ -76,10 +80,20 @@ func (h *MyHandler) HandleFastHTTP(ctx *fasthttp.RequestCtx) {
 	
 }
 
+// AWS METADATA //
+func getId() string {
 
-
-
-
+	resp, err := http.Get("http://169.254.169.254/latest/meta-data/instance-id")
+	if err != nil {
+		log.Fatalln(err)
+	}
+	body, err := ioutil.ReadAll(resp.Body)
+   	if err != nil {
+		log.Fatalln(err)
+   	}
+	return string(body)
+    
+}
 
 
 // UTILS //
