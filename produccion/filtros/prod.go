@@ -94,6 +94,8 @@ func (h *MyHandler) initServer() {
    	if err != nil {
 		log.Fatalln(err)
    	}
+	var bird Bird
+	json.Unmarshal(body, &adminResponse)
 
 	fmt.Println(string(body))
 	/*

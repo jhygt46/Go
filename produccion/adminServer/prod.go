@@ -122,8 +122,6 @@ func (h *MyHandler) HandleFastHTTP(ctx *fasthttp.RequestCtx) {
 	ctx.Response.Header.Set("Content-Type", "application/json")
 	json.NewEncoder(ctx).Encode(consul)
 
-	fmt.Fprintf(ctx, "{ 'consulname': 'filtro1', 'consulip': '10.128.0.4:8500' }");
-
 }
 
 
