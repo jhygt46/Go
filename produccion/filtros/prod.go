@@ -35,8 +35,8 @@ type Evals struct {
 }
 
 type adminResponse struct {
-	consulname string `json:"consulName"`
-	consulip string `json:"consulHost"`
+	consulname string `json:"consulname"`
+	consulip string `json:"consulip"`
 }
 
 type ConsulRegister struct {
@@ -79,7 +79,7 @@ func (h *MyHandler) initServer() {
 	if err != nil {
 		fmt.Println(err)
 	}
-	fmt.Println("cName", adminResponse.consulName)
+	fmt.Println("cName", adminResponse.consulname)
 	/*
 	id := getInstanceId()
 	ip := LocalIP()
