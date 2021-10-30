@@ -75,8 +75,8 @@ func main() {
 func (h *MyHandler) initServer() {
 	
 	res := getUrl("http://18.188.234.249/")
-	fmt.Println("ConsulName", *res.Consulname)
-	fmt.Println("ConsulHost", *res.Consulip)
+	fmt.Println("ConsulName", res.Consulname)
+	fmt.Println("ConsulHost", res.Consulip)
 
 }
 
