@@ -74,24 +74,7 @@ func main() {
 
 func (h *MyHandler) initServer() {
 	
-	fmt.Println("RES1")
-	fmt.Println(getUrl("http://18.188.234.249/"))
-	
-	
-	id := getInstanceId()
-	ip := LocalIP()
-	resp, err := http.Get("http://18.188.234.249/?id="+id+"&ip="+ip)
-	if err != nil {
-		log.Fatalln(err)
-	}
-	body, err := ioutil.ReadAll(resp.Body)
-   	if err != nil {
-		log.Fatalln(err)
-   	}
-	var res adminResponse
-	json.Unmarshal(body, &res)
-
-	fmt.Println("RES2")
+	res := getUrl("http://18.188.234.249/")
 	fmt.Println(res)
 
 }
