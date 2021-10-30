@@ -98,6 +98,7 @@ func (h *MyHandler) initServer() {
 	json.Unmarshal(body, &res)
 
 	fmt.Println(res)
+	fmt.Println(string(body))
 	/*
 	if string(body) == "OK" {
 		return "filtro1", "10.128.0.4:8500", true
