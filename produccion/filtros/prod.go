@@ -77,9 +77,11 @@ func (h *MyHandler) initServer() {
 	adminResponse := &adminResponse{}
 	err := getUrl("http://18.118.129.19/", adminResponse)
 	if err != nil {
+		fmt.Println("err")
 		fmt.Println(err)
 	}
-	fmt.Println("cName", adminResponse.consulname)
+	fmt.Println("adminResponse")
+	fmt.Println(adminResponse)
 	/*
 	id := getInstanceId()
 	ip := LocalIP()
@@ -115,6 +117,7 @@ func getUrl(url string, target interface{}) error {
     defer r.Body.Close()
 
 	body, err := ioutil.ReadAll(r.Body)
+	fmt.Println("BODY")
 	fmt.Println(string(body))
 
     return json.NewDecoder(r.Body).Decode(target)
