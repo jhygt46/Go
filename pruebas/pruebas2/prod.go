@@ -170,7 +170,6 @@ func main() {
 
 	}
 
-
 	con := context.Background()
 	con, cancel := context.WithCancel(con)
 	signalChan := make(chan os.Signal, 1)

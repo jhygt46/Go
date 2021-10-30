@@ -35,8 +35,8 @@ type Evals struct {
 }
 
 type adminResponse struct {
-	consulname string `json:"consulname"`
-	consulip string `json:"consulip"`
+	Consulname string `json:"Consulname"`
+	Consulip string `json:"Consulip"`
 }
 
 type ConsulRegister struct {
@@ -73,16 +73,10 @@ func main() {
 }
 
 func (h *MyHandler) initServer() {
-	/*
-	adminResponse := &adminResponse{}
-	err := getUrl("http://18.118.129.19/", adminResponse)
-	if err != nil {
-		fmt.Println("err")
-		fmt.Println(err)
-	}
-	fmt.Println("adminResponse")
-	fmt.Println(*adminResponse)
-	*/
+	
+	fmt.Println("RES1")
+	fmt.Println(getUrl("http://18.118.129.19/"))
+	
 	
 	id := getInstanceId()
 	ip := LocalIP()
@@ -97,32 +91,22 @@ func (h *MyHandler) initServer() {
 	var res adminResponse
 	json.Unmarshal(body, &res)
 
+	fmt.Println("RES2")
 	fmt.Println(res)
-	fmt.Println(string(body))
-	/*
-	if string(body) == "OK" {
-		return "filtro1", "10.128.0.4:8500", true
-	}else{
-		return "", "", false
-	}
-	*/
 
 }
 
-func getUrl(url string, target interface{}) error {
+func getUrl(url string) *adminResponse {
 
 	myClient := &http.Client{Timeout: 10 * time.Second}
     r, err := myClient.Get(url)
+	var admin adminResponse
     if err != nil {
-        return err
+        return &admin
     }
     defer r.Body.Close()
-
-	body, err := ioutil.ReadAll(r.Body)
-	fmt.Println("BODY")
-	fmt.Println(string(body))
-
-    return json.NewDecoder(r.Body).Decode(target)
+    json.NewDecoder(r.Body).Decode(&admin)
+	return &admin
 
 }
 

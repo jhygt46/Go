@@ -43,18 +43,21 @@ type AccionServer struct {
 	Nombre string `json:"Nombre"`
 	Tipo int `json:"Tipo"`
 }
-type Config struct {
-	Id int8 `json:"Id"`
-	Fecha time.Time `json:"Fecha"`
-	Tiempo time.Duration `json:"Time"`
-}
 type Daemon struct {
 	Servicios []Servicio `json:"Servicios"`
 }
 type MyHandler struct {
-	Conf Config `json:"Conf"`
-	Dae *Daemon `json:"Dae"`
-	Admin *adminResponse `json:"Conf"`
+	Conf *Config `json:"Conf"`
+	Admin *adminResponse `json:"Admin"`
+}
+type adminResponse struct {
+	Consulname string `json:"Consulname"`
+	Consulip string `json:"Consulip"`
+}
+type Config struct {
+	Id int8 `json:"Id"`
+	Fecha time.Time `json:"Fecha"`
+	Tiempo time.Duration `json:"Tiempo"`
 }
 type EC2API interface {
 	CreateImage(ctx context.Context, params *ec2.CreateImageInput, optFns ...func(*ec2.Options)) (*ec2.CreateImageOutput, error)
@@ -63,16 +66,13 @@ type EC2API interface {
 	DeregisterImage(ctx context.Context, params *ec2.DeregisterImageInput, optFns ...func(*ec2.Options)) (*ec2.DeregisterImageOutput, error)
 	TerminateInstances(ctx context.Context, params *ec2.TerminateInstancesInput, optFns ...func(*ec2.Options)) (*ec2.TerminateInstancesOutput, error)
 }
-type adminResponse struct {
-	consulname string `json:"consulname"`
-	consulip string `json:"consulip"`
-}
+
 // TYPES //
 
 func main() {
 
-	dae := readFile("daemon.json")
-	pass := &MyHandler{ Conf: Config{}, Dae: dae, Admin: &adminResponse{ consulname: "filtro1", consulip: "10.128.0.4:8500" } }
+	//dae := readFile("daemon.json")
+	pass := &MyHandler{ Conf: &Config{}, Admin: &adminResponse{ Consulname: "filtro1", Consulip: "10.128.0.4:8500" } }
 
 	con := context.Background()
 	con, cancel := context.WithCancel(con)
@@ -115,15 +115,8 @@ func main() {
 
 func (h *MyHandler) HandleFastHTTP(ctx *fasthttp.RequestCtx) {
 
-	r := h.Admin
-	fmt.Println(*r)
-
 	ctx.Response.Header.Set("Content-Type", "application/json")
-
-	if err := json.NewEncoder(ctx).Encode(r); err != nil {
-		fmt.Println("err")
-		fmt.Println(err)
-	}
+	json.NewEncoder(ctx).Encode(h.Admin)
 
 }
 
