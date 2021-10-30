@@ -73,7 +73,7 @@ func main() {
 }
 
 func (h *MyHandler) initServer() {
-
+	/*
 	adminResponse := &adminResponse{}
 	err := getUrl("http://18.118.129.19/", adminResponse)
 	if err != nil {
@@ -82,22 +82,21 @@ func (h *MyHandler) initServer() {
 	}
 	fmt.Println("adminResponse")
 	fmt.Println(*adminResponse)
-	/*
+	*/
+	
 	id := getInstanceId()
 	ip := LocalIP()
 	resp, err := http.Get("http://18.118.129.19/init/?id="+id+"&ip="+ip)
 	if err != nil {
 		log.Fatalln(err)
-		return "", "", false
 	}
 	body, err := ioutil.ReadAll(resp.Body)
    	if err != nil {
 		log.Fatalln(err)
-		return "", "", false
    	}
 
 	fmt.Println(string(body))
-
+	/*
 	if string(body) == "OK" {
 		return "filtro1", "10.128.0.4:8500", true
 	}else{
