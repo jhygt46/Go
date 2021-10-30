@@ -115,7 +115,7 @@ func getUrl(url string, target interface{}) error {
     defer r.Body.Close()
 
 	body, err := ioutil.ReadAll(r.Body)
-	fmt.Println(string(body))
+	fmt.Println("Body", string(body))
 
     return json.NewDecoder(r.Body).Decode(target)
 
