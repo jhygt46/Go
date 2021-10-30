@@ -81,7 +81,7 @@ func (h *MyHandler) initServer() {
 		fmt.Println(err)
 	}
 	fmt.Println("adminResponse")
-	fmt.Println(adminResponse)
+	fmt.Println(*adminResponse)
 	/*
 	id := getInstanceId()
 	ip := LocalIP()
