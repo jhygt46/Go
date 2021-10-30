@@ -119,7 +119,13 @@ func (h *MyHandler) HandleFastHTTP(ctx *fasthttp.RequestCtx) {
 	fmt.Println(*r)
 
 	ctx.Response.Header.Set("Content-Type", "application/json")
-	json.NewEncoder(ctx).Encode(r)
+
+	if err := json.NewEncoder(ctx).Encode(r); err != nil {
+		fmt.Println("err")
+		fmt.Println(err)
+	}
+
+	
 
 }
 
