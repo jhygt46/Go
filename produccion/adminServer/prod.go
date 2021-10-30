@@ -54,7 +54,7 @@ type Daemon struct {
 type MyHandler struct {
 	Conf Config `json:"Conf"`
 	Dae *Daemon `json:"Dae"`
-	Admin adminResponse `json:"Conf"`
+	Admin *adminResponse `json:"Conf"`
 }
 type EC2API interface {
 	CreateImage(ctx context.Context, params *ec2.CreateImageInput, optFns ...func(*ec2.Options)) (*ec2.CreateImageOutput, error)
@@ -72,7 +72,7 @@ type adminResponse struct {
 func main() {
 
 	dae := readFile("daemon.json")
-	pass := &MyHandler{ Conf: Config{}, Dae: dae, Admin: adminResponse{ consulname: "filtro1", consulip: "10.128.0.4:8500" } }
+	pass := &MyHandler{ Conf: Config{}, Dae: dae, Admin: &adminResponse{ consulname: "filtro1", consulip: "10.128.0.4:8500" } }
 
 	con := context.Background()
 	con, cancel := context.WithCancel(con)
@@ -115,18 +115,11 @@ func main() {
 
 func (h *MyHandler) HandleFastHTTP(ctx *fasthttp.RequestCtx) {
 
-	
-
-	response, err := json.Marshal(h.Admin)
-    if err != nil {
-        fmt.Println(err)
-    }
-
-	fmt.Println(string(response))
+	r := h.Admin
+	fmt.Println(*r)
 
 	ctx.Response.Header.Set("Content-Type", "application/json")
-	fmt.Fprintf(ctx, string(response))
-	json.NewEncoder(ctx).Encode(h.Admin)
+	json.NewEncoder(ctx).Encode(r)
 
 }
 
