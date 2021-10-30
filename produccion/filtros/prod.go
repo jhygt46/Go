@@ -79,8 +79,7 @@ func (h *MyHandler) initServer() {
 	if err != nil {
 
 	}
-	fmt.Println("consulName", adminResponse.consulName)
-	fmt.Println("consulHost", adminResponse.consulHost)
+	fmt.Println(adminResponse)
 	/*
 	id := getInstanceId()
 	ip := LocalIP()
