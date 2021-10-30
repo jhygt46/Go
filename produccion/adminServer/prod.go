@@ -63,8 +63,8 @@ type EC2API interface {
 	TerminateInstances(ctx context.Context, params *ec2.TerminateInstancesInput, optFns ...func(*ec2.Options)) (*ec2.TerminateInstancesOutput, error)
 }
 type adminResponse struct {
-	consulName string `json:"consulName"`
-	consulHost string `json:"consulHost"`
+	consulname string `json:"consulname"`
+	consulip string `json:"consulip"`
 }
 // TYPES //
 
@@ -114,9 +114,7 @@ func main() {
 
 func (h *MyHandler) HandleFastHTTP(ctx *fasthttp.RequestCtx) {
 
-	consul := adminResponse{}
-	consul.consulName = "filtro1"
-	consul.consulHost = "10.128.0.4:8500"
+	consul := adminResponse{ consulname: "filtro1", consulip: "10.128.0.4:8500" }
 	//fmt.Println(h.Conf)
 	//fmt.Println(*h.Dae)
 	ctx.Response.Header.Set("Content-Type", "application/json")
