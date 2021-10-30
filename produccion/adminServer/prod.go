@@ -126,6 +126,7 @@ func (h *MyHandler) HandleFastHTTP(ctx *fasthttp.RequestCtx) {
 
 	ctx.Response.Header.Set("Content-Type", "application/json")
 	fmt.Fprintf(ctx, string(response))
+	json.NewEncoder(ctx).Encode(h.Admin)
 
 }
 
