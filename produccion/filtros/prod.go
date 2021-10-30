@@ -34,6 +34,11 @@ type Evals struct {
 	N string `json:"N"`
 }
 
+type adminResponse struct {
+	consulName string `json:"consulName"`
+	consulHost string `json:"consulHost"`
+}
+
 type ConsulRegister struct {
 	Address                        string
 	Name                           string
@@ -67,8 +72,16 @@ func main() {
 	
 }
 
-func (h *MyHandler) initServer() (string, string, bool) {
+func (h *MyHandler) initServer() {
 
+	adminResponse := &adminResponse{}
+	err := getUrl("http://18.118.129.19/", adminResponse)
+	if err != nil {
+
+	}
+	fmt.Println("consulName", adminResponse.consulName)
+	fmt.Println("consulHost", adminResponse.consulHost)
+	/*
 	id := getInstanceId()
 	ip := LocalIP()
 	resp, err := http.Get("http://18.118.129.19/init/?id="+id+"&ip="+ip)
@@ -89,8 +102,22 @@ func (h *MyHandler) initServer() (string, string, bool) {
 	}else{
 		return "", "", false
 	}
+	*/
 
 }
+
+func getUrl(url string, target interface{}) error {
+
+	myClient := &http.Client{Timeout: 10 * time.Second}
+    r, err := myClient.Get(url)
+    if err != nil {
+        return err
+    }
+    defer r.Body.Close()
+    return json.NewDecoder(r.Body).Decode(target)
+
+}
+
 
 func (h *MyHandler) HandleFastHTTP(ctx *fasthttp.RequestCtx) {
 
