@@ -75,7 +75,7 @@ func main() {
 func (h *MyHandler) initServer() {
 	
 	res := getUrl("http://18.188.234.249/")
-	fmt.Println(res)
+	fmt.Println(*res)
 
 }
 
