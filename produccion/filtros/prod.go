@@ -75,12 +75,12 @@ func main() {
 func (h *MyHandler) initServer() {
 	
 	fmt.Println("RES1")
-	fmt.Println(getUrl("http://18.118.129.19/"))
+	fmt.Println(getUrl("http://18.188.234.249/"))
 	
 	
 	id := getInstanceId()
 	ip := LocalIP()
-	resp, err := http.Get("http://18.118.129.19/init/?id="+id+"&ip="+ip)
+	resp, err := http.Get("http://18.188.234.249/?id="+id+"&ip="+ip)
 	if err != nil {
 		log.Fatalln(err)
 	}
