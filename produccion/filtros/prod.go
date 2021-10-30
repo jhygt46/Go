@@ -77,7 +77,7 @@ func (h *MyHandler) initServer() {
 	adminResponse := &adminResponse{}
 	err := getUrl("http://18.118.129.19/", adminResponse)
 	if err != nil {
-
+		fmt.Println(err)
 	}
 	fmt.Println(adminResponse)
 	/*
