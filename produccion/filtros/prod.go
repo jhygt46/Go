@@ -35,8 +35,8 @@ type Evals struct {
 }
 
 type adminResponse struct {
-	consulName string `json:"consulName"`
-	consulHost string `json:"consulHost"`
+	consulname string `json:"consulName"`
+	consulip string `json:"consulHost"`
 }
 
 type ConsulRegister struct {
