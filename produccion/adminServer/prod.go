@@ -116,8 +116,14 @@ func main() {
 func (h *MyHandler) HandleFastHTTP(ctx *fasthttp.RequestCtx) {
 
 	fmt.Println(h.Admin)
+
+	response, err := json.Marshal(h.Admin)
+    if err != nil {
+        fmt.Println(err)
+    }
+
 	ctx.Response.Header.Set("Content-Type", "application/json")
-	json.NewEncoder(ctx).Encode(h.Admin)
+	fmt.Fprintf(ctx, string(response))
 
 }
 
