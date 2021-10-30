@@ -62,6 +62,10 @@ type EC2API interface {
 	DeregisterImage(ctx context.Context, params *ec2.DeregisterImageInput, optFns ...func(*ec2.Options)) (*ec2.DeregisterImageOutput, error)
 	TerminateInstances(ctx context.Context, params *ec2.TerminateInstancesInput, optFns ...func(*ec2.Options)) (*ec2.TerminateInstancesOutput, error)
 }
+type adminResponse struct {
+	consulName string `json:"consulName"`
+	consulHost string `json:"consulHost"`
+}
 // TYPES //
 
 func main() {
@@ -110,8 +114,14 @@ func main() {
 
 func (h *MyHandler) HandleFastHTTP(ctx *fasthttp.RequestCtx) {
 
+	consul := adminResponse{}
+	consul.consulName = "filtro1"
+	consul.consulHost = "10.128.0.4:8500"
 	//fmt.Println(h.Conf)
 	//fmt.Println(*h.Dae)
+	ctx.Response.Header.Set("Content-Type", "application/json")
+	json.NewEncoder(ctx).Encode(consul)
+
 	fmt.Fprintf(ctx, "{ 'consulname': 'filtro1', 'consulip': '10.128.0.4:8500' }");
 
 }
