@@ -114,12 +114,13 @@ func main() {
 
 func (h *MyHandler) HandleFastHTTP(ctx *fasthttp.RequestCtx) {
 
-	consul := adminResponse{ consulname: "filtro1", consulip: "10.128.0.4:8500" }
-	fmt.Println(consul)
 	//fmt.Println(h.Conf)
 	//fmt.Println(*h.Dae)
+
+	consul := adminResponse{ consulname: "filtro1", consulip: "10.128.0.4:8500" }
+	js, _ := json.Marshal(consul)
 	ctx.Response.Header.Set("Content-Type", "application/json")
-	json.NewEncoder(ctx).Encode(consul)
+	fmt.Fprintf(ctx, string(js))
 
 }
 
