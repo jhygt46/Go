@@ -94,10 +94,10 @@ func (h *MyHandler) initServer() {
    	if err != nil {
 		log.Fatalln(err)
    	}
-	var bird Bird
-	json.Unmarshal(body, &adminResponse)
+	var res adminResponse
+	json.Unmarshal(body, &res)
 
-	fmt.Println(string(body))
+	fmt.Println(res)
 	/*
 	if string(body) == "OK" {
 		return "filtro1", "10.128.0.4:8500", true
