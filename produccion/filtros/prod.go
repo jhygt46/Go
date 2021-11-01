@@ -111,7 +111,6 @@ func (h *MyHandler) initServer() {
 	}
 
 }
-
 func getUrl(url string) *adminResponse {
 
 	myClient := &http.Client{Timeout: 10 * time.Second}
@@ -146,8 +145,6 @@ func (h *MyHandler) HandleFastHTTP(ctx *fasthttp.RequestCtx) {
 	}
 	
 }
-
-
 
 // AWS METADATA //
 func getInstanceId() string {
@@ -400,7 +397,7 @@ func (s *stats) GatherStats() {
 }
 // MONITORING //
 
-func DirSize(path string) (int64, error) {
+func DirSize(path string) (float64, error) {
     var size int64
     err := filepath.Walk(path, func(_ string, info os.FileInfo, err error) error {
         if err != nil {
@@ -411,5 +408,6 @@ func DirSize(path string) (int64, error) {
         }
         return err
     })
-    return size, err
+	sizeMB := float64(size) / 1024.0 / 1024.0
+    return sizeMB, err
 }
