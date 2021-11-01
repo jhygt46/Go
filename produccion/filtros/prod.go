@@ -81,7 +81,7 @@ func main() {
 
 	h := &MyHandler{}
 	//h.initServer()
-	fasthttp.ListenAndServe(":81", h.HandleFastHTTP)
+	fasthttp.ListenAndServe(":80", h.HandleFastHTTP)
 	
 }
 
