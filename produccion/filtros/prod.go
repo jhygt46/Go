@@ -83,7 +83,7 @@ func main() {
 	//h.initServer()
 
 	size, err := DirSize("/var/Go")
-	if err != nil {
+	if err == nil {
 		fmt.Println(size)
 	}
 
