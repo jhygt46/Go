@@ -13,10 +13,10 @@ import (
 	"io/ioutil"
 	"encoding/json"
     "github.com/valyala/fasthttp"
-	"github.com/aws/aws-sdk-go-v2/aws"
-	"github.com/aws/aws-sdk-go-v2/config"
-	"github.com/aws/aws-sdk-go-v2/service/ec2"
-	"github.com/aws/aws-sdk-go-v2/service/ec2/types"
+	//"github.com/aws/aws-sdk-go-v2/aws"
+	//"github.com/aws/aws-sdk-go-v2/config"
+	//"github.com/aws/aws-sdk-go-v2/service/ec2"
+	//"github.com/aws/aws-sdk-go-v2/service/ec2/types"
 )
 
 // TYPES //
@@ -52,13 +52,16 @@ type MyHandler struct {
 }
 type adminResponse struct {
 	Consulname string `json:"Consulname"`
-	Consulip string `json:"Consulip"`
+	Consulhost string `json:"Consulip"`
+	Cachetipo int8 `json:"Cachetipo"` // 0 AUTOMATICO - 1 LISTA CACHE
+	ListaCache []int64 `json:"ListaCache"`
 }
 type Config struct {
 	Id int8 `json:"Id"`
 	Fecha time.Time `json:"Fecha"`
 	Tiempo time.Duration `json:"Tiempo"`
 }
+/*
 type EC2API interface {
 	CreateImage(ctx context.Context, params *ec2.CreateImageInput, optFns ...func(*ec2.Options)) (*ec2.CreateImageOutput, error)
 	RunInstances(ctx context.Context, params *ec2.RunInstancesInput, optFns ...func(*ec2.Options)) (*ec2.RunInstancesOutput, error)
@@ -66,13 +69,13 @@ type EC2API interface {
 	DeregisterImage(ctx context.Context, params *ec2.DeregisterImageInput, optFns ...func(*ec2.Options)) (*ec2.DeregisterImageOutput, error)
 	TerminateInstances(ctx context.Context, params *ec2.TerminateInstancesInput, optFns ...func(*ec2.Options)) (*ec2.TerminateInstancesOutput, error)
 }
-
+*/
 // TYPES //
 
 func main() {
 
 	//dae := readFile("daemon.json")
-	pass := &MyHandler{ Conf: &Config{}, Admin: &adminResponse{ Consulname: "filtro1", Consulip: "10.128.0.4:8500" } }
+	pass := &MyHandler{ Conf: &Config{}, Admin: &adminResponse{ Consulname: "filtro1", Consulhost: "10.128.0.4:8500", Cachetipo: 1, ListaCache: []int64{1, 4, 7, 9, 12, 15, 17, 19, 21, 23, 25, 27} } }
 
 	con := context.Background()
 	con, cancel := context.WithCancel(con)
@@ -150,7 +153,7 @@ func run(con context.Context, c *MyHandler, stdout io.Writer) error {
 }
 // DAEMON //
 
-
+/*
 // AWS USED FUNCTION //
 func delete_image(ami string) {
 
@@ -303,7 +306,7 @@ func MakeImage(c context.Context, api EC2API, input *ec2.CreateImageInput) (*ec2
 	return api.CreateImage(c, input)
 }
 // AWS FUNCTIONS //
-
+*/
 
 // UTILS //
 func printelaped(start time.Time, str string){

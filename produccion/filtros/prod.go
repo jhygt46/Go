@@ -15,7 +15,34 @@ import (
 	"encoding/json"
     "github.com/valyala/fasthttp"
 	"github.com/hashicorp/consul/api"
+	"bitbucket.org/bertimus9/systemstat"
 )
+
+// MONITORING //
+var coresToPegPtr *int64
+type stats struct {
+	startTime time.Time
+
+	// stats this process
+	ProcUptime        float64 //seconds
+	ProcMemUsedPct    float64
+	ProcCPUAvg        systemstat.ProcCPUAverage
+	LastProcCPUSample systemstat.ProcCPUSample `json:"-"`
+	CurProcCPUSample  systemstat.ProcCPUSample `json:"-"`
+
+	// stats for whole system
+	LastCPUSample systemstat.CPUSample `json:"-"`
+	CurCPUSample  systemstat.CPUSample `json:"-"`
+	SysCPUAvg     systemstat.CPUAverage
+	SysMemK       systemstat.MemSample
+	LoadAverage   systemstat.LoadAvgSample
+	SysUptime     systemstat.UptimeSample
+
+	// bookkeeping
+	procCPUSampled bool
+	sysCPUSampled  bool
+}
+// MONITORING //
 
 type MyHandler struct {
 	minicache map[uint32]*Data
@@ -36,7 +63,9 @@ type Evals struct {
 
 type adminResponse struct {
 	Consulname string `json:"Consulname"`
-	Consulip string `json:"Consulip"`
+	Consulhost string `json:"Consulip"`
+	Cachetipo int8 `json:"Cachetipo"` // 0 AUTOMATICO - 1 LISTA CACHE
+	ListaCache []int64 `json:"ListaCache"`
 }
 
 type ConsulRegister struct {
@@ -53,30 +82,33 @@ func main() {
 	h := &MyHandler{}
 	h.initServer()
 
-	/*
-	time1 := time.Now()
-	if consulname, consulhost, err := initServer(); err {
-		printelaped(time1, "SERVER INICIADO...")
-		time2 := time.Now()
-		if consulRegister(consulname, consulhost) {
-			printelaped(time2, "CONSUL INICIADO...")
-			
-			fasthttp.ListenAndServe(":80", h.HandleFastHTTP)
-		}else{
-			fmt.Println("Consul Register ERROR")
-		}
-	}else{
-		fmt.Println("ERROR AL INICIAR SERVIDOR")
+	size, err := DirSize("/var/Go")
+	if err != nil {
+		fmt.Println(size)
 	}
-	*/
+
+	fasthttp.ListenAndServe(":81", h.HandleFastHTTP)
 	
 }
 
 func (h *MyHandler) initServer() {
 	
-	res := getUrl("http://18.188.234.249/")
-	fmt.Println("ConsulName", res.Consulname)
-	fmt.Println("ConsulHost", res.Consulip)
+	res := getUrl("http://localhost/")
+
+	switch res.Cachetipo {
+	case 0:
+
+	case 1:
+		for _, v := range res.ListaCache {
+			fmt.Println("Lista: ", v)
+		}
+	default:
+		
+	}
+
+	if consulRegister(res.Consulname, res.Consulhost) {
+
+	}
 
 }
 
@@ -93,8 +125,6 @@ func getUrl(url string) *adminResponse {
 	return &admin
 
 }
-
-
 func (h *MyHandler) HandleFastHTTP(ctx *fasthttp.RequestCtx) {
 
 	switch string(ctx.Path()) {
@@ -106,6 +136,10 @@ func (h *MyHandler) HandleFastHTTP(ctx *fasthttp.RequestCtx) {
 		}else{
 
 		}
+	case "/monitoring":
+		stats := NewStats()
+		stats.GatherStats()
+		stats.PrintStats()
 	default:
 		//ctx.Error("Not Found", fasthttp.StatusNotFound)
 		fmt.Fprintf(ctx, "ok");
@@ -286,3 +320,96 @@ func printelaped(start time.Time, str string){
 	fmt.Printf("%s / Tiempo [%v]\n", str, elapsed)
 }
 // TIME LAPSED //
+
+// MONITORING //
+func NewStats() *stats {
+	s := stats{}
+	s.startTime = time.Now()
+	return &s
+}
+func (s *stats) PrintStats() {
+	up, err := time.ParseDuration(fmt.Sprintf("%fs", s.SysUptime.Uptime))
+	upstring := "SysUptime Error"
+	if err == nil {
+		updays := up.Hours() / 24
+		switch {
+		case updays >= 365:
+			upstring = fmt.Sprintf("%.0f years", updays/365)
+		case updays >= 1:
+			upstring = fmt.Sprintf("%.0f days", updays)
+		default: // less than a day
+			upstring = up.String()
+		}
+	}
+
+	fmt.Println("*********************************************************")
+	fmt.Printf("go-top - %s  up %s,\t\tload average: %.2f, %.2f, %.2f\n",
+		s.LoadAverage.Time.Format("15:04:05"), upstring, s.LoadAverage.One, s.LoadAverage.Five, s.LoadAverage.Fifteen)
+
+	fmt.Printf("Cpu(s): %.1f%%us, %.1f%%sy, %.1f%%ni, %.1f%%id, %.1f%%wa, %.1f%%hi, %.1f%%si, %.1f%%st %.1f%%gu\n",
+		s.SysCPUAvg.UserPct, s.SysCPUAvg.SystemPct, s.SysCPUAvg.NicePct, s.SysCPUAvg.IdlePct,
+		s.SysCPUAvg.IowaitPct, s.SysCPUAvg.IrqPct, s.SysCPUAvg.SoftIrqPct, s.SysCPUAvg.StealPct,
+		s.SysCPUAvg.GuestPct)
+
+	fmt.Printf("Mem:  %9dk total, %9dk used, %9dk free, %9dk buffers\n", s.SysMemK.MemTotal,
+		s.SysMemK.MemUsed, s.SysMemK.MemFree, s.SysMemK.Buffers)
+	fmt.Printf("Swap: %9dk total, %9dk used, %9dk free, %9dk cached\n", s.SysMemK.SwapTotal,
+		s.SysMemK.SwapUsed, s.SysMemK.SwapFree, s.SysMemK.Cached)
+
+	fmt.Println("************************************************************")
+	if s.ProcCPUAvg.PossiblePct > 0 {
+		cpuHelpText := "[see -help flag to change %cpu]"
+		if *coresToPegPtr > 0 {
+			cpuHelpText = ""
+		}
+		fmt.Printf("ProcessName\tRES(k)\t%%CPU\t%%CCPU\t%%MEM\n")
+		fmt.Printf("this-process\t%d\t%3.1f\t%2.1f\t%3.1f\t%s\n",
+			s.CurProcCPUSample.ProcMemUsedK,
+			s.ProcCPUAvg.TotalPct,
+			100*s.CurProcCPUSample.Total/s.ProcUptime/float64(1),
+			100*float64(s.CurProcCPUSample.ProcMemUsedK)/float64(s.SysMemK.MemTotal),
+			cpuHelpText)
+		fmt.Println("%CCPU is cumulative CPU usage over this process' life.")
+		fmt.Printf("Max this-process CPU possible: %3.f%%\n", s.ProcCPUAvg.PossiblePct)
+	}
+}
+func (s *stats) GatherStats() {
+	s.SysUptime = systemstat.GetUptime()
+	s.ProcUptime = time.Since(s.startTime).Seconds()
+
+	s.SysMemK = systemstat.GetMemSample()
+	s.LoadAverage = systemstat.GetLoadAvgSample()
+
+	s.LastCPUSample = s.CurCPUSample
+	s.CurCPUSample = systemstat.GetCPUSample()
+
+	if s.sysCPUSampled { // we need 2 samples to get an average
+		s.SysCPUAvg = systemstat.GetCPUAverage(s.LastCPUSample, s.CurCPUSample)
+	}
+	// we have at least one sample, subsequent rounds will give us an average
+	s.sysCPUSampled = true
+
+	s.ProcMemUsedPct = 100 * float64(s.CurProcCPUSample.ProcMemUsedK) / float64(s.SysMemK.MemTotal)
+
+	s.LastProcCPUSample = s.CurProcCPUSample
+	s.CurProcCPUSample = systemstat.GetProcCPUSample()
+	if s.procCPUSampled {
+		s.ProcCPUAvg = systemstat.GetProcCPUAverage(s.LastProcCPUSample, s.CurProcCPUSample, s.ProcUptime)
+	}
+	s.procCPUSampled = true
+}
+// MONITORING //
+
+func DirSize(path string) (int64, error) {
+    var size int64
+    err := filepath.Walk(path, func(_ string, info os.FileInfo, err error) error {
+        if err != nil {
+            return err
+        }
+        if !info.IsDir() {
+            size += info.Size()
+        }
+        return err
+    })
+    return size, err
+}

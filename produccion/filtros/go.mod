@@ -3,6 +3,7 @@ module example.com/prod
 go 1.16
 
 require (
+	bitbucket.org/bertimus9/systemstat v0.0.0-20180207000608-0eeff89b0690 // indirect
 	github.com/andybalholm/brotli v1.0.3 // indirect
 	github.com/armon/go-metrics v0.3.10 // indirect
 	github.com/fatih/color v1.13.0 // indirect
