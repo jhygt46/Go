@@ -80,7 +80,7 @@ type ConsulRegister struct {
 func main() {
 
 	h := &MyHandler{}
-	h.initServer()
+	//h.initServer()
 
 	size, err := DirSize("/var/Go")
 	if err != nil {
