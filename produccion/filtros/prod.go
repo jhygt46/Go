@@ -81,12 +81,6 @@ func main() {
 
 	h := &MyHandler{}
 	//h.initServer()
-
-	size, err := DirSize("/var/Go")
-	if err == nil {
-		fmt.Println(size)
-	}
-
 	fasthttp.ListenAndServe(":81", h.HandleFastHTTP)
 	
 }
@@ -111,19 +105,6 @@ func (h *MyHandler) initServer() {
 	}
 
 }
-func getUrl(url string) *adminResponse {
-
-	myClient := &http.Client{Timeout: 10 * time.Second}
-    r, err := myClient.Get(url)
-	var admin adminResponse
-    if err != nil {
-        return &admin
-    }
-    defer r.Body.Close()
-    json.NewDecoder(r.Body).Decode(&admin)
-	return &admin
-
-}
 func (h *MyHandler) HandleFastHTTP(ctx *fasthttp.RequestCtx) {
 
 	switch string(ctx.Path()) {
@@ -139,6 +120,10 @@ func (h *MyHandler) HandleFastHTTP(ctx *fasthttp.RequestCtx) {
 		stats := NewStats()
 		stats.GatherStats()
 		stats.PrintStats()
+		size, err := DirSize("/var/Go")
+		if err == nil {
+			fmt.Println(size)
+		}
 	default:
 		//ctx.Error("Not Found", fasthttp.StatusNotFound)
 		fmt.Fprintf(ctx, "ok");
@@ -169,6 +154,19 @@ func read_int32(data []byte) uint32 {
         x = x * 10 + uint32(c - '0')
     }
     return x
+}
+func getUrl(url string) *adminResponse {
+
+	myClient := &http.Client{Timeout: 10 * time.Second}
+    r, err := myClient.Get(url)
+	var admin adminResponse
+    if err != nil {
+        return &admin
+    }
+    defer r.Body.Close()
+    json.NewDecoder(r.Body).Decode(&admin)
+	return &admin
+
 }
 // UTILS //
 
@@ -397,6 +395,7 @@ func (s *stats) GatherStats() {
 }
 // MONITORING //
 
+// du -sh /var/Go
 func DirSize(path string) (float64, error) {
     var size int64
     err := filepath.Walk(path, func(_ string, info os.FileInfo, err error) error {
