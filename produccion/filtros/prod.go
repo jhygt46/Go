@@ -251,7 +251,7 @@ func postRequest(url string, post PostRequest) *PostResponse {
 	req.SetRequestURI(url)
 	res := fasthttp.AcquireResponse()
 	if err := fasthttp.Do(req, res); err != nil {
-		panic("handle error")
+		fmt.Println("handle error")
 	}
 	fasthttp.ReleaseRequest(req)
 	body := res.Body()
