@@ -103,7 +103,7 @@ type PostRequest struct {
 func main() {
 
 	h := &MyHandler{}
-	h.initServer()
+	//h.initServer()
 	fasthttp.ListenAndServe(":81", h.HandleFastHTTP)
 	
 }
