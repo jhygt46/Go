@@ -250,14 +250,13 @@ func postRequest(url string, post PostRequest) *PostResponse {
 	req.Header.SetContentType("application/json")
 	req.SetRequestURI(url)
 	res := fasthttp.AcquireResponse()
-	if err := fasthttp.Do(req, res); err != nil {
-		fmt.Println("handle error")
-	}
-	fasthttp.ReleaseRequest(req)
-	body := res.Body()
 	var resp PostResponse
-	json.Unmarshal(body, &resp)
-	fasthttp.ReleaseResponse(res)
+	if err := fasthttp.Do(req, res); err == nil {
+		fasthttp.ReleaseRequest(req)
+		body := res.Body()
+		json.Unmarshal(body, &resp)
+		fasthttp.ReleaseResponse(res)
+	}
 	return &resp
 
 }
