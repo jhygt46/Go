@@ -195,8 +195,8 @@ func (h *MyHandler) HandleFastHTTP(ctx *fasthttp.RequestCtx) {
 	case "/health":
 		fmt.Fprintf(ctx, "OK");
 	default:
-		//fmt.Println(h);
-		ctx.Error("Not Found", fasthttp.StatusNotFound)
+		fmt.Fprintf(ctx, "OK");
+		//ctx.Error("Not Found", fasthttp.StatusNotFound)
 	}
 	
 }
