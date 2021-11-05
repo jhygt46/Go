@@ -44,9 +44,6 @@ type stats struct {
 }
 // MONITORING //
 
-type MyHandler struct {
-	minicache map[uint32]*Data
-}
 type Data struct {
 	C [] Campos `json:"C"`
 	E [] Evals `json:"E"`
@@ -64,10 +61,10 @@ type Evals struct {
 type adminResponse struct {
 	Consulname string `json:"Consulname"`
 	Consulhost string `json:"Consulip"`
-	Cachetipo int8 `json:"Cachetipo"` // 0 AUTOMATICO - 1 LISTA CACHE
+	AutoCache bool `json:"AutoCache"` // 0 AUTOMATICO - 1 LISTA CACHE
 	ListaCache []int64 `json:"ListaCache"`
+	TotalCache int32 `json:"TotalCache"`
 }
-
 type ConsulRegister struct {
 	Address                        string
 	Name                           string
@@ -76,33 +73,87 @@ type ConsulRegister struct {
 	DeregisterCriticalServiceAfter time.Duration
 	Interval                       time.Duration
 }
-
+type Config struct {
+	Fecha time.Time `json:"Fecha"`
+	AutoCache bool `json:"Cachetipo"`
+	TotalCache int32 `json:"TotalCache"`
+	CountCache int32 `json:"CountCache"`
+	MetricCount int32 `json:"MetricCount"`
+	MetricCache int32 `json:"MetricCache"`
+	MetricFile int32 `json:"MetricFile"`
+}
+type MyHandler struct {
+	Minicache map[uint64]*Data
+	Config Config
+}
+type PostResponse struct {
+	Consulname string `json:"Consulname"`
+	Consulhost string `json:"Consulip"`
+	AutoCache bool `json:"AutoCache"` // 0 AUTOMATICO - 1 LISTA CACHE
+	ListaCache []int64 `json:"ListaCache"`
+	TotalCache int32 `json:"TotalCache"`
+}
+type PostRequest struct {
+	Id string `json:"Id"`
+	Ip string `json:"Ip"`
+	Init bool `json:"Init"`
+	Consul bool `json:"Consul"`
+	Time time.Time `json:"Time"`
+}
 func main() {
 
 	h := &MyHandler{}
-	//h.initServer()
-	fasthttp.ListenAndServe(":80", h.HandleFastHTTP)
+	h.initServer()
+	fasthttp.ListenAndServe(":81", h.HandleFastHTTP)
 	
 }
 
 func (h *MyHandler) initServer() {
 	
-	res := getUrl("http://localhost/")
+	h.Config.CountCache = 0
+	
+	params := PostRequest{}
+	//params.Id = getInstanceId()
+	params.Id = "ami-636388377355";
+	params.Ip = LocalIP()
+	params.Init = true
+	params.Time = time.Now()
+	res := postRequest("http://localhost/init", params)
+	
+	h.Minicache = make(map[uint64]*Data, res.TotalCache)
+	h.Config.TotalCache = res.TotalCache
 
-	switch res.Cachetipo {
-	case 0:
-
-	case 1:
+	if !res.AutoCache {
 		for _, v := range res.ListaCache {
-			fmt.Println("Lista: ", v)
+			jsonFiltro, err := os.Open("/var/filtros/"+getFolder64(uint64(v)))
+			if err == nil {
+				byteValueFiltro, _ := ioutil.ReadAll(jsonFiltro)
+				data := Data{}
+				if err := json.Unmarshal(byteValueFiltro, &data); err == nil {
+					h.Minicache[uint64(v)] = &data
+					h.Config.CountCache++
+				}
+			}
+			defer jsonFiltro.Close()
 		}
-	default:
-		
+		if h.Config.CountCache >= h.Config.TotalCache {
+			h.Config.AutoCache = false
+		}
+	}else{
+		h.Config.AutoCache = true
 	}
 
+	params.Init = false
 	if consulRegister(res.Consulname, res.Consulhost) {
-
+		params.Consul = true
+		params.Time = time.Now()
+		postRequest("http://localhost/init", params)
+	}else{
+		params.Consul = false
+		params.Time = time.Now()
+		postRequest("http://localhost/init", params)
 	}
+	h.Config.Fecha = time.Now()
 
 }
 func (h *MyHandler) HandleFastHTTP(ctx *fasthttp.RequestCtx) {
@@ -110,11 +161,28 @@ func (h *MyHandler) HandleFastHTTP(ctx *fasthttp.RequestCtx) {
 	switch string(ctx.Path()) {
 	case "/filtro":
 		ctx.Response.Header.Set("Content-Type", "application/json")
-		id := read_int32(ctx.QueryArgs().Peek("id"))
-		if res, found := h.minicache[id]; found {
+		id := read_int64(ctx.QueryArgs().Peek("id")) 
+		if res, found := h.Minicache[id]; found {
 			json.NewEncoder(ctx).Encode(res)
 		}else{
-
+			jsonFiltro, err := os.Open("/var/filtros/"+getFolder64(id))
+			if err == nil {
+				byteValueFiltro, _ := ioutil.ReadAll(jsonFiltro)
+				if h.Config.AutoCache {
+					data := Data{}
+					if err := json.Unmarshal(byteValueFiltro, &data); err == nil {
+						h.Minicache[uint64(id)] = &data
+						h.Config.CountCache++
+						if h.Config.CountCache >= h.Config.TotalCache {
+							h.Config.AutoCache = false
+						}
+					}
+				}
+				fmt.Fprintf(ctx, string(byteValueFiltro))
+			}else{
+				ctx.Error("Not Found", fasthttp.StatusNotFound)
+			}
+			defer jsonFiltro.Close()
 		}
 	case "/monitoring":
 		stats := NewStats()
@@ -124,9 +192,11 @@ func (h *MyHandler) HandleFastHTTP(ctx *fasthttp.RequestCtx) {
 		if err == nil {
 			fmt.Println(size)
 		}
+	case "/health":
+		fmt.Fprintf(ctx, "OK");
 	default:
-		//ctx.Error("Not Found", fasthttp.StatusNotFound)
-		fmt.Fprintf(ctx, "ok");
+		fmt.Println(h);
+		ctx.Error("Not Found", fasthttp.StatusNotFound)
 	}
 	
 }
@@ -148,14 +218,14 @@ func getInstanceId() string {
 // AWS METADATA //
 
 // UTILS //
-func read_int32(data []byte) uint32 {
-    var x uint32
+func read_int64(data []byte) uint64 {
+    var x uint64
     for _, c := range data {
-        x = x * 10 + uint32(c - '0')
+        x = x * 10 + uint64(c - '0')
     }
     return x
 }
-func getUrl(url string) *adminResponse {
+func getUrladminResponse(url string) *adminResponse {
 
 	myClient := &http.Client{Timeout: 10 * time.Second}
     r, err := myClient.Get(url)
@@ -166,6 +236,29 @@ func getUrl(url string) *adminResponse {
     defer r.Body.Close()
     json.NewDecoder(r.Body).Decode(&admin)
 	return &admin
+
+}
+func postRequest(url string, post PostRequest) *PostResponse {
+	
+	u, err := json.Marshal(post)
+	if err != nil {
+		panic(err)
+	}
+	req := fasthttp.AcquireRequest()
+	req.SetBody(u)
+	req.Header.SetMethod("POST")
+	req.Header.SetContentType("application/json")
+	req.SetRequestURI(url)
+	res := fasthttp.AcquireResponse()
+	if err := fasthttp.Do(req, res); err != nil {
+		panic("handle error")
+	}
+	fasthttp.ReleaseRequest(req)
+	body := res.Body()
+	var resp PostResponse
+	json.Unmarshal(body, &resp)
+	fasthttp.ReleaseResponse(res)
+	return &resp
 
 }
 // UTILS //
@@ -230,34 +323,31 @@ func LocalIP() string {
 // CONSUL //
 
 // ARCHIVOS //
-func getFolder(num int) string {
+func getFolder64(num uint64) string {
 
-	var c1 int = num / 1000000
-	var n1 int = num - c1 * 1000000
+	c1, n1 := divmod(num, 1000000)
+	c2, n2 := divmod(n1, 10000)
+	c3, c4 := divmod(n2, 10000)
+	return strconv.FormatUint(c1, 10)+"/"+strconv.FormatUint(c2, 10)+"/"+strconv.FormatUint(c3, 10)+"/"+strconv.FormatUint(c4, 10)
 
-	var c2 int = n1 / 10000
-	n1 = n1 - c2 * 10000
-
-	var c3 int = n1 / 100
-	var c4 int = n1 % 100
-
-	//fmt.Printf("num[%v] c1[%v] c2[%v]", num, c1, c2)
-	return strconv.Itoa(c1)+"/"+strconv.Itoa(c2)+"/"+strconv.Itoa(c3)+"/"+strconv.Itoa(c4)
+}
+func divmod(numerator, denominator uint64) (quotient, remainder uint64) {
+	quotient = numerator / denominator
+	remainder = numerator % denominator
+	return
 }
 func escribirArchivos(){
 
 	d1 := []byte("{\"Id\":1,\"Data\":{\"C\":[{ \"T\": 1, \"N\": \"Nacionalidad\", \"V\": [\"Chilena\", \"Argentina\", \"Brasileña\", \"Uruguaya\"] }, { \"T\": 2, \"N\": \"Servicios\", \"V\": [\"Americana\", \"Rusa\", \"Bailarina\", \"Masaje\"] },{ \"T\": 3, \"N\": \"Edad\" }],\"E\": [{ \"T\": 1, \"N\": \"Rostro\" },{ \"T\": 1, \"N\": \"Senos\" },{ \"T\": 1, \"N\": \"Trasero\" }]}}")
 
-	x := make([]int, 10000)
+	x := make([]int64, 10000)
 	c := 0
 	time1 := time.Now()
 
 	for j, _ := range x {
 
-		//j = j + 1863100
 		v := 100
-		folder := getFolder(j)
-		//cant := uint64(v)
+		folder := getFolder64(uint64(j))
 
 		newpath := filepath.Join("/var/tmp/utils/filtros", folder)
 		err := os.MkdirAll(newpath, os.ModePerm)
@@ -266,15 +356,12 @@ func escribirArchivos(){
 			fmt.Println("FOLDER ERROR: ", err)
 		}
 
-		//time1 := time.Now()
 		for i := 0; i < v; i++ {
 			err := os.WriteFile("/var/tmp/utils/filtros/"+folder+"/"+strconv.Itoa(i), d1, 0644)
 			if err != nil {
 				fmt.Println(err)
 			}
 		}
-		//elapsed1 := uint64(time.Since(time1) / time.Nanosecond) / cant
-		//fmt.Printf("utils/filtros/%v [%v] [%v]\n", folder, j, elapsed1)
 		c++
 	}
 	elapsed1 := time.Since(time1)
@@ -288,7 +375,7 @@ func leerArchivos(){
 	for i < 2000 {
 
 		n, _ := rand.Int(rand.Reader, big.NewInt(1000000))
-		folder := getFolder(int(n.Int64()))
+		folder := getFolder64(n.Uint64())
 		file, err := os.Open("/home/admin/Go/pruebas/utils/filtros/"+folder)
 		if err != nil{
 			fmt.Println(err)

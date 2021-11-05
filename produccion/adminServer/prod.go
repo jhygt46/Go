@@ -55,10 +55,9 @@ type adminResponse struct {
 	Consulhost string `json:"Consulip"`
 	Cachetipo int8 `json:"Cachetipo"` // 0 AUTOMATICO - 1 LISTA CACHE
 	ListaCache []int64 `json:"ListaCache"`
+	TotalCache int32 `json:"TotalCache"`
 }
 type Config struct {
-	Id int8 `json:"Id"`
-	Fecha time.Time `json:"Fecha"`
 	Tiempo time.Duration `json:"Tiempo"`
 }
 /*
@@ -72,10 +71,18 @@ type EC2API interface {
 */
 // TYPES //
 
+type PostRequest struct {
+	Id string `json:"Id"`
+	Ip string `json:"Ip"`
+	Init bool `json:"Init"`
+	Consul bool `json:"Consul"`
+	Time time.Time `json:"Time"`
+}
+
 func main() {
 
 	//dae := readFile("daemon.json")
-	pass := &MyHandler{ Conf: &Config{}, Admin: &adminResponse{ Consulname: "filtro1", Consulhost: "10.128.0.4:8500", Cachetipo: 1, ListaCache: []int64{1, 4, 7, 9, 12, 15, 17, 19, 21, 23, 25, 27} } }
+	pass := &MyHandler{ Conf: &Config{}, Admin: &adminResponse{ Consulname: "filtro1", Consulhost: "10.128.0.4:8500", Cachetipo: 1, TotalCache: 12, ListaCache: []int64{1, 4, 7, 9, 12, 15, 17, 19, 21, 23, 25, 27} } }
 
 	con := context.Background()
 	con, cancel := context.WithCancel(con)
@@ -119,7 +126,29 @@ func main() {
 func (h *MyHandler) HandleFastHTTP(ctx *fasthttp.RequestCtx) {
 
 	ctx.Response.Header.Set("Content-Type", "application/json")
-	json.NewEncoder(ctx).Encode(h.Admin)
+
+	if string(ctx.Method()) == "POST" {
+		params := ctx.PostBody()
+		switch string(ctx.Path()) {
+		case "/init":
+			
+			//fmt.Println(ctx.RemoteAddr())
+			var res PostRequest
+			if err := json.Unmarshal(params, &res); err == nil {
+				fmt.Println("Id", res.Id)
+				fmt.Println("Ip", res.Ip)
+				fmt.Println("Init", res.Init)
+				fmt.Println("Consul", res.Consul)
+				fmt.Println("Time", res.Time)
+			}
+
+			
+			json.NewEncoder(ctx).Encode(h.Admin)
+		default:
+			ctx.Error("Not Found", fasthttp.StatusNotFound)
+		}
+	}
+	ctx.Error("Not Found", fasthttp.StatusNotFound)
 
 }
 
@@ -325,5 +354,12 @@ func readFile(file string) *Daemon {
     json.Unmarshal(byteValue, &dae)
 	return &dae
 
+}
+func read_int32(data []byte) uint32 {
+    var x uint32
+    for _, c := range data {
+        x = x * 10 + uint32(c - '0')
+    }
+    return x
 }
 // UTILS //
