@@ -8,8 +8,14 @@ import (
 
 func main() {
 
-	db, _ := sql.Open("sqlite3", "./filtros.db")
-	stmt, _ := db.Prepare("CREATE TABLE IF NOT EXISTS 'test' { 'ID' INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, 'content' TEXT }")
+	db, err1 := sql.Open("sqlite3", "./filtros.db")
+	if err1 != nil {
+		fmt.Println(err1)
+	}
+	stmt, err2 := db.Prepare("CREATE TABLE IF NOT EXISTS 'test' { 'ID' INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, 'content' TEXT }")
+	if err2 != nil {
+		fmt.Println(err2)
+	}
 	stmt.Exec()
 
 }
