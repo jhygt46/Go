@@ -2,8 +2,8 @@ package main
 
 import (
 	"database/sql"
-	"github.com/mattn/go-sqlite3"
-	"github.com/povsister/scp"
+	_ "github.com/mattn/go-sqlite3"
+	//"github.com/povsister/scp"
 )
 
 func main() {
