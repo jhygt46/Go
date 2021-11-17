@@ -13,7 +13,7 @@ func main() {
 	if err1 != nil {
 		fmt.Println(err1)
 	}
-	stmt, err2 := db.Prepare("CREATE TABLE IF NOT EXISTS 'test' { 'ID' INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, 'content' TEXT }")
+	stmt, err2 := db.Prepare(`create table if not exists user (id  integer not null primary key,name text, age integer)`)
 	if err2 != nil {
 		fmt.Println(err2)
 	}
