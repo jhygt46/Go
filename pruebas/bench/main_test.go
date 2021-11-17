@@ -4,6 +4,7 @@ import (
     //"os"
     "testing"
 	"fmt"
+    "time"
     //"strconv"
     //"crypto/rand"
     //"math/big"
@@ -12,18 +13,91 @@ import (
 //https://gist.github.com/arsham/bbc93990d8e5c9b54128a3d88901ab90#file-go_cpu_memory_profiling_benchmarks-sh
 //go test -bench=. -benchmem
 
+type Data struct {
+	C [] Campos `json:"C"`
+	E [] Evals `json:"E"`
+}
+type Campos struct {
+	T int `json:"T"`
+	N string `json:"N"`
+	V [] string `json:"V"`
+}
+type Evals struct {
+	T int `json:"T"`
+	N string `json:"N"`
+}
+
+type MyHandler struct {
+	Minicache map[uint64]*Data
+    Config Config
+}
+
+type Config struct {
+	Fecha time.Time `json:"Fecha"`
+	AutoCache bool `json:"Cachetipo"`
+	TotalCache int32 `json:"TotalCache"`
+	CountCache int32 `json:"CountCache"`
+	MetricCount int32 `json:"MetricCount"`
+	MetricCache int32 `json:"MetricCache"`
+	MetricFile int32 `json:"MetricFile"`
+}
+
 func main() {
     fmt.Println("Hello World")
 }
-
-func BenchmarkCalculateA(b *testing.B) {
-    for i := 0; i < b.N; i++ {
-        
-    }
+func BenchmarkFoo1(b *testing.B) {
+    h := &MyHandler{}
+    genericBenchmarkFoo1(b, h)
+}
+func BenchmarkFoo2(b *testing.B) {
+    h := &MyHandler{}
+    genericBenchmarkFoo2(b, h)
+}
+func BenchmarkFoo3(b *testing.B) {
+    h := &MyHandler{}
+    genericBenchmarkFoo3(b, h)
+}
+func BenchmarkFoo4(b *testing.B) {
+    h := &MyHandler{}
+    genericBenchmarkFoo4(b, h)
 }
 
-
-
+func genericBenchmarkFoo1(b *testing.B, h *MyHandler) {
+    for i := 0; i < b.N; i++ {
+        id := uint64(i)
+        if res, found := h.Minicache[id]; found {
+			json.NewEncoder(ctx).Encode(res)
+			h.Config.MetricCache++
+		}else{
+            jsonFiltro, err := os.Open("/var/filtros/"+getFolder64(id))
+			if err == nil {
+				byteValueFiltro, _ := ioutil.ReadAll(jsonFiltro)
+				if h.Config.AutoCache {
+					data := Data{}
+					if err := json.Unmarshal(byteValueFiltro, &data); err == nil {
+						h.Minicache[uint64(id)] = &data
+						h.Config.CountCache++
+						if h.Config.CountCache >= h.Config.TotalCache {
+							h.Config.AutoCache = false
+						}
+					}
+				}
+				h.Config.MetricFile++
+				fmt.Fprintf(string(byteValueFiltro))
+			}
+			defer jsonFiltro.Close()
+        }
+    }
+}
+func genericBenchmarkFoo2(b *testing.B, n *MyHandler) {
+    
+}
+func genericBenchmarkFoo3(b *testing.B, n *MyHandler) {
+    
+}
+func genericBenchmarkFoo4(b *testing.B, n *MyHandler) {
+    
+}
 
 
 /*

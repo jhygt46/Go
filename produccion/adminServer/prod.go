@@ -10,16 +10,58 @@ import (
 	"syscall"
 	"context"
 	"os/signal"
-	"io/ioutil"
 	"encoding/json"
     "github.com/valyala/fasthttp"
+	//"utils/utils"
 	//"github.com/aws/aws-sdk-go-v2/aws"
 	//"github.com/aws/aws-sdk-go-v2/config"
 	//"github.com/aws/aws-sdk-go-v2/service/ec2"
 	//"github.com/aws/aws-sdk-go-v2/service/ec2/types"
 )
 
-// TYPES //
+// SERVICE KUBERNET//
+type Servicio struct {
+	Nombre string `json:"Nombre"`
+	Acl_tipo int8 `json:"Acl_tipo"`
+	Acl_valor string `json:"Acl_valor"`
+	Backends []Backends `json:"Backends"`
+}
+type Backends struct {
+	Active bool `json:"Active"`
+	Fecha time.Time `json:"Fecha"`
+	Lista_backends []Backend `json:"Lista_backends"`
+}
+type Backend struct {
+	Acls []Acl `json:"Acls"`
+	Servers []Server `json:"Servers"`
+	Backend string`json:"Backend"`
+	Consulname string`json:"Consulname"`
+}
+type Acl struct {
+	Nombre string`json:"Nombre"`
+	Param string`json:"Param"`
+	Tipo int8 `json:"Tipo"`
+	Valor1 int64 `json:"Valor1"`
+	Valor2 int64 `json:"Valor2"`
+}
+type Server struct {
+	Ip string `json:"Ip"`
+	Id string `json:"Id"`
+	Cpu Cpu `json:"Cpu"`
+	Memory Memory `json:"Memory"`
+	DiskMb int32 `json:"Disk"`
+}
+type Cpu struct {
+	Param1 float64 `json:"Param1"`
+}
+type Memory struct {
+	Param1 float64 `json:"Param1"`
+}
+// SERVICE KUBERNET//
+
+
+
+/*
 type Servicio struct {
 	Servers []Server `json:"Servers"`
 	Alertas []Alerta `json:"Alertas"`
@@ -46,10 +88,6 @@ type AccionServer struct {
 type Daemon struct {
 	Servicios []Servicio `json:"Servicios"`
 }
-type MyHandler struct {
-	Conf *Config `json:"Conf"`
-	Admin *adminResponse `json:"Admin"`
-}
 type adminResponse struct {
 	Consulname string `json:"Consulname"`
 	Consulhost string `json:"Consulip"`
@@ -57,10 +95,6 @@ type adminResponse struct {
 	ListaCache []int64 `json:"ListaCache"`
 	TotalCache int32 `json:"TotalCache"`
 }
-type Config struct {
-	Tiempo time.Duration `json:"Tiempo"`
-}
-/*
 type EC2API interface {
 	CreateImage(ctx context.Context, params *ec2.CreateImageInput, optFns ...func(*ec2.Options)) (*ec2.CreateImageOutput, error)
 	RunInstances(ctx context.Context, params *ec2.RunInstancesInput, optFns ...func(*ec2.Options)) (*ec2.RunInstancesOutput, error)
@@ -79,10 +113,28 @@ type PostRequest struct {
 	Time time.Time `json:"Time"`
 }
 
+type Config struct {
+	Tiempo time.Duration `json:"Tiempo"`
+}
+type MyHandler struct {
+	Conf *Config `json:"Conf"`
+	Servicios []*Servicio `json:"Servicios"`
+}
+
 func main() {
 
+	acl1 := Acl{ Nombre: "Acl1", Param: "Param1", Tipo: 1, Valor1: 0, Valor2: 100 }
+	ser1 := Server{ Ip: "127.0.0.1", Id: "ami-664875373826", Cpu: Cpu{ Param1: 100 }, Memory: Memory{ Param1: 105 }, DiskMb: 1000 }
+
+	bck1 := Backend{ Backend: "BACKNAME", Consulname: "BACKCONSUL", Acls: []Acl{acl1}, Servers: []Server{ser1} }
+
+	l_bck1 := Backends{ Active: true, Fecha: time.Now(), Lista_backends: []Backend{bck1} }
+	
+	Servicios := make([]*Servicio, 0)
+	Servicios = append(Servicios, &Servicio{ Nombre: "Filtro", Acl_tipo: 1, Acl_valor: "/filtro/", Backends: []Backends{l_bck1}  })
+	
 	//dae := readFile("daemon.json")
-	pass := &MyHandler{ Conf: &Config{}, Admin: &adminResponse{ Consulname: "filtro1", Consulhost: "10.128.0.4:8500", Cachetipo: 1, TotalCache: 12, ListaCache: []int64{1, 4, 7, 9, 12, 15, 17, 19, 21, 23, 25, 27} } }
+	pass := &MyHandler{ Conf: &Config{}, Servicios: Servicios }
 
 	con := context.Background()
 	con, cancel := context.WithCancel(con)
@@ -113,7 +165,7 @@ func main() {
 	}()
 	
 	go func() {
-		fasthttp.ListenAndServe(":80", pass.HandleFastHTTP)
+		fasthttp.ListenAndServe(":81", pass.HandleFastHTTP)
 	}()
 	
 	if err := run(con, pass, os.Stdout); err != nil {
@@ -126,12 +178,16 @@ func main() {
 func (h *MyHandler) HandleFastHTTP(ctx *fasthttp.RequestCtx) {
 
 	ctx.Response.Header.Set("Content-Type", "application/json")
+	ctx.Response.Header.Set("Access-Control-Allow-Origin", "*")
+    ctx.Response.Header.Set("Access-Control-Allow-Headers", "authorization, content-type, set-cookie, cookie, server")
+    ctx.Response.Header.Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS")
+    ctx.Response.Header.Set("Access-Control-Allow-Credentials", "false")
 
 	if string(ctx.Method()) == "POST" {
 		params := ctx.PostBody()
+		fmt.Println(string(params))
 		switch string(ctx.Path()) {
 		case "/init":
-			
 			//fmt.Println(ctx.RemoteAddr())
 			var res PostRequest
 			if err := json.Unmarshal(params, &res); err == nil {
@@ -140,29 +196,76 @@ func (h *MyHandler) HandleFastHTTP(ctx *fasthttp.RequestCtx) {
 				fmt.Println("Init", res.Init)
 				fmt.Println("Consul", res.Consul)
 				fmt.Println("Time", res.Time)
+				fmt.Println(res)
+			}else{
+				fmt.Println(err)
 			}
-
-			
-			json.NewEncoder(ctx).Encode(h.Admin)
+			json.NewEncoder(ctx).Encode(res)
+		case "/status":
+			var res statusParams
+			if err := json.Unmarshal(params, &res); err == nil {
+				//fmt.Println("DiskMb: ", res.DiskMb)
+				h.statusServer(res)
+			}else{
+				fmt.Println(err)
+			}
 		default:
 			ctx.Error("Not Found", fasthttp.StatusNotFound)
 		}
 	}
-	ctx.Error("Not Found", fasthttp.StatusNotFound)
+	//ctx.Error("Not Found", fasthttp.StatusNotFound)
 
 }
 
 
+func (h *MyHandler) statusServer(params statusParams){
+ 
+	for _, bck := range h.Servicios[param.serv].Backends {
+		if bck.Active {
+			for _, l_bck := range bck.Lista_backends {
+				if l_bck
+			}
+		}
+	}
+
+}
+
 // DAEMON //
 func (h *MyHandler) StartDaemon() {
 
-	fmt.Println("DAEMON: ", h.Conf.Tiempo)
+	for _, serv := range h.Servicios {
+		fmt.Println("SERVICIO NOMBRE", serv.Nombre)
+		fmt.Println("SERVICIO TIPO", serv.Acl_tipo)
+		fmt.Println("SERVICIO ACL VALOR", serv.Acl_valor)
+		for _, bck := range serv.Backends {
+			fmt.Println("BACKEND ACTIVE", bck.Active)
+			fmt.Println("BACKEND FECHA", bck.Fecha)
+			for _, l_bck := range bck.Lista_backends {
+				fmt.Println("L_BCK: ", l_bck.Backend)
+				fmt.Println("L_BCK: ", l_bck.Consulname)
+				for _, acls := range l_bck.Acls {
+					fmt.Println("ACL NOMBRE: ", acls.Nombre)
+					fmt.Println("ACL PARAM: ", acls.Param)
+					fmt.Println("ACL TIPO: ", acls.Tipo)
+					fmt.Println("ACL VALOR 1: ", acls.Valor1)
+					fmt.Println("ACL VALOR 2: ", acls.Valor2)
+				}
+				for _, servers := range l_bck.Servers {
+					fmt.Println("SERVER ID: ", servers.Id)
+					fmt.Println("SERVER IP: ", servers.Ip)
+					fmt.Println("SERVER CPU: ", servers.Cpu)
+					fmt.Println("SERVER MEMORY: ", servers.Memory)
+					fmt.Println("SERVER DISKMB: ", servers.DiskMb)
+				}
+			}
+		}
+	}
 	h.Conf.Tiempo = 20 * time.Second
 
 }
 func (c *Config) init() {
 
-	var tick = flag.Duration("tick", 5 * time.Second, "Ticking interval")
+	var tick = flag.Duration("tick", 1 * time.Second, "Ticking interval")
 	c.Tiempo = *tick
 
 }
@@ -317,7 +420,6 @@ func create_image(InstanceId string, Nombre string, Descripcion string) string {
 }
 // AWS USED FUNCTION //
 
-
 // AWS NATIVE FUNCTIONS //
 func DelImage(c context.Context, api EC2API, input *ec2.DeregisterImageInput) (*ec2.DeregisterImageOutput, error) {
 	return api.DeregisterImage(c, input)
@@ -338,28 +440,9 @@ func MakeImage(c context.Context, api EC2API, input *ec2.CreateImageInput) (*ec2
 */
 
 // UTILS //
-func printelaped(start time.Time, str string){
-	elapsed := time.Since(start)
-	fmt.Printf("%s / Tiempo [%v]\n", str, elapsed)
-}
-func readFile(file string) *Daemon {
 
-	jsonFile, err := os.Open(file)
-	var dae Daemon
-    if err != nil {
-        return &dae
-    }
-	defer jsonFile.Close()
-	byteValue, _ := ioutil.ReadAll(jsonFile)
-    json.Unmarshal(byteValue, &dae)
-	return &dae
+/*
 
-}
-func read_int32(data []byte) uint32 {
-    var x uint32
-    for _, c := range data {
-        x = x * 10 + uint32(c - '0')
-    }
-    return x
-}
+*/
+
 // UTILS //
