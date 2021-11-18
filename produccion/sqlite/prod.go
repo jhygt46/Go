@@ -162,7 +162,7 @@ func get_content(db *sql.DB, id int64) string {
 	defer rows.Close()
 	var content string
 	for rows.Next() {
-		err2 := rows.Scan(&content)
+		_ := rows.Scan(&content)
 	}
 	return content
 }
