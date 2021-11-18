@@ -25,7 +25,7 @@ func main() {
 
 	select_file()
 	now = printelaped(now, "SELECT FILES")
-	escribir_file()
+	escribir_file("/var/db1_test/")
 	now = printelaped(now, "WRITE FILES")
 
 }
