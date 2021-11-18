@@ -1,11 +1,14 @@
 package main
 
 import (
+	"os"
 	"fmt"
 	"time"
 	"math/big"
+	"io/ioutil"
 	"crypto/rand"
 	"database/sql"
+	"path/filepath"
 	_ "github.com/mattn/go-sqlite3"
 	//"github.com/povsister/scp"
 )
@@ -99,7 +102,6 @@ func escribir_db(db *sql.DB, str string){
 	elapsed := time.Since(now)
 	fmt.Printf("Cantidad %v / Tiempo: [%v]\n", c, elapsed)
 }
-
 func create_db(db *sql.DB){
 	now = time.Now()
 	stmt, err := db.Prepare(`create table if not exists contents (id integer not null primary key,content text)`)
@@ -163,7 +165,14 @@ func get_contents(db *sql.DB, id int64) string {
 	}
 	return content
 }
+func getFolder64(num uint64) string {
 
+	c1, n1 := divmod(num, 1000000)
+	c2, n2 := divmod(n1, 10000)
+	c3, c4 := divmod(n2, 10000)
+	return strconv.FormatUint(c1, 10)+"/"+strconv.FormatUint(c2, 10)+"/"+strconv.FormatUint(c3, 10)+"/"+strconv.FormatUint(c4, 10)
+
+}
 func printelaped(start time.Time, str string) time.Time {
 	elapsed := time.Since(start)
 	fmt.Printf("%s / Tiempo [%v]\n", str, elapsed)
