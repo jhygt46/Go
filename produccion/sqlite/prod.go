@@ -20,7 +20,7 @@ func main() {
 	now = printelaped(now, "CREATE DB")
 	select_db(db)
 	now = printelaped(now, "SELECT DB")
-	escribir_db(db)
+	escribir_db(db, "PRUEBA")
 	now = printelaped(now, "WRITE DB")
 
 	select_file()
@@ -91,7 +91,7 @@ func escribir_db(db *sql.DB, str string){
 	now = time.Now()
 	c := 0
 	for n := 0; n < numb; n++ {
-		add_txt_db(&db, "PRUEBA")
+		add_txt_db(&db, strP)
 		c++
 	}
 	elapsed := time.Since(now)
