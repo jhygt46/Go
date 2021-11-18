@@ -16,11 +16,11 @@ func main() {
 		fmt.Println(err1)
 	}
 	now = printelaped(now, "OPEN DB")
-	create_db(&db)
+	create_db(db)
 	now = printelaped(now, "CREATE DB")
-	select_db(&db)
+	select_db(db)
 	now = printelaped(now, "SELECT DB")
-	escribir_db(&db)
+	escribir_db(db)
 	now = printelaped(now, "WRITE DB")
 
 	select_file()
