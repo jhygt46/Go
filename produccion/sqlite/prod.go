@@ -95,7 +95,7 @@ func escribir_file(path string){
 }
 func escribir_db(db *sql.DB, str string){
 	numb := 80000
-	now = time.Now()
+	now := time.Now()
 	c := 0
 	for n := 0; n < numb; n++ {
 		add_txt_db(db, str)
@@ -105,7 +105,7 @@ func escribir_db(db *sql.DB, str string){
 	fmt.Printf("Cantidad %v / Tiempo: [%v]\n", c, elapsed)
 }
 func create_db(db *sql.DB){
-	now = time.Now()
+	now := time.Now()
 	stmt, err := db.Prepare(`create table if not exists contents (id integer not null primary key,content text)`)
 	if err != nil {
 		fmt.Println(err)
