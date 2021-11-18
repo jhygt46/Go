@@ -178,7 +178,7 @@ func getFolder64(num uint64) string {
 	fmt.Println("ACCESS FOLDER %d", num)
 	c1, n1 := divmod(num, 1000000)
 	c2, n2 := divmod(n1, 10000)
-	c3, c4 := divmod(n2, 10000)
+	c3, c4 := divmod(n2, 100)
 	return strconv.FormatUint(c1, 10)+"/"+strconv.FormatUint(c2, 10)+"/"+strconv.FormatUint(c3, 10)+"/"+strconv.FormatUint(c4, 10)
 
 }
