@@ -47,7 +47,7 @@ func select_db(db *sql.DB){
 	now := time.Now()
 	for n := 0; n < numb; n++ {
 		n, _ := rand.Int(rand.Reader, big.NewInt(100000))
-		content := get_content(db, n.Uint64());
+		content := get_content(db, n.Int64());
 	}
 	printelaped(now, "SELECT DB")
 }
