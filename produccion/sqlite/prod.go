@@ -121,8 +121,9 @@ func add_obj_db(db *sql.DB, obj objeto){
 	if err != nil {
 		panic(err)
 	}
-	_, err := stmt.Exec(u)
+	res, err := stmt.Exec(u)
 	if err != nil {
+		fmt.Println(res)
 		fmt.Println(err)
 	}
 }
@@ -131,8 +132,9 @@ func add_txt_db(db *sql.DB, str string){
 	if err != nil {
 		fmt.Println(err)
 	}
-	_, err := stmt.Exec(str)
+	res, err := stmt.Exec(str)
 	if err != nil {
+		fmt.Println(res)
 		fmt.Println(err)
 	}
 }
@@ -141,8 +143,9 @@ func update_db(db *sql.DB, id int64){
 	if err != nil {
 		fmt.Println(err)
 	}
-	_, err := stmt.Exec("content", id)
+	res, err := stmt.Exec("content", id)
 	if err != nil {
+		fmt.Println(res)
 		fmt.Println(err)
 	}
 }
