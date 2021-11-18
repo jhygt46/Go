@@ -22,19 +22,13 @@ func main() {
 	if err1 != nil {
 		fmt.Println(err1)
 	}
-	now = printelaped(now, "OPEN DB")
-	create_db(db)
-	now = printelaped(now, "CREATE DB")
-	select_db(db)
-	now = printelaped(now, "SELECT DB")
-	escribir_db(db, "PRUEBA")
-	now = printelaped(now, "WRITE DB")
+	printelaped(now, "OPEN DB")
 
+	create_db(db)
+	select_db(db)
+	escribir_db(db, "PRUEBA")
 	escribir_file("/var/db1_test/")
-	now = printelaped(now, "WRITE FILES")
 	select_file("/var/db1_test/")
-	now = printelaped(now, "SELECT FILES")
-	
 
 }
 
@@ -191,10 +185,10 @@ func divmod(numerator, denominator uint64) (quotient, remainder uint64) {
 	remainder = numerator % denominator
 	return
 }
-func printelaped(start time.Time, str string) time.Time {
+func printelaped(start time.Time, str string) /*time.Time*/ {
 	elapsed := time.Since(start)
 	fmt.Printf("%s / Tiempo [%v]\n", str, elapsed)
-	return time.Now()
+	//return time.Now()
 }
 func read(x []byte){
 	//
