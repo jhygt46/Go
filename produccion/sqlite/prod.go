@@ -38,8 +38,8 @@ func main() {
 
 }
 
-type objecto struct {
-	
+type Objecto struct {
+	Name string `json:"Nname"`
 }
 
 func select_db(db *sql.DB){
@@ -118,7 +118,7 @@ func create_db(db *sql.DB){
 	stmt.Exec()
 	printelaped(now, "CREATE DB")
 }
-func add_obj_db(db *sql.DB, obj objeto){
+func add_obj_db(db *sql.DB, obj Objecto){
 	stmt, err := db.Prepare("INSERT INTO contents(content) values(?)")
 	if err != nil {
 		fmt.Println(err)
@@ -192,4 +192,7 @@ func printelaped(start time.Time, str string) time.Time {
 	elapsed := time.Since(start)
 	fmt.Printf("%s / Tiempo [%v]\n", str, elapsed)
 	return time.Now()
+}
+func read(x []byte){
+	//
 }
