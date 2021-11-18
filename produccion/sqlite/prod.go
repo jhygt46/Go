@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"time"
+	"math/big"
 	"crypto/rand"
 	"database/sql"
 	_ "github.com/mattn/go-sqlite3"
@@ -42,9 +43,9 @@ func select_db(db *sql.DB){
 }
 func select_file(){
 	numb := 100000
-	now = time.Now()
+	now := time.Now()
 	for n := 0; n < numb; n++ {
-		n, _ := remove.Int(remove.Reader, big.NewInt(1000000))
+		n, _ := rand.Int(rand.Reader, big.NewInt(100000))
 		folder := getFolder64(n.Uint64())
 		file, err := os.Open(path+"/"+folder)
 		if err != nil{
