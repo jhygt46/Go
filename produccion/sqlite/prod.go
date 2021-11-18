@@ -28,10 +28,11 @@ func main() {
 	escribir_db(db, "PRUEBA")
 	now = printelaped(now, "WRITE DB")
 
-	select_file()
-	now = printelaped(now, "SELECT FILES")
 	escribir_file("/var/db1_test/")
 	now = printelaped(now, "WRITE FILES")
+	select_file("/var/db1_test/")
+	now = printelaped(now, "SELECT FILES")
+	
 
 }
 
@@ -40,11 +41,11 @@ func select_db(db *sql.DB){
 	now := time.Now()
 	for n := 0; n < numb; n++ {
 		n, _ := rand.Int(rand.Reader, big.NewInt(100000))
-		content := get_content(&db, n.Uint64());
+		content := get_content(db, n.Uint64());
 	}
 	printelaped(now, "SELECT DB")
 }
-func select_file(){
+func select_file(path string){
 	numb := 100000
 	now := time.Now()
 	for n := 0; n < numb; n++ {
