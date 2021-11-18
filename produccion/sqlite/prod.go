@@ -48,6 +48,7 @@ func select_db(db *sql.DB){
 	for n := 0; n < numb; n++ {
 		n, _ := rand.Int(rand.Reader, big.NewInt(100000))
 		content := get_content(db, n.Int64());
+		readcon(content)
 	}
 	printelaped(now, "SELECT DB")
 }
@@ -194,5 +195,8 @@ func printelaped(start time.Time, str string) time.Time {
 	return time.Now()
 }
 func read(x []byte){
+	//
+}
+func readcon(x string){
 	//
 }
