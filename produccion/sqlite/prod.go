@@ -175,6 +175,7 @@ func get_contents(db *sql.DB, id int64) string {
 }
 func getFolder64(num uint64) string {
 
+	fmt.Println("ACCESS FOLDER %d", num)
 	c1, n1 := divmod(num, 1000000)
 	c2, n2 := divmod(n1, 10000)
 	c3, c4 := divmod(n2, 10000)
