@@ -162,7 +162,8 @@ func get_content(db *sql.DB, id int64) string {
 	defer rows.Close()
 	var content string
 	for rows.Next() {
-		_ := rows.Scan(&content)
+		err2 := rows.Scan(&content)
+		if err2 != nil { fmt.Println(err2) }
 	}
 	return content
 }
@@ -173,6 +174,7 @@ func get_contents(db *sql.DB, id int64) string {
 	var content string
 	for rows.Next() {
 		err2 := rows.Scan(&content)
+		if err2 != nil { fmt.Println(err2) }
 	}
 	return content
 }
