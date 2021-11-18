@@ -10,6 +10,7 @@ import (
 	"crypto/rand"
 	"database/sql"
 	"path/filepath"
+	"encoding/json"
 	_ "github.com/mattn/go-sqlite3"
 	//"github.com/povsister/scp"
 )
@@ -35,6 +36,10 @@ func main() {
 	now = printelaped(now, "SELECT FILES")
 	
 
+}
+
+type objecto struct {
+	
 }
 
 func select_db(db *sql.DB){
@@ -177,6 +182,11 @@ func getFolder64(num uint64) string {
 	c3, c4 := divmod(n2, 10000)
 	return strconv.FormatUint(c1, 10)+"/"+strconv.FormatUint(c2, 10)+"/"+strconv.FormatUint(c3, 10)+"/"+strconv.FormatUint(c4, 10)
 
+}
+func divmod(numerator, denominator uint64) (quotient, remainder uint64) {
+	quotient = numerator / denominator
+	remainder = numerator % denominator
+	return
 }
 func printelaped(start time.Time, str string) time.Time {
 	elapsed := time.Since(start)
