@@ -34,7 +34,7 @@ func select_db(db *sql.DB){
 	numb := 100000
 	now = time.Now()
 	for n := 0; n < numb; n++ {
-		n, _ := rand.Int(rand.Reader, big.NewInt(1000000))
+		n, _ := rand.Int(rand.Reader, big.NewInt(100000))
 		content := get_content(&db, n.Uint64());
 	}
 	printelaped(now, "SELECT DB")
@@ -60,7 +60,7 @@ func escribir_file(path string){
 	d1 := []byte("{\"Id\":1,\"Data\":{\"C\":[{ \"T\": 1, \"N\": \"Nacionalidad\", \"V\": [\"Chilena\", \"Argentina\", \"Brasileña\", \"Uruguaya\"] }, { \"T\": 2, \"N\": \"Servicios\", \"V\": [\"Americana\", \"Rusa\", \"Bailarina\", \"Masaje\"] },{ \"T\": 3, \"N\": \"Edad\" }],\"E\": [{ \"T\": 1, \"N\": \"Rostro\" },{ \"T\": 1, \"N\": \"Senos\" },{ \"T\": 1, \"N\": \"Trasero\" }]}}")
 	c := 0
 
-	numb := 8000
+	numb := 800
 	now = time.Now()
 	for n := 0; n < numb; n++ {
 
@@ -87,7 +87,7 @@ func escribir_file(path string){
 	fmt.Printf("Cantidad %v / Tiempo: [%v]\n", c, elapsed)
 }
 func escribir_db(db *sql.DB, str string){
-	numb := 800000
+	numb := 80000
 	now = time.Now()
 	c := 0
 	for n := 0; n < numb; n++ {
