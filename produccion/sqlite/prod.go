@@ -37,7 +37,7 @@ type Objecto struct {
 }
 
 func select_db(db *sql.DB){
-	numb := 100000
+	numb := 259
 	now := time.Now()
 	for n := 0; n < numb; n++ {
 		n, _ := rand.Int(rand.Reader, big.NewInt(100000))
@@ -47,7 +47,7 @@ func select_db(db *sql.DB){
 	printelaped(now, "SELECT DB")
 }
 func select_file(path string){
-	numb := 100000
+	numb := 250
 	now := time.Now()
 	for n := 0; n < numb; n++ {
 		n, _ := rand.Int(rand.Reader, big.NewInt(100000))
@@ -67,7 +67,7 @@ func escribir_file(path string){
 	d1 := []byte("{\"Id\":1,\"Data\":{\"C\":[{ \"T\": 1, \"N\": \"Nacionalidad\", \"V\": [\"Chilena\", \"Argentina\", \"Brasileña\", \"Uruguaya\"] }, { \"T\": 2, \"N\": \"Servicios\", \"V\": [\"Americana\", \"Rusa\", \"Bailarina\", \"Masaje\"] },{ \"T\": 3, \"N\": \"Edad\" }],\"E\": [{ \"T\": 1, \"N\": \"Rostro\" },{ \"T\": 1, \"N\": \"Senos\" },{ \"T\": 1, \"N\": \"Trasero\" }]}}")
 	c := 0
 
-	numb := 800
+	numb := 8
 	now := time.Now()
 	for n := 0; n < numb; n++ {
 
@@ -94,7 +94,7 @@ func escribir_file(path string){
 	fmt.Printf("Cantidad %v / Tiempo: [%v]\n", c, elapsed)
 }
 func escribir_db(db *sql.DB, str string){
-	numb := 80000
+	numb := 250
 	now := time.Now()
 	c := 0
 	for n := 0; n < numb; n++ {
