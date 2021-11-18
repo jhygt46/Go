@@ -4,6 +4,7 @@ import (
 	"os"
 	"fmt"
 	"time"
+	"strconv"
 	"math/big"
 	"io/ioutil"
 	"crypto/rand"
@@ -67,7 +68,7 @@ func escribir_file(path string){
 	c := 0
 
 	numb := 800
-	now = time.Now()
+	now := time.Now()
 	for n := 0; n < numb; n++ {
 
 		v := 100
@@ -97,7 +98,7 @@ func escribir_db(db *sql.DB, str string){
 	now = time.Now()
 	c := 0
 	for n := 0; n < numb; n++ {
-		add_txt_db(&db, strP)
+		add_txt_db(db, str)
 		c++
 	}
 	elapsed := time.Since(now)
