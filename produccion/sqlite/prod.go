@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"time"
+	"crypto/rand"
 	"database/sql"
 	_ "github.com/mattn/go-sqlite3"
 	//"github.com/povsister/scp"
@@ -32,7 +33,7 @@ func main() {
 
 func select_db(db *sql.DB){
 	numb := 100000
-	now = time.Now()
+	now := time.Now()
 	for n := 0; n < numb; n++ {
 		n, _ := rand.Int(rand.Reader, big.NewInt(100000))
 		content := get_content(&db, n.Uint64());
