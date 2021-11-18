@@ -37,10 +37,10 @@ type Objecto struct {
 }
 
 func select_db(db *sql.DB){
-	numb := 259
+	numb := 250
 	now := time.Now()
 	for n := 0; n < numb; n++ {
-		n, _ := rand.Int(rand.Reader, big.NewInt(100000))
+		n, _ := rand.Int(rand.Reader, big.NewInt(800))
 		content := get_content(db, n.Int64());
 		readcon(content)
 	}
@@ -50,7 +50,7 @@ func select_file(path string){
 	numb := 250
 	now := time.Now()
 	for n := 0; n < numb; n++ {
-		n, _ := rand.Int(rand.Reader, big.NewInt(100000))
+		n, _ := rand.Int(rand.Reader, big.NewInt(800))
 		folder := getFolder64(n.Uint64())
 		file, err := os.Open(path+"/"+folder)
 		if err != nil{
@@ -94,15 +94,16 @@ func escribir_file(path string){
 	fmt.Printf("Cantidad %v / Tiempo: [%v]\n", c, elapsed)
 }
 func escribir_db(db *sql.DB, str string){
-	numb := 250
+	d1 := []byte("{\"Id\":1,\"Data\":{\"C\":[{ \"T\": 1, \"N\": \"Nacionalidad\", \"V\": [\"Chilena\", \"Argentina\", \"Brasileña\", \"Uruguaya\"] }, { \"T\": 2, \"N\": \"Servicios\", \"V\": [\"Americana\", \"Rusa\", \"Bailarina\", \"Masaje\"] },{ \"T\": 3, \"N\": \"Edad\" }],\"E\": [{ \"T\": 1, \"N\": \"Rostro\" },{ \"T\": 1, \"N\": \"Senos\" },{ \"T\": 1, \"N\": \"Trasero\" }]}}")
+	numb := 800
 	now := time.Now()
 	c := 0
 	for n := 0; n < numb; n++ {
-		add_txt_db(db, str)
+		add_txt_db(db, string(d1))
 		c++
 	}
 	elapsed := time.Since(now)
-	fmt.Printf("Cantidad %v / Tiempo: [%v]\n", c, elapsed)
+	fmt.Printf("Cantidad %v / Tiempo: [%v] %T \n", c, elapsed, str)
 }
 func create_db(db *sql.DB){
 	now := time.Now()
