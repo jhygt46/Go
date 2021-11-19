@@ -52,6 +52,7 @@ func select_file(path string){
 	for n := 0; n < numb; n++ {
 		n, _ := rand.Int(rand.Reader, big.NewInt(800))
 		folder, file := getFolder64(n.Uint64())
+		/*
 		file, err := os.Open(path+"/"+folder+"/"+file)
 		if err != nil{
 			fmt.Println(err)
@@ -59,20 +60,25 @@ func select_file(path string){
 		file.Close()
 		byteValue, _ := ioutil.ReadAll(file)
 		read(byteValue)
+		*/
 	}
 	printelaped(now, "SELECT FILES")
 }
 func escribir_file(path string){
 
-	d1 := []byte("{\"Id\":1,\"Data\":{\"C\":[{ \"T\": 1, \"N\": \"Nacionalidad\", \"V\": [\"Chilena\", \"Argentina\", \"Brasileña\", \"Uruguaya\"] }, { \"T\": 2, \"N\": \"Servicios\", \"V\": [\"Americana\", \"Rusa\", \"Bailarina\", \"Masaje\"] },{ \"T\": 3, \"N\": \"Edad\" }],\"E\": [{ \"T\": 1, \"N\": \"Rostro\" },{ \"T\": 1, \"N\": \"Senos\" },{ \"T\": 1, \"N\": \"Trasero\" }]}}")
+	//d1 := []byte("{\"Id\":1,\"Data\":{\"C\":[{ \"T\": 1, \"N\": \"Nacionalidad\", \"V\": [\"Chilena\", \"Argentina\", \"Brasileña\", \"Uruguaya\"] }, { \"T\": 2, \"N\": \"Servicios\", \"V\": [\"Americana\", \"Rusa\", \"Bailarina\", \"Masaje\"] },{ \"T\": 3, \"N\": \"Edad\" }],\"E\": [{ \"T\": 1, \"N\": \"Rostro\" },{ \"T\": 1, \"N\": \"Senos\" },{ \"T\": 1, \"N\": \"Trasero\" }]}}")
 	c := 0
 
 	numb := 8000
 	now := time.Now()
 	for n := 0; n < numb; n += 100 {
 
-		v := 100
+		
 		folder, file := getFolder64(uint64(n))
+
+		fmt.Println("Folder", folder)
+		fmt.Println("File", file)
+		/*
 
 		newpath := filepath.Join(path, folder)
 		err := os.MkdirAll(newpath, os.ModePerm)
@@ -80,13 +86,14 @@ func escribir_file(path string){
 			fmt.Println(err)
 			fmt.Println("FOLDER ERROR: ", err)
 		}
-
+		v := 100
 		for i := 0; i < v; i++ {
 			err := os.WriteFile(path+"/"+folder+"/"+strconv.Itoa(i), d1, 0644)
 			if err != nil {
 				fmt.Println(err)
 			}
 		}
+		*/
 		c++
 
 	}
