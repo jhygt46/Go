@@ -51,8 +51,8 @@ func select_file(path string){
 	now := time.Now()
 	for n := 0; n < numb; n++ {
 		n, _ := rand.Int(rand.Reader, big.NewInt(800))
-		folder := getFolder64(n.Uint64())
-		file, err := os.Open(path+"/"+folder)
+		folder, file := getFolder64(n.Uint64())
+		file, err := os.Open(path+"/"+folder+"/"+file)
 		if err != nil{
 			fmt.Println(err)
 		}
@@ -67,12 +67,12 @@ func escribir_file(path string){
 	d1 := []byte("{\"Id\":1,\"Data\":{\"C\":[{ \"T\": 1, \"N\": \"Nacionalidad\", \"V\": [\"Chilena\", \"Argentina\", \"Brasileña\", \"Uruguaya\"] }, { \"T\": 2, \"N\": \"Servicios\", \"V\": [\"Americana\", \"Rusa\", \"Bailarina\", \"Masaje\"] },{ \"T\": 3, \"N\": \"Edad\" }],\"E\": [{ \"T\": 1, \"N\": \"Rostro\" },{ \"T\": 1, \"N\": \"Senos\" },{ \"T\": 1, \"N\": \"Trasero\" }]}}")
 	c := 0
 
-	numb := 8
+	numb := 8000
 	now := time.Now()
-	for n := 0; n < numb; n++ {
+	for n := 0; n < numb; n += 100 {
 
 		v := 100
-		folder := getFolder64(uint64(n))
+		folder, file := getFolder64(uint64(n))
 
 		newpath := filepath.Join(path, folder)
 		err := os.MkdirAll(newpath, os.ModePerm)
@@ -173,15 +173,14 @@ func get_contents(db *sql.DB, id int64) string {
 	}
 	return content
 }
-func getFolder64(num uint64) string {
+func getFolder64(num uint64) folder string, file string {
 
 	c1, n1 := divmod(num, 1000000)
-	c2, n2 := divmod(n1, 10000) 
+	c2, n2 := divmod(n1, 10000)
 	c3, c4 := divmod(n2, 100)
-	str := strconv.FormatUint(c1, 10)+"/"+strconv.FormatUint(c2, 10)+"/"+strconv.FormatUint(c3, 10)+"/"+strconv.FormatUint(c4, 10)
-	fmt.Println("NUMBER FOLDER: ", num)
-	fmt.Println("FOLDERS: ", str)
-	return str
+	folder := strconv.FormatUint(c1, 10)+"/"+strconv.FormatUint(c2, 10)+"/"+strconv.FormatUint(c3, 10)
+	file := strconv.FormatUint(c4, 10)
+	return
 
 }
 func divmod(numerator, denominator uint64) (quotient, remainder uint64) {
