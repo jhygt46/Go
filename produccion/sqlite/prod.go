@@ -24,10 +24,10 @@ func main() {
 	}
 	printelaped(now, "OPEN DB")
 	create_db(db)
-	//escribir_db(db, "PRUEBA")
-	//select_db(db)
+	escribir_db(db, "PRUEBA")
+	select_db(db)
 	escribir_file("/var/db1_test")
-	//select_file("/var/db1_test")
+	select_file("/var/db1_test")
 
 }
 
