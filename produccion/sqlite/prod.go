@@ -27,7 +27,7 @@ func main() {
 	//escribir_db(db, "PRUEBA")
 	//select_db(db)
 	escribir_file("/var/db1_test")
-	select_file("/var/db1_test")
+	//select_file("/var/db1_test")
 
 }
 
@@ -51,6 +51,8 @@ func select_file(path string){
 	for n := 0; n < numb; n++ {
 		n, _ := rand.Int(rand.Reader, big.NewInt(800))
 		folder, file := getFolder64(n.Uint64())
+		fmt.Println("Folder", folder)
+		fmt.Println("File", file)
 		/*
 		file, err := os.Open(path+"/"+folder+"/"+file)
 		if err != nil{
