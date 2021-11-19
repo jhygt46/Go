@@ -1,15 +1,15 @@
 package main
 
 import (
-	"os"
+	//"os"
 	"fmt"
 	"time"
 	"strconv"
 	"math/big"
-	"io/ioutil"
+	//"io/ioutil"
 	"crypto/rand"
 	"database/sql"
-	"path/filepath"
+	//"path/filepath"
 	"encoding/json"
 	_ "github.com/mattn/go-sqlite3"
 	//"github.com/povsister/scp"
@@ -185,8 +185,8 @@ func getFolder64(num uint64) (folder, file string) {
 	c1, n1 := divmod(num, 1000000)
 	c2, n2 := divmod(n1, 10000)
 	c3, c4 := divmod(n2, 100)
-	folder := strconv.FormatUint(c1, 10)+"/"+strconv.FormatUint(c2, 10)+"/"+strconv.FormatUint(c3, 10)
-	file := strconv.FormatUint(c4, 10)
+	folder = strconv.FormatUint(c1, 10)+"/"+strconv.FormatUint(c2, 10)+"/"+strconv.FormatUint(c3, 10)
+	file = strconv.FormatUint(c4, 10)
 	return
 
 }
