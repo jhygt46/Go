@@ -40,13 +40,12 @@ type Objecto struct {
 
 func select_db(db *sql.DB){
 	c := 0
-	numb := 25000
+	numb := 250000
 	now := time.Now()
 	for n := 0; n < numb; n++ {
 		n, _ := rand.Int(rand.Reader, big.NewInt(80000))
 		content := get_content(db, n.Int64());
-		//readcon(content)
-		fmt.Println(content)
+		readcon(content)
 		c++
 	}
 	elapsed := time.Since(now)
