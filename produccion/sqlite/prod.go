@@ -50,18 +50,16 @@ func select_file(path string){
 	now := time.Now()
 	for n := 0; n < numb; n++ {
 		n, _ := rand.Int(rand.Reader, big.NewInt(800))
-		folder, file := getFolder64(n.Uint64())
-		fmt.Println("Folder", folder)
-		fmt.Println("File", file)
-		/*
-		file, err := os.Open(path+"/"+folder+"/"+file)
-		if err != nil{
-			fmt.Println(err)
+		folder := getFolder64(n.Uint64())
+		for i:=0; i<100; i++ {
+			file, err := os.Open(path+"/"+folder+"/"+strconv.Itoa(i))
+			if err != nil{
+				fmt.Println(err)
+			}
+			file.Close()
+			byteValue, _ := ioutil.ReadAll(file)
+			read(byteValue)
 		}
-		file.Close()
-		byteValue, _ := ioutil.ReadAll(file)
-		read(byteValue)
-		*/
 	}
 	printelaped(now, "SELECT FILES")
 }
@@ -74,27 +72,19 @@ func escribir_file(path string){
 	now := time.Now()
 	for n := 0; n < numb; n += 100 {
 
-		
-		folder, file := getFolder64(uint64(n))
-
-		fmt.Println("Folder", folder)
-		fmt.Println("File", file)
-		/*
-
+		folder := getFolder64(uint64(n))
 		newpath := filepath.Join(path, folder)
 		err := os.MkdirAll(newpath, os.ModePerm)
 		if err != nil {
 			fmt.Println(err)
 			fmt.Println("FOLDER ERROR: ", err)
 		}
-		v := 100
-		for i := 0; i < v; i++ {
+		for i := 0; i < 100; i++ {
 			err := os.WriteFile(path+"/"+folder+"/"+strconv.Itoa(i), d1, 0644)
 			if err != nil {
 				fmt.Println(err)
 			}
 		}
-		*/
 		c++
 
 	}
@@ -181,14 +171,12 @@ func get_contents(db *sql.DB, id int64) string {
 	}
 	return content
 }
-func getFolder64(num uint64) (folder, file string) {
+func getFolder64(num uint64) string {
 
 	c1, n1 := divmod(num, 1000000)
 	c2, n2 := divmod(n1, 10000)
-	c3, c4 := divmod(n2, 100)
-	folder = strconv.FormatUint(c1, 10)+"/"+strconv.FormatUint(c2, 10)+"/"+strconv.FormatUint(c3, 10)
-	file = strconv.FormatUint(c4, 10)
-	return
+	c3, _ := divmod(n2, 100)
+	return strconv.FormatUint(c1, 10)+"/"+strconv.FormatUint(c2, 10)+"/"+strconv.FormatUint(c3, 10)
 
 }
 func divmod(numerator, denominator uint64) (quotient, remainder uint64) {
