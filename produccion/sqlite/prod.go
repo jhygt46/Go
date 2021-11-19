@@ -24,8 +24,11 @@ func main() {
 	}
 	printelaped(now, "OPEN DB")
 	create_db(db)
+
+
 	escribir_db(db, "PRUEBA")
 	select_db(db)
+
 	escribir_file("/var/db1_test")
 	select_file("/var/db1_test")
 
@@ -36,42 +39,45 @@ type Objecto struct {
 }
 
 func select_db(db *sql.DB){
-	numb := 250
+	c := 0
+	numb := 25000
 	now := time.Now()
 	for n := 0; n < numb; n++ {
 		n, _ := rand.Int(rand.Reader, big.NewInt(800))
 		content := get_content(db, n.Int64());
 		readcon(content)
+		c++
 	}
-	printelaped(now, "SELECT DB")
+	elapsed := time.Since(now)
+	fmt.Printf("SELECT %v DB en [%v]\n", c, elapsed)
 }
 func select_file(path string){
-	numb := 250
+	c := 0
+	numb := 25000
 	now := time.Now()
 	for n := 0; n < numb; n++ {
 		n, _ := rand.Int(rand.Reader, big.NewInt(800))
 		folder := getFolder64(n.Uint64())
-		for i:=0; i<100; i++ {
-			file, err := os.Open(path+"/"+folder+"/"+strconv.Itoa(i))
-			if err != nil{
-				fmt.Println(err)
-			}
-			file.Close()
-			byteValue, _ := ioutil.ReadAll(file)
-			read(byteValue)
+		file, err := os.Open(path+"/"+folder+"/56")
+		if err != nil{
+			fmt.Println(err)
 		}
+		file.Close()
+		byteValue, _ := ioutil.ReadAll(file)
+		read(byteValue)
+		c++
 	}
-	printelaped(now, "SELECT FILES")
+	elapsed := time.Since(now)
+	fmt.Printf("SELECT %v FILES en [%v]\n", c, elapsed)
 }
 func escribir_file(path string){
 
 	d1 := []byte("{\"Id\":1,\"Data\":{\"C\":[{ \"T\": 1, \"N\": \"Nacionalidad\", \"V\": [\"Chilena\", \"Argentina\", \"Brasileña\", \"Uruguaya\"] }, { \"T\": 2, \"N\": \"Servicios\", \"V\": [\"Americana\", \"Rusa\", \"Bailarina\", \"Masaje\"] },{ \"T\": 3, \"N\": \"Edad\" }],\"E\": [{ \"T\": 1, \"N\": \"Rostro\" },{ \"T\": 1, \"N\": \"Senos\" },{ \"T\": 1, \"N\": \"Trasero\" }]}}")
 	c := 0
 
-	numb := 8000
+	numb := 80000
 	now := time.Now()
 	for n := 0; n < numb; n += 100 {
-
 		folder := getFolder64(uint64(n))
 		newpath := filepath.Join(path, folder)
 		err := os.MkdirAll(newpath, os.ModePerm)
@@ -84,16 +90,15 @@ func escribir_file(path string){
 			if err != nil {
 				fmt.Println(err)
 			}
+			c++
 		}
-		c++
-
 	}
 	elapsed := time.Since(now)
-	fmt.Printf("Cantidad %v / Tiempo: [%v]\n", c, elapsed)
+	fmt.Printf("WRITE FILES %v en [%v]\n", c, elapsed)
 }
-func escribir_db(db *sql.DB, str string){
-	d1 := []byte("{\"Id\":1,\"Data\":{\"C\":[{ \"T\": 1, \"N\": \"Nacionalidad\", \"V\": [\"Chilena\", \"Argentina\", \"Brasileña\", \"Uruguaya\"] }, { \"T\": 2, \"N\": \"Servicios\", \"V\": [\"Americana\", \"Rusa\", \"Bailarina\", \"Masaje\"] },{ \"T\": 3, \"N\": \"Edad\" }],\"E\": [{ \"T\": 1, \"N\": \"Rostro\" },{ \"T\": 1, \"N\": \"Senos\" },{ \"T\": 1, \"N\": \"Trasero\" }]}}")
-	numb := 800
+func escribir_db(db *sql.DB, d1 string){
+	d1 = []byte("{\"Id\":1,\"Data\":{\"C\":[{ \"T\": 1, \"N\": \"Nacionalidad\", \"V\": [\"Chilena\", \"Argentina\", \"Brasileña\", \"Uruguaya\"] }, { \"T\": 2, \"N\": \"Servicios\", \"V\": [\"Americana\", \"Rusa\", \"Bailarina\", \"Masaje\"] },{ \"T\": 3, \"N\": \"Edad\" }],\"E\": [{ \"T\": 1, \"N\": \"Rostro\" },{ \"T\": 1, \"N\": \"Senos\" },{ \"T\": 1, \"N\": \"Trasero\" }]}}")
+	numb := 80000
 	now := time.Now()
 	c := 0
 	for n := 0; n < numb; n++ {
@@ -101,7 +106,7 @@ func escribir_db(db *sql.DB, str string){
 		c++
 	}
 	elapsed := time.Since(now)
-	fmt.Printf("Cantidad %v / Tiempo: [%v] %T \n", c, elapsed, str)
+	fmt.Printf("WRITE DB %v en [%v]\n", c, elapsed)
 }
 func create_db(db *sql.DB){
 	now := time.Now()
