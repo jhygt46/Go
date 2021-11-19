@@ -1,15 +1,15 @@
 package main
 
 import (
-	//"os"
+	"os"
 	"fmt"
 	"time"
 	"strconv"
 	"math/big"
-	//"io/ioutil"
+	"io/ioutil"
 	"crypto/rand"
 	"database/sql"
-	//"path/filepath"
+	"path/filepath"
 	"encoding/json"
 	_ "github.com/mattn/go-sqlite3"
 	//"github.com/povsister/scp"
@@ -65,7 +65,7 @@ func select_file(path string){
 }
 func escribir_file(path string){
 
-	//d1 := []byte("{\"Id\":1,\"Data\":{\"C\":[{ \"T\": 1, \"N\": \"Nacionalidad\", \"V\": [\"Chilena\", \"Argentina\", \"Brasileña\", \"Uruguaya\"] }, { \"T\": 2, \"N\": \"Servicios\", \"V\": [\"Americana\", \"Rusa\", \"Bailarina\", \"Masaje\"] },{ \"T\": 3, \"N\": \"Edad\" }],\"E\": [{ \"T\": 1, \"N\": \"Rostro\" },{ \"T\": 1, \"N\": \"Senos\" },{ \"T\": 1, \"N\": \"Trasero\" }]}}")
+	d1 := []byte("{\"Id\":1,\"Data\":{\"C\":[{ \"T\": 1, \"N\": \"Nacionalidad\", \"V\": [\"Chilena\", \"Argentina\", \"Brasileña\", \"Uruguaya\"] }, { \"T\": 2, \"N\": \"Servicios\", \"V\": [\"Americana\", \"Rusa\", \"Bailarina\", \"Masaje\"] },{ \"T\": 3, \"N\": \"Edad\" }],\"E\": [{ \"T\": 1, \"N\": \"Rostro\" },{ \"T\": 1, \"N\": \"Senos\" },{ \"T\": 1, \"N\": \"Trasero\" }]}}")
 	c := 0
 
 	numb := 8000
