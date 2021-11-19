@@ -180,7 +180,7 @@ func getFolder64(num uint64) folder string, file string {
 	c3, c4 := divmod(n2, 100)
 	folder := strconv.FormatUint(c1, 10)+"/"+strconv.FormatUint(c2, 10)+"/"+strconv.FormatUint(c3, 10)
 	file := strconv.FormatUint(c4, 10)
-	return
+	return folder, file
 
 }
 func divmod(numerator, denominator uint64) (quotient, remainder uint64) {
