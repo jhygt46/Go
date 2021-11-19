@@ -26,11 +26,11 @@ func main() {
 	//create_db(db)
 
 
-	escribir_db(db)
-	//select_db(db)
+	//escribir_db(db)
+	select_db(db)
 
-	escribir_file("/var/db1_test")
-	//select_file("/var/db1_test")
+	//escribir_file("/var/db1_test")
+	select_file("/var/db1_test")
 
 }
 
