@@ -22,11 +22,11 @@ func main() {
 	if err1 != nil {
 		fmt.Println(err1)
 	}
-	printelaped(now, "OPEN DB")
+	//printelaped(now, "OPEN DB")
 
-	create_db(db)
-	escribir_db(db, "PRUEBA")
-	select_db(db)
+	//create_db(db)
+	//escribir_db(db, "PRUEBA")
+	//select_db(db)
 	escribir_file("/var/db1_test")
 	select_file("/var/db1_test")
 
@@ -175,11 +175,13 @@ func get_contents(db *sql.DB, id int64) string {
 }
 func getFolder64(num uint64) string {
 
-	fmt.Println("ACCESS FOLDER %d", num)
 	c1, n1 := divmod(num, 1000000)
-	c2, n2 := divmod(n1, 10000)
+	c2, n2 := divmod(n1, 10000) 
 	c3, c4 := divmod(n2, 100)
-	return strconv.FormatUint(c1, 10)+"/"+strconv.FormatUint(c2, 10)+"/"+strconv.FormatUint(c3, 10)+"/"+strconv.FormatUint(c4, 10)
+	str := strconv.FormatUint(c1, 10)+"/"+strconv.FormatUint(c2, 10)+"/"+strconv.FormatUint(c3, 10)+"/"+strconv.FormatUint(c4, 10)
+	fmt.Println("NUMBER FOLDER: ", num)
+	fmt.Println("FOLDERS: ", str)
+	return str
 
 }
 func divmod(numerator, denominator uint64) (quotient, remainder uint64) {
