@@ -26,10 +26,10 @@ func main() {
 	//create_db(db)
 
 
-	//escribir_db(db)
-	select_db(db)
+	escribir_db(db)
+	//select_db(db)
 
-	//escribir_file("/var/db1_test")
+	escribir_file("/var/db1_test")
 	//select_file("/var/db1_test")
 
 }
@@ -43,7 +43,7 @@ func select_db(db *sql.DB){
 	numb := 250000
 	now := time.Now()
 	for n := 0; n < numb; n++ {
-		n, _ := rand.Int(rand.Reader, big.NewInt(80000))
+		n, _ := rand.Int(rand.Reader, big.NewInt(200000))
 		content := get_content(db, n.Int64());
 		readcon(content)
 		c++
@@ -53,10 +53,10 @@ func select_db(db *sql.DB){
 }
 func select_file(path string){
 	c := 0
-	numb := 25000
+	numb := 250000
 	now := time.Now()
 	for n := 0; n < numb; n++ {
-		n, _ := rand.Int(rand.Reader, big.NewInt(80))
+		n, _ := rand.Int(rand.Reader, big.NewInt(2000))
 		folder := getFolder64(n.Uint64())
 		file, err := os.Open(path+"/"+folder+"/56")
 		if err != nil{
@@ -75,7 +75,7 @@ func escribir_file(path string){
 	d1 := []byte("{\"Id\":1,\"Data\":{\"C\":[{ \"T\": 1, \"N\": \"Nacionalidad\", \"V\": [\"Chilena\", \"Argentina\", \"Brasileña\", \"Uruguaya\"] }, { \"T\": 2, \"N\": \"Servicios\", \"V\": [\"Americana\", \"Rusa\", \"Bailarina\", \"Masaje\"] },{ \"T\": 3, \"N\": \"Edad\" }],\"E\": [{ \"T\": 1, \"N\": \"Rostro\" },{ \"T\": 1, \"N\": \"Senos\" },{ \"T\": 1, \"N\": \"Trasero\" }]}}")
 	c := 0
 
-	numb := 800
+	numb := 2000
 	now := time.Now()
 	for n := 0; n < numb; n++ {
 		folder := getFolder64(uint64(n*100))
@@ -98,7 +98,7 @@ func escribir_file(path string){
 }
 func escribir_db(db *sql.DB){
 	d1 := []byte("{\"Id\":1,\"Data\":{\"C\":[{ \"T\": 1, \"N\": \"Nacionalidad\", \"V\": [\"Chilena\", \"Argentina\", \"Brasileña\", \"Uruguaya\"] }, { \"T\": 2, \"N\": \"Servicios\", \"V\": [\"Americana\", \"Rusa\", \"Bailarina\", \"Masaje\"] },{ \"T\": 3, \"N\": \"Edad\" }],\"E\": [{ \"T\": 1, \"N\": \"Rostro\" },{ \"T\": 1, \"N\": \"Senos\" },{ \"T\": 1, \"N\": \"Trasero\" }]}}")
-	numb := 80000
+	numb := 120000
 	now := time.Now()
 	c := 0
 	for n := 0; n < numb; n++ {
