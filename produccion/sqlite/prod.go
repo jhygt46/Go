@@ -22,9 +22,8 @@ func main() {
 	if err1 != nil {
 		fmt.Println(err1)
 	}
-	//printelaped(now, "OPEN DB")
-
-	//create_db(db)
+	printelaped(now, "OPEN DB")
+	create_db(db)
 	//escribir_db(db, "PRUEBA")
 	//select_db(db)
 	escribir_file("/var/db1_test")
