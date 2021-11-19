@@ -98,12 +98,13 @@ func escribir_file(path string){
 }
 func escribir_db(db *sql.DB){
 	d1 := []byte("{\"Id\":1,\"Data\":{\"C\":[{ \"T\": 1, \"N\": \"Nacionalidad\", \"V\": [\"Chilena\", \"Argentina\", \"Brasileña\", \"Uruguaya\"] }, { \"T\": 2, \"N\": \"Servicios\", \"V\": [\"Americana\", \"Rusa\", \"Bailarina\", \"Masaje\"] },{ \"T\": 3, \"N\": \"Edad\" }],\"E\": [{ \"T\": 1, \"N\": \"Rostro\" },{ \"T\": 1, \"N\": \"Senos\" },{ \"T\": 1, \"N\": \"Trasero\" }]}}")
-	numb := 8000
+	numb := 80000
 	now := time.Now()
 	c := 0
 	for n := 0; n < numb; n++ {
 		add_txt_db(db, string(d1))
 		c++
+		fmt.Printf("WRITE %v de %v\n", c, numb)
 	}
 	elapsed := time.Since(now)
 	fmt.Printf("WRITE DB %v en [%v]\n", c, elapsed)
