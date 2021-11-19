@@ -29,8 +29,8 @@ func main() {
 	//escribir_db(db)
 	select_db(db)
 
-	escribir_file("/var/db1_test")
-	select_file("/var/db1_test")
+	//escribir_file("/var/db1_test")
+	//select_file("/var/db1_test")
 
 }
 
@@ -43,9 +43,10 @@ func select_db(db *sql.DB){
 	numb := 25000
 	now := time.Now()
 	for n := 0; n < numb; n++ {
-		n, _ := rand.Int(rand.Reader, big.NewInt(80))
+		n, _ := rand.Int(rand.Reader, big.NewInt(80000))
 		content := get_content(db, n.Int64());
-		readcon(content)
+		//readcon(content)
+		fmt.Println(content)
 		c++
 	}
 	elapsed := time.Since(now)
