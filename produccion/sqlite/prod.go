@@ -26,7 +26,7 @@ func main() {
 	create_db(db)
 
 
-	escribir_db(db, "PRUEBA")
+	escribir_db(db)
 	select_db(db)
 
 	escribir_file("/var/db1_test")
@@ -96,7 +96,7 @@ func escribir_file(path string){
 	elapsed := time.Since(now)
 	fmt.Printf("WRITE FILES %v en [%v]\n", c, elapsed)
 }
-func escribir_db(db *sql.DB, d1 string){
+func escribir_db(db *sql.DB){
 	d1 = []byte("{\"Id\":1,\"Data\":{\"C\":[{ \"T\": 1, \"N\": \"Nacionalidad\", \"V\": [\"Chilena\", \"Argentina\", \"Brasileña\", \"Uruguaya\"] }, { \"T\": 2, \"N\": \"Servicios\", \"V\": [\"Americana\", \"Rusa\", \"Bailarina\", \"Masaje\"] },{ \"T\": 3, \"N\": \"Edad\" }],\"E\": [{ \"T\": 1, \"N\": \"Rostro\" },{ \"T\": 1, \"N\": \"Senos\" },{ \"T\": 1, \"N\": \"Trasero\" }]}}")
 	numb := 80000
 	now := time.Now()
