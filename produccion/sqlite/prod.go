@@ -23,10 +23,10 @@ func main() {
 		fmt.Println(err1)
 	}
 	printelaped(now, "OPEN DB")
-	create_db(db)
+	//create_db(db)
 
 
-	escribir_db(db)
+	//escribir_db(db)
 	select_db(db)
 
 	escribir_file("/var/db1_test")
@@ -75,7 +75,7 @@ func escribir_file(path string){
 	d1 := []byte("{\"Id\":1,\"Data\":{\"C\":[{ \"T\": 1, \"N\": \"Nacionalidad\", \"V\": [\"Chilena\", \"Argentina\", \"Brasileña\", \"Uruguaya\"] }, { \"T\": 2, \"N\": \"Servicios\", \"V\": [\"Americana\", \"Rusa\", \"Bailarina\", \"Masaje\"] },{ \"T\": 3, \"N\": \"Edad\" }],\"E\": [{ \"T\": 1, \"N\": \"Rostro\" },{ \"T\": 1, \"N\": \"Senos\" },{ \"T\": 1, \"N\": \"Trasero\" }]}}")
 	c := 0
 
-	numb := 80
+	numb := 800
 	now := time.Now()
 	for n := 0; n < numb; n++ {
 		folder := getFolder64(uint64(n*100))
@@ -102,9 +102,11 @@ func escribir_db(db *sql.DB){
 	now := time.Now()
 	c := 0
 	for n := 0; n < numb; n++ {
+		now1 := time.Now()
 		add_txt_db(db, string(d1))
 		c++
-		fmt.Printf("WRITE %v de %v\n", c, numb)
+		elapsed1 := time.Since(now1)
+		fmt.Printf("WRITE %v de %v en [%v]\n", c, numb, elapsed1)
 	}
 	elapsed := time.Since(now)
 	fmt.Printf("WRITE DB %v en [%v]\n", c, elapsed)
