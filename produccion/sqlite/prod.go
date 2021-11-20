@@ -25,7 +25,7 @@ func main() {
 		fmt.Println(err)
 	}
 	printelaped(now, "OPEN DB")
-	create_db(db)
+	//create_db(db)
 
 	/*
 	stmt, err := db.PrepareContext(ctx, "SELECT content FROM contents WHERE id=?")
@@ -41,29 +41,28 @@ func main() {
 	fmt.Println(username)
 	*/
 
-	//create_db(db)
-	/*
-	escribir_db(db, 10000)
-	select_db(db, 2500, 160000)
-	escribir_db(db, 10000)
-	select_db(db, 2500, 170000)
-	escribir_db(db, 10000)
-	select_db(db, 2500, 180000)
-	escribir_db(db, 10000)
-	select_db(db, 2500, 190000)
-	escribir_db(db, 10000)
+
+	escribir_db(db, 50000)
+	select_db(db, 2500, 100000)
+	escribir_db(db, 50000)
+	select_db(db, 2500, 150000)
+	escribir_db(db, 50000)
 	select_db(db, 2500, 200000)
-	escribir_db(db, 10000)
-	select_db(db, 2500, 210000)
-	escribir_db(db, 10000)
-	select_db(db, 2500, 220000)
-	escribir_db(db, 10000)
-	select_db(db, 2500, 230000)
-	escribir_db(db, 10000)
-	select_db(db, 2500, 240000)
-	escribir_db(db, 10000)
+	escribir_db(db, 50000)
 	select_db(db, 2500, 250000)
-	*/
+	escribir_db(db, 50000)
+	select_db(db, 2500, 30000)
+	escribir_db(db, 50000)
+	select_db(db, 2500, 350000)
+	escribir_db(db, 50000)
+	select_db(db, 2500, 400000)
+	escribir_db(db, 50000)
+	select_db(db, 2500, 450000)
+	escribir_db(db, 50000)
+	select_db(db, 2500, 500000)
+	escribir_db(db, 50000)
+	select_db(db, 2500, 550000)
+	
 	//escribir_file("/var/db1_test", 25000)
 	//select_file("/var/db1_test", 25000)
 
