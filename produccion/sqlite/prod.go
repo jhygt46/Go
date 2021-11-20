@@ -4,6 +4,7 @@ import (
 	"os"
 	"fmt"
 	"time"
+	//"context"
 	"strconv"
 	"math/big"
 	"io/ioutil"
@@ -24,8 +25,24 @@ func main() {
 		fmt.Println(err)
 	}
 	printelaped(now, "OPEN DB")
+	create_db(db)
+
+	/*
+	stmt, err := db.PrepareContext(ctx, "SELECT content FROM contents WHERE id=?")
+	if err != nil {
+		fmt.Println(err)
+	}
+	defer stmt.Close()
+
+	id := 43
+	var username string
+	err = stmt.QueryRowContext(ctx, id).Scan(&username)
+	fmt.Println(err)
+	fmt.Println(username)
+	*/
+
 	//create_db(db)
-	
+	/*
 	escribir_db(db, 10000)
 	select_db(db, 2500, 160000)
 	escribir_db(db, 10000)
@@ -46,7 +63,7 @@ func main() {
 	select_db(db, 2500, 240000)
 	escribir_db(db, 10000)
 	select_db(db, 2500, 250000)
-	
+	*/
 	//escribir_file("/var/db1_test", 25000)
 	//select_file("/var/db1_test", 25000)
 
@@ -182,17 +199,6 @@ func update_db(db *sql.DB, id int64){
 	}
 }
 func get_content(db *sql.DB, id int64) string {
-	rows, err := db.Query("SELECT content FROM contents WHERE id=?", id)
-	if err != nil { panic(err) }
-	defer rows.Close()
-	var content string
-	for rows.Next() {
-		err2 := rows.Scan(&content)
-		if err2 != nil { fmt.Println(err2) }
-	}
-	return content
-}
-func get_contents(db *sql.DB, id int64) string {
 	rows, err := db.Query("SELECT content FROM contents WHERE id=?", id)
 	if err != nil { panic(err) }
 	defer rows.Close()
