@@ -26,18 +26,17 @@ func main() {
 	printelaped(now, "OPEN DB")
 	//create_db(db)
 
-	//escribir_db(db, 10000)
-	/*
-	select_db(db, 2500, 5000)
-	escribir_db(db, 5000)
+
 	select_db(db, 2500, 10000)
-	escribir_db(db, 5000)
-	select_db(db, 2500, 15000)
-	escribir_db(db, 5000)
+	escribir_db(db, 10000)
 	select_db(db, 2500, 20000)
-	escribir_db(db, 5000)
-	select_db(db, 2500, 25000)
-	*/
+	escribir_db(db, 10000)
+	select_db(db, 2500, 30000)
+	escribir_db(db, 10000)
+	select_db(db, 2500, 40000)
+	escribir_db(db, 10000)
+	select_db(db, 2500, 50000)
+	
 	//escribir_file("/var/db1_test", 25000)
 	//select_file("/var/db1_test", 25000)
 
@@ -110,18 +109,18 @@ func escribir_file(path string, numb int){
 func escribir_db(db *sql.DB, numb int){
 	d1 := []byte("{\"Id\":1,\"Data\":{\"C\":[{ \"T\": 1, \"N\": \"Nacionalidad\", \"V\": [\"Chilena\", \"Argentina\", \"Brasileña\", \"Uruguaya\"] }, { \"T\": 2, \"N\": \"Servicios\", \"V\": [\"Americana\", \"Rusa\", \"Bailarina\", \"Masaje\"] },{ \"T\": 3, \"N\": \"Edad\" }],\"E\": [{ \"T\": 1, \"N\": \"Rostro\" },{ \"T\": 1, \"N\": \"Senos\" },{ \"T\": 1, \"N\": \"Trasero\" }]}}")
 	now := time.Now()
-	now1 := time.Now()
+	//now1 := time.Now()
 	c := 0
 	for n := 0; n < numb; n++ {
 		add_txt_db(db, string(d1))
 		c++
-		
+		/*
 		if c % 1000 == 0 { 
 			elapsed1 := time.Since(now1)
 			fmt.Printf("WRITE 1000 [%s] c/u\n", time_cu(elapsed1, c))
 			now1 = time.Now()
 		}
-		
+		*/
 	}
 	elapsed := time.Since(now)
 	fmt.Printf("WRITE DB %v en [%v] [%s] c/u\n", c, elapsed, time_cu(elapsed, c))
