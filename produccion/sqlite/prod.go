@@ -18,7 +18,7 @@ import (
 func main() {
 
 	now := time.Now()
-	db, err := sql.Open("sqlite3", "./filtros1.db")
+	_, err := sql.Open("sqlite3", "./filtros1.db")
 	if err != nil {
 		fmt.Println("ERROR")
 		fmt.Println(err)
@@ -26,7 +26,7 @@ func main() {
 	printelaped(now, "OPEN DB")
 	//create_db(db)
 
-	escribir_db(db, 5000)
+	//escribir_db(db, 5000)
 	/*
 	select_db(db, 2500, 5000)
 	escribir_db(db, 5000)
