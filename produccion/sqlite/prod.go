@@ -24,9 +24,9 @@ func main() {
 		fmt.Println(err)
 	}
 	printelaped(now, "OPEN DB")
-	create_db(db)
+	//create_db(db)
 
-	//escribir_db(db, 5000)
+	escribir_db(db, 10000)
 	/*
 	select_db(db, 2500, 5000)
 	escribir_db(db, 5000)
