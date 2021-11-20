@@ -18,7 +18,7 @@ import (
 func main() {
 
 	now := time.Now()
-	_, err := sql.Open("sqlite3", "./filtros1.db")
+	db, err := sql.Open("sqlite3", "./filtros1.db")
 	if err != nil {
 		fmt.Println("ERROR")
 		fmt.Println(err)
