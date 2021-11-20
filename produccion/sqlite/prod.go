@@ -26,34 +26,36 @@ func main() {
 	//create_db(db)
 
 
-	//escribir_db(db)
-	select_db(db)
+	//escribir_db(db, 5000)
+	select_db(db, 2500, 10000)
 
-	//escribir_file("/var/db1_test")
-	select_file("/var/db1_test")
+	//escribir_file("/var/db1_test", 25000)
+	//select_file("/var/db1_test", 25000)
 
 }
 
 type Objecto struct {
-	Name string `json:"Nname"`
+	Name string `json:"Name"`
 }
 
-func select_db(db *sql.DB){
+func select_db(db *sql.DB, numb int, max int){
 	c := 0
-	numb := 250000
 	now := time.Now()
 	for n := 0; n < numb; n++ {
-		n, _ := rand.Int(rand.Reader, big.NewInt(200000))
+		n, _ := rand.Int(rand.Reader, big.NewInt(int64(max)))
 		content := get_content(db, n.Int64());
-		readcon(content)
+		if content == ""{
+			fmt.Println("CONTENT VACIO")
+		}
+		//readcon(content)
 		c++
 	}
 	elapsed := time.Since(now)
-	fmt.Printf("SELECT %v DB en [%v]\n", c, elapsed)
+	fmt.Printf("SELECT %v [%s] c/u\n", c, time_cu(elapsed, c))
 }
-func select_file(path string){
+func select_file(path string, numb int){
 	c := 0
-	numb := 250000
+	//numb := 250000
 	now := time.Now()
 	for n := 0; n < numb; n++ {
 		n, _ := rand.Int(rand.Reader, big.NewInt(2000))
@@ -70,12 +72,12 @@ func select_file(path string){
 	elapsed := time.Since(now)
 	fmt.Printf("SELECT %v FILES en [%v]\n", c, elapsed)
 }
-func escribir_file(path string){
+func escribir_file(path string, numb int){
 
 	d1 := []byte("{\"Id\":1,\"Data\":{\"C\":[{ \"T\": 1, \"N\": \"Nacionalidad\", \"V\": [\"Chilena\", \"Argentina\", \"Brasileña\", \"Uruguaya\"] }, { \"T\": 2, \"N\": \"Servicios\", \"V\": [\"Americana\", \"Rusa\", \"Bailarina\", \"Masaje\"] },{ \"T\": 3, \"N\": \"Edad\" }],\"E\": [{ \"T\": 1, \"N\": \"Rostro\" },{ \"T\": 1, \"N\": \"Senos\" },{ \"T\": 1, \"N\": \"Trasero\" }]}}")
 	c := 0
 
-	numb := 2000
+	numb = numb / 100
 	now := time.Now()
 	for n := 0; n < numb; n++ {
 		folder := getFolder64(uint64(n*100))
@@ -96,20 +98,24 @@ func escribir_file(path string){
 	elapsed := time.Since(now)
 	fmt.Printf("WRITE FILES %v en [%v]\n", c, elapsed)
 }
-func escribir_db(db *sql.DB){
+func escribir_db(db *sql.DB, numb int){
 	d1 := []byte("{\"Id\":1,\"Data\":{\"C\":[{ \"T\": 1, \"N\": \"Nacionalidad\", \"V\": [\"Chilena\", \"Argentina\", \"Brasileña\", \"Uruguaya\"] }, { \"T\": 2, \"N\": \"Servicios\", \"V\": [\"Americana\", \"Rusa\", \"Bailarina\", \"Masaje\"] },{ \"T\": 3, \"N\": \"Edad\" }],\"E\": [{ \"T\": 1, \"N\": \"Rostro\" },{ \"T\": 1, \"N\": \"Senos\" },{ \"T\": 1, \"N\": \"Trasero\" }]}}")
-	numb := 120000
 	now := time.Now()
+	//now1 := time.Now()
 	c := 0
 	for n := 0; n < numb; n++ {
-		now1 := time.Now()
 		add_txt_db(db, string(d1))
 		c++
-		elapsed1 := time.Since(now1)
-		fmt.Printf("WRITE %v de %v en [%v]\n", c, numb, elapsed1)
+		/*
+		if c % 5000 == 0 { 
+			elapsed1 := time.Since(now1)
+			fmt.Printf("WRITE 5000 [%s] c/u\n", time_cu(elapsed1, c))
+			now1 = time.Now()
+		}
+		*/
 	}
 	elapsed := time.Since(now)
-	fmt.Printf("WRITE DB %v en [%v]\n", c, elapsed)
+	fmt.Printf("WRITE DB %v en [%v] [%s] c/u\n", c, elapsed, time_cu(elapsed, c))
 }
 func create_db(db *sql.DB){
 	now := time.Now()
@@ -202,4 +208,17 @@ func read(x []byte){
 }
 func readcon(x string){
 	//
+}
+func time_cu(t time.Duration, c int) string {
+	ms := float64(t / time.Millisecond)
+	res := ms / float64(c)
+	var s string
+	if res < 1{
+		s = fmt.Sprintf("%v NanoSec", res*1000)
+	} else if res > 1{
+		s = fmt.Sprintf("%v Sec", res/1000)
+	} else {
+		s = fmt.Sprintf("%v MilliSec", res)
+	}
+	return s
 }
