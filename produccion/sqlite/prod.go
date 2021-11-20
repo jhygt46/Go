@@ -25,9 +25,16 @@ func main() {
 	printelaped(now, "OPEN DB")
 	//create_db(db)
 
-
-	//escribir_db(db, 5000)
+	escribir_db(db, 5000)
+	select_db(db, 2500, 5000)
+	escribir_db(db, 5000)
 	select_db(db, 2500, 10000)
+	escribir_db(db, 5000)
+	select_db(db, 2500, 15000)
+	escribir_db(db, 5000)
+	select_db(db, 2500, 20000)
+	escribir_db(db, 5000)
+	select_db(db, 2500, 25000)
 
 	//escribir_file("/var/db1_test", 25000)
 	//select_file("/var/db1_test", 25000)
