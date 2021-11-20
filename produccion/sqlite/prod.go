@@ -18,7 +18,7 @@ import (
 func main() {
 
 	now := time.Now()
-	db, err := sql.Open("sqlite3", "./filtros1.db")
+	_, err := sql.Open("sqlite3", "./filtros1.db")
 	if err != nil {
 		fmt.Println("ERROR")
 		fmt.Println(err)
@@ -26,7 +26,7 @@ func main() {
 	printelaped(now, "OPEN DB")
 	//create_db(db)
 
-	escribir_db(db, 10000)
+	//escribir_db(db, 10000)
 	/*
 	select_db(db, 2500, 5000)
 	escribir_db(db, 5000)
@@ -219,15 +219,15 @@ func readcon(x string){
 	//
 }
 func time_cu(t time.Duration, c int) string {
-	ms := float64(t / time.Millisecond)
+	ms := float64(t / time.Nanosecond)
 	res := ms / float64(c)
 	var s string
-	if res < 1{
-		s = fmt.Sprintf("%v NanoSec", res*1000)
-	} else if res > 1{
-		s = fmt.Sprintf("%v Sec", res/1000)
+	if res < 1000 {
+		s = fmt.Sprintf("%.2f NanoSec", res)
+	} else if res >= 1000 && res < 1000000{
+		s = fmt.Sprintf("%.2f MicroSec", res/1000)
 	} else {
-		s = fmt.Sprintf("%v MilliSec", res)
+		s = fmt.Sprintf("%.2f MilliSec", res/1000000)
 	}
 	return s
 }
