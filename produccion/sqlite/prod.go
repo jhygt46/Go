@@ -61,8 +61,6 @@ func main() {
 	h := &MyHandler{ Dbs: dbs }
 	fasthttp.ListenAndServe(":81", h.HandleFastHTTP)
 
-	//create_db(db)
-
 	/*
 	stmt, err := db.PrepareContext(ctx, "SELECT content FROM contents WHERE id=?")
 	if err != nil {
@@ -77,13 +75,6 @@ func main() {
 	fmt.Println(username)
 	*/
 
-	//fmt.Println(get_content(db, 960000))
-	//escribir_db(db, 50000)
-	//select_db(db, 2500, 50000)
-
-	
-	//escribir_file("/var/db1_test", 25000)
-	//select_file("/var/db1_test", 25000)
 
 }
 
@@ -95,45 +86,46 @@ func (h *MyHandler) HandleFastHTTP(ctx *fasthttp.RequestCtx) {
 
 	db := read_int64(ctx.QueryArgs().Peek("db"))
 	id := read_int64(ctx.QueryArgs().Peek("id")) 
+	total := read_int64(ctx.QueryArgs().Peek("total")) 
 
 	switch string(ctx.Path()) {
 	case "/get-op1":
-		select_db(h.Dbs[db], 2500, 1000000)
+		select_db(h.Dbs[db], 2500, total)
 		fmt.Fprintf(ctx, "OK")
 	case "/get-op2":
-		select_db_rand(h.Dbs, 2500, 100000)
+		select_db_rand(h.Dbs, 2500, total)
 		fmt.Fprintf(ctx, "OK")
 	case "/get-op3":
-		select_file("/var/db1_test", 2500, 600000)
+		select_file("/var/db1_test", 2500, total)
 		fmt.Fprintf(ctx, "OK")
 	case "/get-op4":
-		h.select_memory(2500, 100000)
+		h.select_memory(2500, total)
 		fmt.Fprintf(ctx, "OK")
 	case "/put-op1":
-		escribir_db(h.Dbs[db], int(id))
+		escribir_db(h.Dbs[db], id)
 		fmt.Fprintf(ctx, "OK")
 	case "/put-op2":
-		escribir_file("/var/db1_test", 600000)
+		escribir_file("/var/db1_test", total)
 		fmt.Fprintf(ctx, "OK")
 	case "/put-op3":
-		h.escribir_memory(100000)
+		h.escribir_memory("/var/db1_test", int(total))
 		fmt.Fprintf(ctx, "OK")
 	default:
 		ctx.Error("Not Found", fasthttp.StatusNotFound)
 	}
 	
 }
-func (h *MyHandler) escribir_memory(numb int){
+func (h *MyHandler) escribir_memory(path string, numb int){
 
 	c := 0
 	now := time.Now()
 	for n := 1; n <= numb; n++ {
-		jsonFiltro, err := os.Open("/var/filtros/"+getFolder64(uint64(n)))
+		jsonFiltro, err := os.Open(path+"/"+getFolderFile64(int64(n)))
 		if err == nil {
 			byteValueFiltro, _ := ioutil.ReadAll(jsonFiltro)
 			data := Data{}
 			if err := json.Unmarshal(byteValueFiltro, &data); err == nil {
-				
+				h.Minicache[uint64(n)] = &data
 			}
 		}
 		defer jsonFiltro.Close()
@@ -142,12 +134,12 @@ func (h *MyHandler) escribir_memory(numb int){
 	fmt.Printf("SELECT %v [%s] c/u total %v\n", c, time_cu(elapsed, c), elapsed)
 
 }
-func (h *MyHandler) select_memory(numb int, max int){
+func (h *MyHandler) select_memory(numb int, max int64){
 
 	c := 0
 	now := time.Now()
 	for n := 0; n < numb; n++ {
-		n, _ := rand.Int(rand.Reader, big.NewInt(int64(max)))
+		n, _ := rand.Int(rand.Reader, big.NewInt(max))
 		if res, found := h.Minicache[n.Uint64()]; found {
 			readdata(res)
 			c++
@@ -193,7 +185,7 @@ func select_file(path string, numb int, max int64){
 	now := time.Now()
 	for n := 0; n < numb; n++ {
 		n, _ := rand.Int(rand.Reader, big.NewInt(max))
-		folder := getFolder64(n.Uint64())
+		folder := getFolder64(n.Int64())
 		file, err := os.Open(path+"/"+folder+"/56")
 		if err != nil{
 			fmt.Println(err)
@@ -206,15 +198,15 @@ func select_file(path string, numb int, max int64){
 	elapsed := time.Since(now)
 	fmt.Printf("SELECTFILES %v [%s] c/u total %v\n", c, time_cu(elapsed, c), elapsed)
 }
-func escribir_file(path string, numb int){
+func escribir_file(path string, numb int64){
 
 	d1 := []byte("{\"Id\":1,\"Data\":{\"C\":[{ \"T\": 1, \"N\": \"Nacionalidad\", \"V\": [\"Chilena\", \"Argentina\", \"Brasileña\", \"Uruguaya\"] }, { \"T\": 2, \"N\": \"Servicios\", \"V\": [\"Americana\", \"Rusa\", \"Bailarina\", \"Masaje\"] },{ \"T\": 3, \"N\": \"Edad\" }],\"E\": [{ \"T\": 1, \"N\": \"Rostro\" },{ \"T\": 1, \"N\": \"Senos\" },{ \"T\": 1, \"N\": \"Trasero\" }]}}")
 	c := 0
 
-	numb = numb / 100
+	numb2 := int(numb / 100)
 	now := time.Now()
-	for n := 0; n < numb; n++ {
-		folder := getFolder64(uint64(n*100))
+	for n := 0; n < numb2; n++ {
+		folder := getFolder64(int64(n*100))
 		newpath := filepath.Join(path, folder)
 		err := os.MkdirAll(newpath, os.ModePerm)
 		if err != nil {
@@ -232,12 +224,12 @@ func escribir_file(path string, numb int){
 	elapsed := time.Since(now)
 	fmt.Printf("WRITE FILES %v en [%v]\n", c, elapsed)
 }
-func escribir_db(db *sql.DB, numb int){
+func escribir_db(db *sql.DB, numb int64){
 	d1 := []byte("{\"Id\":1,\"Data\":{\"C\":[{ \"T\": 1, \"N\": \"Nacionalidad\", \"V\": [\"Chilena\", \"Argentina\", \"Brasileña\", \"Uruguaya\"] }, { \"T\": 2, \"N\": \"Servicios\", \"V\": [\"Americana\", \"Rusa\", \"Bailarina\", \"Masaje\"] },{ \"T\": 3, \"N\": \"Edad\" }],\"E\": [{ \"T\": 1, \"N\": \"Rostro\" },{ \"T\": 1, \"N\": \"Senos\" },{ \"T\": 1, \"N\": \"Trasero\" }]}}")
 	now := time.Now()
 	//now1 := time.Now()
 	c := 0
-	for n := 0; n < numb; n++ {
+	for n := 0; n < int(numb); n++ {
 		add_txt_db(db, string(d1))
 		c++
 		/*
@@ -308,15 +300,23 @@ func get_content(db *sql.DB, id int64) string {
 	}
 	return content
 }
-func getFolder64(num uint64) string {
+func getFolder64(num int64) string {
 
 	c1, n1 := divmod(num, 1000000)
 	c2, n2 := divmod(n1, 10000)
 	c3, _ := divmod(n2, 100)
-	return strconv.FormatUint(c1, 10)+"/"+strconv.FormatUint(c2, 10)+"/"+strconv.FormatUint(c3, 10)
+	return strconv.FormatInt(c1, 10)+"/"+strconv.FormatInt(c2, 10)+"/"+strconv.FormatInt(c3, 10)
 
 }
-func divmod(numerator, denominator uint64) (quotient, remainder uint64) {
+func getFolderFile64(num int64) string {
+
+	c1, n1 := divmod(num, 1000000)
+	c2, n2 := divmod(n1, 10000)
+	c3, c4 := divmod(n2, 100)
+	return strconv.FormatInt(c1, 10)+"/"+strconv.FormatInt(c2, 10)+"/"+strconv.FormatInt(c3, 10)+"/"+strconv.FormatInt(c4, 10)
+
+}
+func divmod(numerator, denominator int64) (quotient, remainder int64) {
 	quotient = numerator / denominator
 	remainder = numerator % denominator
 	return
