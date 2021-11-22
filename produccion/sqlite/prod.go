@@ -13,18 +13,54 @@ import (
 	"path/filepath"
 	"encoding/json"
 	_ "github.com/mattn/go-sqlite3"
+	"github.com/valyala/fasthttp"
 	//"github.com/povsister/scp"
 )
+type Config struct {
 
+}
+type MyHandler struct {
+	Dbs []*sql.DB `json:"Dbs"`
+	Config Config `json:"Config"`
+	Minicache map[uint64]*Data
+}
+type Data struct {
+	C [] Campos `json:"C"`
+	E [] Evals `json:"E"`
+}
+type Campos struct {
+	T int `json:"T"`
+	N string `json:"N"`
+	V [] string `json:"V"`
+}
+type Evals struct {
+	T int `json:"T"`
+	N string `json:"N"`
+}
 func main() {
 
+	len := 10
+
+	dbs := make([]*sql.DB, 0)
 	now := time.Now()
-	db, err := sql.Open("sqlite3", "./filtros1.db")
-	if err != nil {
-		fmt.Println("ERROR")
-		fmt.Println(err)
+	for i:=0; i < len; i++ {
+		db, err := sql.Open("sqlite3", "./filtros"+strconv.Itoa(i)+".db")
+		if err == nil {
+			stmt, err := db.Prepare(`create table if not exists contents (id integer not null primary key autoincrement,content text)`)
+			if err != nil {
+				fmt.Println(err)
+			}
+			stmt.Exec()
+			dbs = append(dbs, db)
+		}else{
+			fmt.Println(err)
+		}
 	}
-	printelaped(now, "OPEN DB")
+	printelaped(now, "OPEN DBS")
+
+	h := &MyHandler{ Dbs: dbs }
+	fasthttp.ListenAndServe(":81", h.HandleFastHTTP)
+
 	//create_db(db)
 
 	/*
@@ -41,7 +77,7 @@ func main() {
 	fmt.Println(username)
 	*/
 
-	fmt.Println(get_content(db, 900000))
+	//fmt.Println(get_content(db, 960000))
 	//escribir_db(db, 50000)
 	//select_db(db, 2500, 50000)
 
@@ -55,11 +91,93 @@ type Objecto struct {
 	Name string `json:"Name"`
 }
 
-func select_db(db *sql.DB, numb int, max int){
+func (h *MyHandler) HandleFastHTTP(ctx *fasthttp.RequestCtx) {
+
+	db := read_int64(ctx.QueryArgs().Peek("db"))
+	id := read_int64(ctx.QueryArgs().Peek("id")) 
+
+	switch string(ctx.Path()) {
+	case "/get-op1":
+		select_db(h.Dbs[db], 2500, 1000000)
+		fmt.Fprintf(ctx, "OK")
+	case "/get-op2":
+		select_db_rand(h.Dbs, 2500, 100000)
+		fmt.Fprintf(ctx, "OK")
+	case "/get-op3":
+		select_file("/var/db1_test", 2500, 600000)
+		fmt.Fprintf(ctx, "OK")
+	case "/get-op4":
+		h.select_memory(2500, 100000)
+		fmt.Fprintf(ctx, "OK")
+	case "/put-op1":
+		escribir_db(h.Dbs[db], int(id))
+		fmt.Fprintf(ctx, "OK")
+	case "/put-op2":
+		escribir_file("/var/db1_test", 600000)
+		fmt.Fprintf(ctx, "OK")
+	case "/put-op3":
+		h.escribir_memory(100000)
+		fmt.Fprintf(ctx, "OK")
+	default:
+		ctx.Error("Not Found", fasthttp.StatusNotFound)
+	}
+	
+}
+func (h *MyHandler) escribir_memory(numb int){
+
+	c := 0
+	now := time.Now()
+	for n := 1; n <= numb; n++ {
+		jsonFiltro, err := os.Open("/var/filtros/"+getFolder64(uint64(n)))
+		if err == nil {
+			byteValueFiltro, _ := ioutil.ReadAll(jsonFiltro)
+			data := Data{}
+			if err := json.Unmarshal(byteValueFiltro, &data); err == nil {
+				
+			}
+		}
+		defer jsonFiltro.Close()
+	}
+	elapsed := time.Since(now)
+	fmt.Printf("SELECT %v [%s] c/u total %v\n", c, time_cu(elapsed, c), elapsed)
+
+}
+func (h *MyHandler) select_memory(numb int, max int){
+
 	c := 0
 	now := time.Now()
 	for n := 0; n < numb; n++ {
 		n, _ := rand.Int(rand.Reader, big.NewInt(int64(max)))
+		if res, found := h.Minicache[n.Uint64()]; found {
+			readdata(res)
+			c++
+		}
+	}
+	elapsed := time.Since(now)
+	fmt.Printf("SELECT %v [%s] c/u total %v\n", c, time_cu(elapsed, c), elapsed)
+
+}
+func select_db_rand(db []*sql.DB, numb int, max int64){
+	c := 0
+	now := time.Now()
+	for n := 0; n < numb; n++ {
+		n, _ := rand.Int(rand.Reader, big.NewInt(max))
+		r, _ := rand.Int(rand.Reader, big.NewInt(10))
+		content := get_content(db[r.Int64()], n.Int64());
+		if content == ""{
+			fmt.Println("CONTENT VACIO")
+		}
+		//readcon(content)
+		c++
+	}
+	elapsed := time.Since(now)
+	fmt.Printf("SELECT %v [%s] c/u total %v\n", c, time_cu(elapsed, c), elapsed)
+}
+func select_db(db *sql.DB, numb int, max int64){
+	c := 0
+	now := time.Now()
+	for n := 0; n < numb; n++ {
+		n, _ := rand.Int(rand.Reader, big.NewInt(max))
 		content := get_content(db, n.Int64());
 		if content == ""{
 			fmt.Println("CONTENT VACIO")
@@ -68,14 +186,13 @@ func select_db(db *sql.DB, numb int, max int){
 		c++
 	}
 	elapsed := time.Since(now)
-	fmt.Printf("SELECT %v [%s] c/u\n", c, time_cu(elapsed, c))
+	fmt.Printf("SELECT %v [%s] c/u total %v\n", c, time_cu(elapsed, c), elapsed)
 }
-func select_file(path string, numb int){
+func select_file(path string, numb int, max int64){
 	c := 0
-	//numb := 250000
 	now := time.Now()
 	for n := 0; n < numb; n++ {
-		n, _ := rand.Int(rand.Reader, big.NewInt(2000))
+		n, _ := rand.Int(rand.Reader, big.NewInt(max))
 		folder := getFolder64(n.Uint64())
 		file, err := os.Open(path+"/"+folder+"/56")
 		if err != nil{
@@ -87,7 +204,7 @@ func select_file(path string, numb int){
 		c++
 	}
 	elapsed := time.Since(now)
-	fmt.Printf("SELECT %v FILES en [%v]\n", c, elapsed)
+	fmt.Printf("SELECTFILES %v [%s] c/u total %v\n", c, time_cu(elapsed, c), elapsed)
 }
 func escribir_file(path string, numb int){
 
@@ -215,6 +332,9 @@ func read(x []byte){
 func readcon(x string){
 	//
 }
+func readdata(x *Data){
+	//
+}
 func time_cu(t time.Duration, c int) string {
 	ms := float64(t / time.Nanosecond)
 	res := ms / float64(c)
@@ -227,4 +347,11 @@ func time_cu(t time.Duration, c int) string {
 		s = fmt.Sprintf("%.2f MilliSec", res/1000000)
 	}
 	return s
+}
+func read_int64(data []byte) int64 {
+    var x int64
+    for _, c := range data {
+        x = x * 10 + int64(c - '0')
+    }
+    return x
 }
