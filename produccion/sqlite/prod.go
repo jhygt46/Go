@@ -118,7 +118,9 @@ func (h *MyHandler) HandleFastHTTP(ctx *fasthttp.RequestCtx) {
 		h.select_memory(int(times), total)
 		fmt.Fprintf(ctx, "OK")
 	case "/put-op1":
-		escribir_db(db, total)
+		for i := 0; i < 10; i++ {
+			escribir_db(db)
+		}
 		fmt.Fprintf(ctx, "OK")
 	case "/put-op2":
 		escribir_file("/var/db1_test", total)
@@ -240,24 +242,18 @@ func escribir_file(path string, numb int64){
 	elapsed := time.Since(now)
 	fmt.Printf("WRITE FILES %v en [%v]\n", c, elapsed)
 }
-func escribir_db(db int64, numb int64){
+func escribir_db(db int64){
 
-	d1 := []byte("{\"Id\":1,\"Data\":{\"C\":[{ \"T\": 1, \"N\": \"Nacionalidad\", \"V\": [\"Chilena\", \"Argentina\", \"Brasileña\", \"Uruguaya\"] }, { \"T\": 2, \"N\": \"Servicios\", \"V\": [\"Americana\", \"Rusa\", \"Bailarina\", \"Masaje\"] },{ \"T\": 3, \"N\": \"Edad\" }],\"E\": [{ \"T\": 1, \"N\": \"Rostro\" },{ \"T\": 1, \"N\": \"Senos\" },{ \"T\": 1, \"N\": \"Trasero\" }]}}")
-	x := numb / 10000
-
-	for n := 0; n < int(x); n++ {
-		c := 0
-		now := time.Now()
-		dbs := getsqlite(int(db))
-		for i := 0; i < 10000; i++ {
-			if add_txt_db(dbs, string(d1)) {
-				c++
-			}
+	c := 0
+	now := time.Now()
+	dbs := getsqlite(int(db))
+	for i := 0; i < 10000; i++ {
+		if add_txt_db(dbs) {
+			c++
 		}
-		elapsed := time.Since(now)
-		fmt.Printf("WRITE %v DB %v en [%v] [%s] c/u\n", c, db, elapsed, time_cu(elapsed, c))
-		dbs = nil
 	}
+	elapsed := time.Since(now)
+	fmt.Printf("WRITE %v DB %v en [%v] [%s] c/u\n", c, db, elapsed, time_cu(elapsed, c))
 	
 }
 func create_db(db *sql.DB){
@@ -284,13 +280,14 @@ func add_obj_db(db *sql.DB, obj Objecto){
 		fmt.Println(err)
 	}
 }
-func add_txt_db(db *sql.DB, str string) bool {
+func add_txt_db(db *sql.DB) bool {
+	str := []byte("{\"Id\":1,\"Data\":{\"C\":[{ \"T\": 1, \"N\": \"Nacionalidad\", \"V\": [\"Chilena\", \"Argentina\", \"Brasileña\", \"Uruguaya\"] }, { \"T\": 2, \"N\": \"Servicios\", \"V\": [\"Americana\", \"Rusa\", \"Bailarina\", \"Masaje\"] },{ \"T\": 3, \"N\": \"Edad\" }],\"E\": [{ \"T\": 1, \"N\": \"Rostro\" },{ \"T\": 1, \"N\": \"Senos\" },{ \"T\": 1, \"N\": \"Trasero\" }]}}")
 	stmt, err := db.Prepare("INSERT INTO contents(content) values(?)")
 	if err != nil {
 		fmt.Println(err)
 		return false
 	}
-	res, err := stmt.Exec(str)
+	res, err := stmt.Exec(string(str))
 	if err != nil {
 		fmt.Println(res)
 		fmt.Println(err)
