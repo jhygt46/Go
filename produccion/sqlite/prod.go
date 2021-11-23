@@ -59,7 +59,7 @@ func main() {
 	printelaped(now, "OPEN DBS")
 
 	h := &MyHandler{ Dbs: dbs }
-	fasthttp.ListenAndServe(":81", h.HandleFastHTTP)
+	fasthttp.ListenAndServe(":80", h.HandleFastHTTP)
 
 	/*
 	stmt, err := db.PrepareContext(ctx, "SELECT content FROM contents WHERE id=?")
@@ -85,24 +85,24 @@ type Objecto struct {
 func (h *MyHandler) HandleFastHTTP(ctx *fasthttp.RequestCtx) {
 
 	db := read_int64(ctx.QueryArgs().Peek("db"))
-	id := read_int64(ctx.QueryArgs().Peek("id")) 
+	times := read_int64(ctx.QueryArgs().Peek("times")) 
 	total := read_int64(ctx.QueryArgs().Peek("total")) 
 
 	switch string(ctx.Path()) {
 	case "/get-op1":
-		select_db(h.Dbs[db], 2500, total)
+		select_db(h.Dbs[db], int(times), total)
 		fmt.Fprintf(ctx, "OK")
 	case "/get-op2":
-		select_db_rand(h.Dbs, 2500, total)
+		select_db_rand(h.Dbs, int(times), total)
 		fmt.Fprintf(ctx, "OK")
 	case "/get-op3":
-		select_file("/var/db1_test", 2500, total)
+		select_file("/var/db1_test", int(times), total)
 		fmt.Fprintf(ctx, "OK")
 	case "/get-op4":
-		h.select_memory(2500, total)
+		h.select_memory(int(times), total)
 		fmt.Fprintf(ctx, "OK")
 	case "/put-op1":
-		escribir_db(h.Dbs[db], id)
+		escribir_db(h.Dbs[db], total)
 		fmt.Fprintf(ctx, "OK")
 	case "/put-op2":
 		escribir_file("/var/db1_test", total)
