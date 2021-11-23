@@ -230,7 +230,9 @@ func escribir_db(db *sql.DB, numb int64){
 	//now1 := time.Now()
 	c := 0
 	for n := 0; n < int(numb); n++ {
-		add_txt_db(db, string(d1))
+		if add_txt_db(db, string(d1)) {
+			fmt.Printf("WRITEDB [%v]\n", n)
+		}
 		c++
 		/*
 		if c % 1000 == 0 { 
@@ -267,16 +269,19 @@ func add_obj_db(db *sql.DB, obj Objecto){
 		fmt.Println(err)
 	}
 }
-func add_txt_db(db *sql.DB, str string){
+func add_txt_db(db *sql.DB, str string) bool {
 	stmt, err := db.Prepare("INSERT INTO contents(content) values(?)")
 	if err != nil {
 		fmt.Println(err)
+		return false
 	}
 	res, err := stmt.Exec(str)
 	if err != nil {
 		fmt.Println(res)
 		fmt.Println(err)
+		return false
 	}
+	return true
 }
 func update_db(db *sql.DB, id int64){
 	stmt, err := db.Prepare("UPDATE contents SET content=? WHERE id=?")
