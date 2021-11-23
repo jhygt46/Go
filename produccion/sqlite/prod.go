@@ -243,21 +243,21 @@ func escribir_file(path string, numb int64){
 func escribir_db(db int64, numb int64){
 
 	d1 := []byte("{\"Id\":1,\"Data\":{\"C\":[{ \"T\": 1, \"N\": \"Nacionalidad\", \"V\": [\"Chilena\", \"Argentina\", \"Brasileña\", \"Uruguaya\"] }, { \"T\": 2, \"N\": \"Servicios\", \"V\": [\"Americana\", \"Rusa\", \"Bailarina\", \"Masaje\"] },{ \"T\": 3, \"N\": \"Edad\" }],\"E\": [{ \"T\": 1, \"N\": \"Rostro\" },{ \"T\": 1, \"N\": \"Senos\" },{ \"T\": 1, \"N\": \"Trasero\" }]}}")
-	now := time.Now()
-	c := 0
 	x := numb / 10000
 
 	for n := 0; n < int(x); n++ {
+		c := 0
+		now := time.Now()
 		dbs := getsqlite(int(db))
 		for i := 0; i < 10000; i++ {
 			if add_txt_db(dbs, string(d1)) {
-				fmt.Printf("WRITEDB [%v]\n", n)
+				c++
 			}
-			c++
 		}
+		elapsed := time.Since(now)
+		fmt.Printf("WRITE DB %v en [%v] [%s] c/u\n", c, elapsed, time_cu(elapsed, c))
 	}
-	elapsed := time.Since(now)
-	fmt.Printf("WRITE DB %v en [%v] [%s] c/u\n", c, elapsed, time_cu(elapsed, c))
+	
 }
 func create_db(db *sql.DB){
 	now := time.Now()
