@@ -37,6 +37,22 @@ type Evals struct {
 	T int `json:"T"`
 	N string `json:"N"`
 }
+
+func getsqlite(i int) *sql.DB {
+	db, err := sql.Open("sqlite3", "./filtros"+strconv.Itoa(i)+".db")
+	if err == nil {
+		stmt, err := db.Prepare(`create table if not exists contents (id integer not null primary key autoincrement,content text)`)
+		if err != nil {
+			fmt.Println(err)
+		}
+		stmt.Exec()
+		return db
+	}else{
+		fmt.Println(err)
+		return nil
+	}
+}
+
 func main() {
 
 	len := 10
@@ -102,7 +118,7 @@ func (h *MyHandler) HandleFastHTTP(ctx *fasthttp.RequestCtx) {
 		h.select_memory(int(times), total)
 		fmt.Fprintf(ctx, "OK")
 	case "/put-op1":
-		escribir_db(h.Dbs[db], total)
+		escribir_db(db, total)
 		fmt.Fprintf(ctx, "OK")
 	case "/put-op2":
 		escribir_file("/var/db1_test", total)
@@ -224,23 +240,21 @@ func escribir_file(path string, numb int64){
 	elapsed := time.Since(now)
 	fmt.Printf("WRITE FILES %v en [%v]\n", c, elapsed)
 }
-func escribir_db(db *sql.DB, numb int64){
+func escribir_db(db int64, numb int64){
+
 	d1 := []byte("{\"Id\":1,\"Data\":{\"C\":[{ \"T\": 1, \"N\": \"Nacionalidad\", \"V\": [\"Chilena\", \"Argentina\", \"Brasileña\", \"Uruguaya\"] }, { \"T\": 2, \"N\": \"Servicios\", \"V\": [\"Americana\", \"Rusa\", \"Bailarina\", \"Masaje\"] },{ \"T\": 3, \"N\": \"Edad\" }],\"E\": [{ \"T\": 1, \"N\": \"Rostro\" },{ \"T\": 1, \"N\": \"Senos\" },{ \"T\": 1, \"N\": \"Trasero\" }]}}")
 	now := time.Now()
-	//now1 := time.Now()
 	c := 0
-	for n := 0; n < int(numb); n++ {
-		if add_txt_db(db, string(d1)) {
-			fmt.Printf("WRITEDB [%v]\n", n)
+	x := numb / 10000
+
+	for n := 0; n < int(x); n++ {
+		dbs := getsqlite(int(db))
+		for i := 0; i < 10000; i++ {
+			if add_txt_db(dbs, string(d1)) {
+				fmt.Printf("WRITEDB [%v]\n", n)
+			}
+			c++
 		}
-		c++
-		/*
-		if c % 1000 == 0 { 
-			elapsed1 := time.Since(now1)
-			fmt.Printf("WRITE 1000 [%s] c/u\n", time_cu(elapsed1, c))
-			now1 = time.Now()
-		}
-		*/
 	}
 	elapsed := time.Since(now)
 	fmt.Printf("WRITE DB %v en [%v] [%s] c/u\n", c, elapsed, time_cu(elapsed, c))
