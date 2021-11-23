@@ -255,7 +255,8 @@ func escribir_db(db int64, numb int64){
 			}
 		}
 		elapsed := time.Since(now)
-		fmt.Printf("WRITE DB %v en [%v] [%s] c/u\n", c, elapsed, time_cu(elapsed, c))
+		fmt.Printf("WRITE %v DB %v en [%v] [%s] c/u\n", c, db, elapsed, time_cu(elapsed, c))
+		dbs = nil
 	}
 	
 }
