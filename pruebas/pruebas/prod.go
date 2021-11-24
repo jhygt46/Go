@@ -1,21 +1,21 @@
 package main
 
 import (
-	"os"
-	"log"
+	//"os"
+	//"log"
 	"fmt"
-	"flag"
-	"time"
-	"math"
-	"bufio"
+	//"flag"
+	//"time"
+	//"math"
+	//"bufio"
 	//"strconv"
 	//"reflect"
 	//"runtime"
 	//"io/ioutil"
-	"path/filepath"
-	"encoding/json"
+	//"path/filepath"
+	//"encoding/json"
     "github.com/valyala/fasthttp"
-    "github.com/dgraph-io/ristretto"
+    //"github.com/dgraph-io/ristretto"
 )
 
 type Filtros struct {
@@ -36,13 +36,13 @@ type Data struct {
 	E [] Evals `json:"E"`
 }
 type MyHandler struct {
-	cache *ristretto.Cache
-	minicache *map[int]*Data
+	//cache *ristretto.Cache
+	//minicache *map[int]*Data
 	//data *[]Data
 }
 
 func main() {
-
+	/*
 	var files []string
 
 	file := flag.String("file", "filtros_go.json", "")
@@ -106,22 +106,20 @@ func main() {
 
 		}
     }
-
+	
 	pass := &MyHandler{ cache: cache, minicache: &minicache }
+	*/
+	pass := &MyHandler{}
     fasthttp.ListenAndServe(":80", pass.HandleFastHTTP)
 
 }
 
 func (h *MyHandler) HandleFastHTTP(ctx *fasthttp.RequestCtx) {
 	
-	//id, _ := strconv.Atoi(string(ctx.QueryArgs().Peek("id")))
-	//val := *h.minicache
-	//fmt.Println(val[id])
-	//fmt.Println(id)
     fmt.Fprintf(ctx, "Ok");
 	
 }
-
+/*
 func logn(n, b float64) float64 {
 	return math.Log(n) / math.Log(b)
 }
@@ -150,7 +148,7 @@ func FileExists(name string) bool {
     }
     return false
 }
-/*
+
 
 	jsonFile, err := os.Open("daemon.json")
     if err != nil {
