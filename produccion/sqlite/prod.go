@@ -45,6 +45,14 @@ func main() {
 
 	db, err := getsqlite(0)
 	if err == nil {
+
+		for i:=0; i<100000; i++ {
+			err := add_txt_db(db)
+			if err != nil {
+				fmt.Println(err)
+			}
+		}
+
 		h := &MyHandler{ Dbs: db}
 		fasthttp.ListenAndServe(":80", h.HandleFastHTTP)
 	}
@@ -90,6 +98,7 @@ func add_txt_db(db *sql.DB) (error) {
 	if err != nil {
 		return err
 	}
+	defer stmt.Close()
 	res, err := stmt.Exec(string(str))
 	if err != nil {
 		return err
@@ -112,12 +121,7 @@ func (h *MyHandler) HandleFastHTTP(ctx *fasthttp.RequestCtx) {
 			fmt.Fprintf(ctx, "CONTENT ERROR")
 		}
 	case "/put":
-		for i:=0; i<10000; i++ {
-			err := add_txt_db(h.Dbs)
-			if err != nil {
-				fmt.Println(err)
-			}
-		}
+		
 	default:
 		ctx.Error("Not Found", fasthttp.StatusNotFound)
 	}
