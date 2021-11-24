@@ -1,17 +1,17 @@
 package main
 
 import (
-	"os"
+	//"os"
 	"fmt"
 	"time"
 	//"context"
 	"strconv"
-	"math/big"
-	"io/ioutil"
-	"crypto/rand"
+	//"math/big"
+	//"io/ioutil"
+	//"crypto/rand"
 	"database/sql"
-	"path/filepath"
-	"encoding/json"
+	//"path/filepath"
+	//"encoding/json"
 	_ "github.com/mattn/go-sqlite3"
 	"github.com/valyala/fasthttp"
 	//"github.com/povsister/scp"
@@ -19,10 +19,8 @@ import (
 type Config struct {
 
 }
-type MyHandler struct {
-	Dbs []*sql.DB `json:"Dbs"`
-	Config Config `json:"Config"`
-	Minicache map[uint64]*Data
+type Objecto struct {
+	Name string `json:"Name"`
 }
 type Data struct {
 	C [] Campos `json:"C"`
@@ -37,69 +35,97 @@ type Evals struct {
 	T int `json:"T"`
 	N string `json:"N"`
 }
-
-func getsqlite(i int) *sql.DB {
-	db, err := sql.Open("sqlite3", "./filtros"+strconv.Itoa(i)+".db")
-	if err == nil {
-		stmt, err := db.Prepare(`create table if not exists contents (id integer not null primary key autoincrement,content text)`)
-		if err != nil {
-			fmt.Println(err)
-		}
-		stmt.Exec()
-		return db
-	}else{
-		fmt.Println(err)
-		return nil
-	}
+type MyHandler struct {
+	Dbs *sql.DB `json:"Dbs"`
+	Config Config `json:"Config"`
+	Minicache map[uint64]*Data
 }
 
 func main() {
 
-	len := 10
-
-	dbs := make([]*sql.DB, 0)
-	now := time.Now()
-	for i:=0; i < len; i++ {
-		db, err := sql.Open("sqlite3", "./filtros"+strconv.Itoa(i)+".db")
-		if err == nil {
-			stmt, err := db.Prepare(`create table if not exists contents (id integer not null primary key autoincrement,content text)`)
+	db, err := getsqlite(0)
+	if err == nil {
+		now := time.Now()
+		/*
+		for i:=0; i<10000; i++ {
+			err := add_txt_db(db)
 			if err != nil {
 				fmt.Println(err)
 			}
-			stmt.Exec()
-			dbs = append(dbs, db)
-		}else{
+		}
+		*/
+		printelaped(now, "ADD 10000")
+		h := &MyHandler{ Dbs: db}
+		fasthttp.ListenAndServe(":80", h.HandleFastHTTP)
+	}
+	
+}
+func getsqlite(i int) (*sql.DB, error) {
+	db, err := sql.Open("sqlite3", "./filtros"+strconv.Itoa(i)+".db")
+	if err == nil {
+		stmt, err := db.Prepare(`create table if not exists contents (id integer not null primary key autoincrement,content text)`)
+		if err != nil {
+			fmt.Println("err1")
 			fmt.Println(err)
+			return db, err
+		}
+		stmt.Exec()
+		return db, nil
+	}else{
+		fmt.Println("err2")
+		fmt.Println(err)
+		return db, err
+	}
+}
+func get_content(db *sql.DB, id int64) (string, error) {
+	rows, err := db.Query("SELECT content FROM contents WHERE id=?", id)
+	if err != nil { 
+		return "", err
+	}
+	defer rows.Close()
+	var content string
+	for rows.Next() {
+		err := rows.Scan(&content)
+		if err != nil { 
+			return "", err
 		}
 	}
-	printelaped(now, "OPEN DBS")
-
-	h := &MyHandler{ Dbs: dbs }
-	fasthttp.ListenAndServe(":80", h.HandleFastHTTP)
-
-	/*
-	stmt, err := db.PrepareContext(ctx, "SELECT content FROM contents WHERE id=?")
-	if err != nil {
-		fmt.Println(err)
-	}
-	defer stmt.Close()
-
-	id := 43
-	var username string
-	err = stmt.QueryRowContext(ctx, id).Scan(&username)
-	fmt.Println(err)
-	fmt.Println(username)
-	*/
-
-
+	return content, nil
 }
 
-type Objecto struct {
-	Name string `json:"Name"`
+func add_txt_db(db *sql.DB) (error) {
+
+	str := []byte("{\"Id\":1,\"Data\":{\"C\":[{ \"T\": 1, \"N\": \"Nacionalidad\", \"V\": [\"Chilena\", \"Argentina\", \"Brasileña\", \"Uruguaya\"] }, { \"T\": 2, \"N\": \"Servicios\", \"V\": [\"Americana\", \"Rusa\", \"Bailarina\", \"Masaje\"] },{ \"T\": 3, \"N\": \"Edad\" }],\"E\": [{ \"T\": 1, \"N\": \"Rostro\" },{ \"T\": 1, \"N\": \"Senos\" },{ \"T\": 1, \"N\": \"Trasero\" }]}}")
+	stmt, err := db.Prepare("INSERT INTO contents (content) values (?)")
+	if err != nil {
+		return err
+	}
+	res, err := stmt.Exec(string(str))
+	if err != nil {
+		return err
+		fmt.Println(res)
+	}
+	return nil
+	
 }
 
 func (h *MyHandler) HandleFastHTTP(ctx *fasthttp.RequestCtx) {
 
+	id := read_int64(ctx.QueryArgs().Peek("id"))
+
+	switch string(ctx.Path()) {
+	case "/get":
+		content, err := get_content(h.Dbs, id)
+		if err == nil{
+			fmt.Fprintf(ctx, content)
+		}else{
+			fmt.Fprintf(ctx, "CONTENT ERROR")
+		}
+	default:
+		ctx.Error("Not Found", fasthttp.StatusNotFound)
+	}
+
+	/*
 	db := read_int64(ctx.QueryArgs().Peek("db"))
 	times := read_int64(ctx.QueryArgs().Peek("times")) 
 	total := read_int64(ctx.QueryArgs().Peek("total")) 
@@ -131,8 +157,10 @@ func (h *MyHandler) HandleFastHTTP(ctx *fasthttp.RequestCtx) {
 	default:
 		ctx.Error("Not Found", fasthttp.StatusNotFound)
 	}
+	*/
 	
 }
+/*
 func (h *MyHandler) escribir_memory(path string, numb int){
 
 	c := 0
@@ -306,17 +334,6 @@ func update_db(db *sql.DB, id int64){
 		fmt.Println(err)
 	}
 }
-func get_content(db *sql.DB, id int64) string {
-	rows, err := db.Query("SELECT content FROM contents WHERE id=?", id)
-	if err != nil { panic(err) }
-	defer rows.Close()
-	var content string
-	for rows.Next() {
-		err2 := rows.Scan(&content)
-		if err2 != nil { fmt.Println(err2) }
-	}
-	return content
-}
 func getFolder64(num int64) string {
 
 	c1, n1 := divmod(num, 1000000)
@@ -338,7 +355,7 @@ func divmod(numerator, denominator int64) (quotient, remainder int64) {
 	remainder = numerator % denominator
 	return
 }
-func printelaped(start time.Time, str string) /*time.Time*/ {
+func printelaped(start time.Time, str string) {
 	elapsed := time.Since(start)
 	fmt.Printf("%s / Tiempo [%v]\n", str, elapsed)
 	//return time.Now()
@@ -365,10 +382,16 @@ func time_cu(t time.Duration, c int) string {
 	}
 	return s
 }
+*/
 func read_int64(data []byte) int64 {
     var x int64
     for _, c := range data {
         x = x * 10 + int64(c - '0')
     }
     return x
+}
+func printelaped(start time.Time, str string) {
+	elapsed := time.Since(start)
+	fmt.Printf("%s / Tiempo [%v]\n", str, elapsed)
+	//return time.Now()
 }
