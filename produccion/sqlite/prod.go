@@ -113,7 +113,7 @@ func (h *MyHandler) HandleFastHTTP(ctx *fasthttp.RequestCtx) {
 		}
 	case "/put":
 		for i:=0; i<10000; i++ {
-			err := add_txt_db(db)
+			err := add_txt_db(h.Dbs)
 			if err != nil {
 				fmt.Println(err)
 			}
