@@ -90,6 +90,7 @@ func getsqlite(i int) (*sql.DB, error) {
 	}
 }
 func get_content(db *sql.DB, id int64) (string, error) {
+	fmt.Println(id)
 	rows, err := db.Query("SELECT content FROM contents WHERE id=?", id)
 	if err != nil { 
 		return "", err
