@@ -107,7 +107,6 @@ func get_content(db *sql.DB, id int64) (string, error) {
 func get_content2(db *sql.DB, id int64) (string, error) {
 	stmt, err := db.Prepare("SELECT content FROM contents WHERE id=?")
 	if err == nil {
-		fmt.Printf("Tipo: %T", stmt)
 		var content string
 		errs := stmt.QueryRow(id).Scan(&content)
 		if errs != nil {
