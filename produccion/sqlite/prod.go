@@ -6,9 +6,9 @@ import (
 	"time"
 	//"context"
 	"strconv"
-	"math/big"
+	//"math/big"
 	//"io/ioutil"
-	"crypto/rand"
+	//"crypto/rand"
 	"database/sql"
 	//"path/filepath"
 	//"encoding/json"
@@ -142,7 +142,7 @@ func (h *MyHandler) HandleFastHTTP(ctx *fasthttp.RequestCtx) {
 
 	//id := read_int64(ctx.QueryArgs().Peek("id"))
 
-	n, _ := rand.Int(rand.Reader, big.NewInt(1000000))
+	//n, _ := rand.Int(rand.Reader, big.NewInt(1000000))
 
 	switch string(ctx.Path()) {
 	case "/get1":
