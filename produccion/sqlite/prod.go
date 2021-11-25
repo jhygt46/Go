@@ -142,8 +142,15 @@ func (h *MyHandler) HandleFastHTTP(ctx *fasthttp.RequestCtx) {
 	id := read_int64(ctx.QueryArgs().Peek("id"))
 
 	switch string(ctx.Path()) {
-	case "/get":
+	case "/get1":
 		content, err := get_content(h.Dbs, id)
+		if err == nil{
+			fmt.Fprintf(ctx, content)
+		}else{
+			ctx.Error("Not Found", fasthttp.StatusNotFound)
+		}
+	case "/get2":
+		content, err := get_content2(h.Dbs, id)
 		if err == nil{
 			fmt.Fprintf(ctx, content)
 		}else{
