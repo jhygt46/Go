@@ -156,12 +156,14 @@ func (h *MyHandler) HandleFastHTTP(ctx *fasthttp.RequestCtx) {
 		}
 		*/
 	case "/get2":
+		/*
 		content, err := get_content2(h.Dbs, n.Int64())
 		if err == nil{
 			fmt.Fprintf(ctx, content)
 		}else{
 			ctx.Error("Not Found", fasthttp.StatusNotFound)
 		}
+		*/
 	case "/put":
 		
 	default:
