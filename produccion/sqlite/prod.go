@@ -142,6 +142,9 @@ func (h *MyHandler) HandleFastHTTP(ctx *fasthttp.RequestCtx) {
 
 	id := read_int64(ctx.QueryArgs().Peek("id"))
 
+	n, _ := rand.Int(rand.Reader, big.NewInt(200))
+	fmt.Println(n)
+
 	switch string(ctx.Path()) {
 	case "/get1":
 		content, err := get_content(h.Dbs, id)
