@@ -143,7 +143,7 @@ func (h *MyHandler) HandleFastHTTP(ctx *fasthttp.RequestCtx) {
 
 	switch string(ctx.Path()) {
 	case "/get":
-		content, err := get_content2(h.Dbs, id)
+		content, err := get_content(h.Dbs, id)
 		if err == nil{
 			fmt.Fprintf(ctx, content)
 		}else{
