@@ -45,18 +45,15 @@ func main() {
 
 	db, err := getsqlite(0)
 	if err == nil {
-		/*
-		for j:=0; j<100; j++ {
-			now := time.Now()
-			for i:=0; i<10000; i++ {
-				err := add_txt_db(db)
-				if err != nil {
-					fmt.Println(err)
-				}
+		now := time.Now()
+		for i:=0; i<36084; i++ {
+			err := add_txt_db(db)
+			if err != nil {
+				fmt.Println(err)
 			}
-			printelaped(now, "10Mil")
+			fmt.Println(i)
 		}
-		*/
+		printelaped(now, "36084")
 		h := &MyHandler{ Dbs: db}
 		fasthttp.ListenAndServe(":80", h.HandleFastHTTP)
 	}
