@@ -142,20 +142,18 @@ func (h *MyHandler) HandleFastHTTP(ctx *fasthttp.RequestCtx) {
 
 	//id := read_int64(ctx.QueryArgs().Peek("id"))
 
-	n, _ := rand.Int(rand.Reader, big.NewInt(1000000))
-	n.Int64()
+	
 
 	switch string(ctx.Path()) {
 	case "/get1":
-		fmt.Fprintf(ctx, "OK")
-		/*
-		content, err := get_content(h.Dbs, n.Int64())
+		
+		content, err := get_content(h.Dbs, random(1000000))
 		if err == nil{
 			fmt.Fprintf(ctx, content)
 		}else{
 			ctx.Error("Not Found", fasthttp.StatusNotFound)
 		}
-		*/
+		
 	case "/get2":
 		/*
 		content, err := get_content2(h.Dbs, n.Int64())
@@ -429,6 +427,10 @@ func time_cu(t time.Duration, c int) string {
 	return s
 }
 */
+func random(max int64) int64 {
+	n, _ := rand.Int(rand.Reader, big.NewInt(max))
+	return n.Int64()
+}
 func read_int64(data []byte) int64 {
     var x int64
     for _, c := range data {
