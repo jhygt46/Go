@@ -39,21 +39,34 @@ type MyHandler struct {
 	Dbs *sql.DB `json:"Dbs"`
 	Config Config `json:"Config"`
 	Minicache map[uint64]*Data
+	DB []Dbs `json:"DB"`
 }
+type Dbs struct {
+	Db *sql.DB `json:"Db"`
+	Stmt []*sql.Stmt `json:"Stmt"`
+}
+//context.Background()
 
 func main() {
 
+	/*
+	dbs := make([]Dbs, 0)
+	len := 10
+	for i:=0; i<len; i++ {
+		db, err := getsqlite(i)
+		if err == nil {
+			stmt, err := db.Prepare("SELECT content FROM contents WHERE id=?")
+			if err == nil {
+				arrstmt := make([]*sql.Stmt, 0)
+				arrstmt = append(arrstmt, stmt)
+				dbs = append(dbs, Dbs{ Db: db, Stmt: arrstmt })
+			}
+		}
+	}
+	*/
+
 	db, err := getsqlite(0)
 	if err == nil {
-		now := time.Now()
-		for i:=0; i<36084; i++ {
-			err := add_txt_db(db)
-			if err != nil {
-				fmt.Println(err)
-			}
-			fmt.Println(i)
-		}
-		printelaped(now, "36084")
 		h := &MyHandler{ Dbs: db}
 		fasthttp.ListenAndServe(":80", h.HandleFastHTTP)
 	}
@@ -91,7 +104,23 @@ func get_content(db *sql.DB, id int64) (string, error) {
 	}
 	return content, nil
 }
-
+func get_content2(db *sql.DB, id int64) (string, error) {
+	stmt, err := db.Prepare("SELECT content FROM contents WHERE id=?")
+	if err == nil {
+		fmt.Printf("Tipo: %T", stmt)
+		var content string
+		errs := stmt.QueryRow(id).Scan(&content)
+		if errs != nil {
+			if errs == sql.ErrNoRows {
+				// Handle the case of no rows returned.
+			}
+			return "", errs
+		}else{
+			return content, nil
+		}
+	}
+	return "", err
+}
 func add_txt_db(db *sql.DB) (error) {
 
 	str := []byte("{\"Id\":1,\"Data\":{\"C\":[{ \"T\": 1, \"N\": \"Nacionalidad\", \"V\": [\"Chilena\", \"Argentina\", \"Brasileña\", \"Uruguaya\"] }, { \"T\": 2, \"N\": \"Servicios\", \"V\": [\"Americana\", \"Rusa\", \"Bailarina\", \"Masaje\"] },{ \"T\": 3, \"N\": \"Edad\" }],\"E\": [{ \"T\": 1, \"N\": \"Rostro\" },{ \"T\": 1, \"N\": \"Senos\" },{ \"T\": 1, \"N\": \"Trasero\" }]}}")
@@ -115,11 +144,11 @@ func (h *MyHandler) HandleFastHTTP(ctx *fasthttp.RequestCtx) {
 
 	switch string(ctx.Path()) {
 	case "/get":
-		content, err := get_content(h.Dbs, id)
+		content, err := get_content2(h.Dbs, id)
 		if err == nil{
 			fmt.Fprintf(ctx, content)
 		}else{
-			fmt.Fprintf(ctx, "CONTENT ERROR")
+			ctx.Error("Not Found", fasthttp.StatusNotFound)
 		}
 	case "/put":
 		

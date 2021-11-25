@@ -1,0 +1,4 @@
+
+*.db
+produccion/sqlite/prod.exe~
+produccion/sqlite/prod.exe
