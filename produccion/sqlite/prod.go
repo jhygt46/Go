@@ -106,19 +106,20 @@ func get_content(db *sql.DB, id int64) (string, error) {
 }
 func get_content2(db *sql.DB, id int64) (string, error) {
 	stmt, err := db.Prepare("SELECT content FROM contents WHERE id=?")
-	if err == nil {
-		var content string
-		errs := stmt.QueryRow(id).Scan(&content)
-		if errs != nil {
-			if errs == sql.ErrNoRows {
-				// Handle the case of no rows returned.
-			}
-			return "", errs
-		}else{
-			return content, nil
-		}
+	if err != nil {
+		return "", err
 	}
-	return "", err
+	defer stmt.Close()
+	var content string
+	errs := stmt.QueryRow(id).Scan(&content)
+	if errs != nil {
+		if errs == sql.ErrNoRows {
+			// Handle the case of no rows returned.
+		}
+		return "", errs
+	}else{
+		return content, nil
+	}
 }
 func add_txt_db(db *sql.DB) (error) {
 
