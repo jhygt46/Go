@@ -1,7 +1,7 @@
 package main
 
 import (
-	//"os"
+	"os"
 	"fmt"
 	"time"
 	//"context"
@@ -10,7 +10,7 @@ import (
 	//"io/ioutil"
 	"crypto/rand"
 	"database/sql"
-	//"path/filepath"
+	"path/filepath"
 	//"encoding/json"
 	_ "github.com/mattn/go-sqlite3"
 	"github.com/valyala/fasthttp"
@@ -65,9 +65,11 @@ func main() {
 	}
 	*/
 
+	escribir_file("/var/db1_test", 300000)
+
 	db, err := getsqlite(0)
 	if err == nil {
-		h := &MyHandler{ Dbs: db}
+		h := &MyHandler{ Dbs: db }
 		fasthttp.ListenAndServe(":80", h.HandleFastHTTP)
 	}
 	
@@ -137,12 +139,36 @@ func add_txt_db(db *sql.DB) (error) {
 	return nil
 
 }
+func escribir_file(path string, numb int){
+
+	d1 := []byte("{\"Id\":1,\"Data\":{\"C\":[{ \"T\": 1, \"N\": \"Nacionalidad\", \"V\": [\"Chilena\", \"Argentina\", \"Brasileña\", \"Uruguaya\"] }, { \"T\": 2, \"N\": \"Servicios\", \"V\": [\"Americana\", \"Rusa\", \"Bailarina\", \"Masaje\"] },{ \"T\": 3, \"N\": \"Edad\" }],\"E\": [{ \"T\": 1, \"N\": \"Rostro\" },{ \"T\": 1, \"N\": \"Senos\" },{ \"T\": 1, \"N\": \"Trasero\" }]}}")
+	c := 0
+
+	now := time.Now()
+	for n := 0; n < numb; n++ {
+		folder := getFolder64(int64(n))
+		newpath := filepath.Join(path, folder)
+		err := os.MkdirAll(newpath, os.ModePerm)
+		if err != nil {
+			fmt.Println(err)
+			fmt.Println("FOLDER ERROR: ", err)
+		}
+		for i := 0; i < 100; i++ {
+			err := os.WriteFile(path+"/"+folder+"/"+strconv.Itoa(i), d1, 0644)
+			if err != nil {
+				fmt.Println(err)
+			}
+			c++
+		}
+	}
+	elapsed := time.Since(now)
+	fmt.Printf("WRITE FILES %v en [%v]\n", c, elapsed)
+
+}
 
 func (h *MyHandler) HandleFastHTTP(ctx *fasthttp.RequestCtx) {
 
 	//id := read_int64(ctx.QueryArgs().Peek("id"))
-
-	
 
 	switch string(ctx.Path()) {
 	case "/get1":
@@ -427,6 +453,19 @@ func time_cu(t time.Duration, c int) string {
 	return s
 }
 */
+func divmod(numerator, denominator int64) (quotient, remainder int64) {
+	quotient = numerator / denominator
+	remainder = numerator % denominator
+	return
+}
+func getFolder64(num int64) string {
+
+	c1, n1 := divmod(num, 1000000)
+	c2, n2 := divmod(n1, 10000)
+	c3, _ := divmod(n2, 100)
+	return strconv.FormatInt(c1, 10)+"/"+strconv.FormatInt(c2, 10)+"/"+strconv.FormatInt(c3, 10)
+
+}
 func random(max int64) int64 {
 	n, _ := rand.Int(rand.Reader, big.NewInt(max))
 	return n.Int64()
