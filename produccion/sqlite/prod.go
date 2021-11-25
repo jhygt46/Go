@@ -140,21 +140,20 @@ func add_txt_db(db *sql.DB) (error) {
 
 func (h *MyHandler) HandleFastHTTP(ctx *fasthttp.RequestCtx) {
 
-	id := read_int64(ctx.QueryArgs().Peek("id"))
+	//id := read_int64(ctx.QueryArgs().Peek("id"))
 
-	n, _ := rand.Int(rand.Reader, big.NewInt(200))
-	fmt.Println(n)
+	n, _ := rand.Int(rand.Reader, big.NewInt(1000000))
 
 	switch string(ctx.Path()) {
 	case "/get1":
-		content, err := get_content(h.Dbs, id)
+		content, err := get_content(h.Dbs, n.Int64())
 		if err == nil{
 			fmt.Fprintf(ctx, content)
 		}else{
 			ctx.Error("Not Found", fasthttp.StatusNotFound)
 		}
 	case "/get2":
-		content, err := get_content2(h.Dbs, id)
+		content, err := get_content2(h.Dbs, n.Int64())
 		if err == nil{
 			fmt.Fprintf(ctx, content)
 		}else{
