@@ -146,7 +146,6 @@ func escribir_file(path string, numb int){
 
 	now := time.Now()
 	for n := 0; n < numb; n++ {
-		now1 := time.Now()
 		folder := getFolder64(int64(n*100))
 		newpath := filepath.Join(path, folder)
 		err := os.MkdirAll(newpath, os.ModePerm)
@@ -161,8 +160,6 @@ func escribir_file(path string, numb int){
 			}
 			c++
 		}
-		fmt.Println(path+"/"+folder+"/")
-		printelaped(now1, "CICLO 100")
 	}
 	elapsed := time.Since(now)
 	fmt.Printf("WRITES FILES %v [%s] c/u total %v\n", c, time_cu(elapsed, c), elapsed)
