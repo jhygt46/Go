@@ -217,6 +217,32 @@ func (h *MyHandler) HandleFastHTTP(ctx *fasthttp.RequestCtx) {
 		}
 		fmt.Fprintf(ctx, "OK")
 
+	case "/update":
+		
+		str1 := []byte("{\"Id\":1,\"Data\":{\"C\":[{ \"T\": 1, \"N\": \"Nacionalidad\", \"V\": [\"Alemana\", \"Española\", \"Inglesa\", \"Francesa\"] }, { \"T\": 2, \"N\": \"Servicios\", \"V\": [\"Americana\", \"Rusa\", \"Bailarina\", \"Masaje\"] },{ \"T\": 3, \"N\": \"Edad\" }],\"E\": [{ \"T\": 1, \"N\": \"Rostro\" },{ \"T\": 1, \"N\": \"Senos\" },{ \"T\": 1, \"N\": \"Trasero\" }]}}")
+		str := string(str1)
+		tx, err := h.Dbs.Begin()
+		if err != nil {
+			fmt.Println(err)
+		}
+		defer tx.Rollback() // The rollback will be ignored if the tx has been committed later in the function.
+		stmt, err := tx.Prepare("UPDATE contents SET content=? WHERE id=?")
+		if err != nil {
+			fmt.Println(err)
+		}
+		defer stmt.Close() // Prepared statements take up server resources and should be closed after use.
+		now := time.Now()
+		for i:=1; i<=350000; i++ {
+			if _, err := stmt.Exec(str, i); err != nil {
+				fmt.Println(err)
+			}
+		}
+		printelaped(now, "UPDATE 350000")
+		if err := tx.Commit(); err != nil {
+			fmt.Println(err)
+		}
+		fmt.Fprintf(ctx, "OK")
+
 	default:
 		ctx.Error("Not Found", fasthttp.StatusNotFound)
 	}
