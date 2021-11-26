@@ -194,7 +194,7 @@ func (h *MyHandler) HandleFastHTTP(ctx *fasthttp.RequestCtx) {
 	case "/put":
 		now := time.Now()
 		for i:=0; i<1000; i++ {
-			add_txt_db(db)
+			add_txt_db(h.Dbs)
 		}
 		printelaped(now, "1000")
 		fmt.Fprintf(ctx, "OK")
