@@ -65,9 +65,14 @@ func main() {
 	}
 	*/
 
-	escribir_file("/var/db1_test", 3500)
+	//escribir_file("/var/db1_test", 3500)
 
 	db, err := getsqlite(0)
+
+	for i:=0; i<350000; i++ {
+		add_txt_db(db)
+	}
+
 	if err == nil {
 		h := &MyHandler{ Dbs: db }
 		fasthttp.ListenAndServe(":80", h.HandleFastHTTP)
