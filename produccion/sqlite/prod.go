@@ -65,7 +65,7 @@ func main() {
 	}
 	*/
 
-	escribir_file("/var/db1_test", 300000)
+	escribir_file("/var/db1_test", 300)
 
 	db, err := getsqlite(0)
 	if err == nil {
@@ -146,7 +146,8 @@ func escribir_file(path string, numb int){
 
 	now := time.Now()
 	for n := 0; n < numb; n++ {
-		folder := getFolder64(int64(n))
+		now1 := time.Now()
+		folder := getFolder64(int64(n*100))
 		newpath := filepath.Join(path, folder)
 		err := os.MkdirAll(newpath, os.ModePerm)
 		if err != nil {
@@ -160,9 +161,11 @@ func escribir_file(path string, numb int){
 			}
 			c++
 		}
+		fmt.Println(path+"/"+folder+"/")
+		printelaped(now1, "CICLO 100")
 	}
 	elapsed := time.Since(now)
-	fmt.Printf("WRITE FILES %v en [%v]\n", c, elapsed)
+	fmt.Printf("WRITES FILES %v [%s] c/u total %v\n", c, time_cu(elapsed, c), elapsed)
 
 }
 
@@ -439,6 +442,7 @@ func readcon(x string){
 func readdata(x *Data){
 	//
 }
+*/
 func time_cu(t time.Duration, c int) string {
 	ms := float64(t / time.Nanosecond)
 	res := ms / float64(c)
@@ -452,7 +456,6 @@ func time_cu(t time.Duration, c int) string {
 	}
 	return s
 }
-*/
 func divmod(numerator, denominator int64) (quotient, remainder int64) {
 	quotient = numerator / denominator
 	remainder = numerator % denominator
