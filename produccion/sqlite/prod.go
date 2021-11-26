@@ -65,7 +65,7 @@ func main() {
 	}
 	*/
 
-	escribir_file("/var/db1_test", 300)
+	escribir_file("/var/db1_test", 5000)
 
 	db, err := getsqlite(0)
 	if err == nil {
