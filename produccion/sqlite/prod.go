@@ -192,11 +192,13 @@ func (h *MyHandler) HandleFastHTTP(ctx *fasthttp.RequestCtx) {
 		fmt.Fprintf(ctx, string(byteValue))
 
 	case "/put":
-		now := time.Now()
-		for i:=0; i<35000; i++ {
-			add_txt_db(h.Dbs)
+		for j:=0; j<35; j++ {
+			now := time.Now()
+			for i:=0; i<1000; i++ {
+				add_txt_db(h.Dbs)
+			}
+			printelaped(now, "1000")
 		}
-		printelaped(now, "35000")
 		fmt.Fprintf(ctx, "OK")
 	default:
 		ctx.Error("Not Found", fasthttp.StatusNotFound)
