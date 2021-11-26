@@ -65,8 +65,6 @@ func main() {
 	}
 	*/
 
-	//escribir_file("/var/db1_test", 3500)
-
 	db, err := getsqlite(0)
 	if err == nil {
 		h := &MyHandler{ Dbs: db }
@@ -191,7 +189,7 @@ func (h *MyHandler) HandleFastHTTP(ctx *fasthttp.RequestCtx) {
 		byteValue, _ := ioutil.ReadAll(file)
 		fmt.Fprintf(ctx, string(byteValue))
 
-	case "/put":
+	case "/put1":
 		
 		str1 := []byte("{\"Id\":1,\"Data\":{\"C\":[{ \"T\": 1, \"N\": \"Nacionalidad\", \"V\": [\"Chilena\", \"Argentina\", \"Brasileña\", \"Uruguaya\"] }, { \"T\": 2, \"N\": \"Servicios\", \"V\": [\"Americana\", \"Rusa\", \"Bailarina\", \"Masaje\"] },{ \"T\": 3, \"N\": \"Edad\" }],\"E\": [{ \"T\": 1, \"N\": \"Rostro\" },{ \"T\": 1, \"N\": \"Senos\" },{ \"T\": 1, \"N\": \"Trasero\" }]}}")
 		str := string(str1)
@@ -216,6 +214,10 @@ func (h *MyHandler) HandleFastHTTP(ctx *fasthttp.RequestCtx) {
 			fmt.Println(err)
 		}
 		fmt.Fprintf(ctx, "OK")
+
+	case "/put2":
+
+		escribir_file("/var/db1_test", 3500)
 
 	case "/update":
 		
@@ -248,9 +250,7 @@ func (h *MyHandler) HandleFastHTTP(ctx *fasthttp.RequestCtx) {
 	}
 
 	/*
-	db := read_int64(ctx.QueryArgs().Peek("db"))
-	times := read_int64(ctx.QueryArgs().Peek("times")) 
-	total := read_int64(ctx.QueryArgs().Peek("total")) 
+
 
 	switch string(ctx.Path()) {
 	case "/get-op1":
