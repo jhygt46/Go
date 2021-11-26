@@ -181,13 +181,13 @@ func (h *MyHandler) HandleFastHTTP(ctx *fasthttp.RequestCtx) {
 	case "/get2":
 		
 		folderfile := getFolderFile64(random(350000))
-		fmt.Println("/var/db1_test/"+folderfile)
 		file, err := os.Open("/var/db1_test/"+folderfile)
 		if err != nil{
 			fmt.Println(err)
 		}
 		file.Close()
 		byteValue, _ := ioutil.ReadAll(file)
+		fmt.Println(byteValue)
 		fmt.Fprintf(ctx, string(byteValue))
 
 	case "/put1":
