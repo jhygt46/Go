@@ -7,7 +7,7 @@ import (
 	//"context"
 	"strconv"
 	"math/big"
-	//"io/ioutil"
+	"io/ioutil"
 	"crypto/rand"
 	"database/sql"
 	"path/filepath"
@@ -178,7 +178,7 @@ func (h *MyHandler) HandleFastHTTP(ctx *fasthttp.RequestCtx) {
 	switch string(ctx.Path()) {
 	case "/get1":
 		
-		content, err := get_content(h.Dbs, random(1000000))
+		content, err := get_content(h.Dbs, random(350000))
 		if err == nil{
 			fmt.Fprintf(ctx, content)
 		}else{
@@ -186,14 +186,16 @@ func (h *MyHandler) HandleFastHTTP(ctx *fasthttp.RequestCtx) {
 		}
 		
 	case "/get2":
-		/*
-		content, err := get_content2(h.Dbs, n.Int64())
-		if err == nil{
-			fmt.Fprintf(ctx, content)
-		}else{
-			ctx.Error("Not Found", fasthttp.StatusNotFound)
+		
+		folderfile := getFolderFile64(random(350000))
+		file, err := os.Open("/var/db1_test/"+folderfile)
+		if err != nil{
+			fmt.Println(err)
 		}
-		*/
+		file.Close()
+		byteValue, _ := ioutil.ReadAll(file)
+		fmt.Fprintf(ctx, string(byteValue))
+
 	case "/put":
 		
 	default:
@@ -469,6 +471,14 @@ func getFolder64(num int64) string {
 	c2, n2 := divmod(n1, 10000)
 	c3, _ := divmod(n2, 100)
 	return strconv.FormatInt(c1, 10)+"/"+strconv.FormatInt(c2, 10)+"/"+strconv.FormatInt(c3, 10)
+
+}
+func getFolderFile64(num int64) string {
+
+	c1, n1 := divmod(num, 1000000)
+	c2, n2 := divmod(n1, 10000)
+	c3, c4 := divmod(n2, 100)
+	return strconv.FormatInt(c1, 10)+"/"+strconv.FormatInt(c2, 10)+"/"+strconv.FormatInt(c3, 10)+"/"+strconv.FormatInt(c4, 10)
 
 }
 func random(max int64) int64 {
