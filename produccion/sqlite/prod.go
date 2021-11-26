@@ -192,14 +192,31 @@ func (h *MyHandler) HandleFastHTTP(ctx *fasthttp.RequestCtx) {
 		fmt.Fprintf(ctx, string(byteValue))
 
 	case "/put":
-		for j:=0; j<35; j++ {
-			now := time.Now()
-			for i:=0; i<1000; i++ {
-				add_txt_db(h.Dbs)
+		
+		str1 := []byte("{\"Id\":1,\"Data\":{\"C\":[{ \"T\": 1, \"N\": \"Nacionalidad\", \"V\": [\"Chilena\", \"Argentina\", \"Brasileña\", \"Uruguaya\"] }, { \"T\": 2, \"N\": \"Servicios\", \"V\": [\"Americana\", \"Rusa\", \"Bailarina\", \"Masaje\"] },{ \"T\": 3, \"N\": \"Edad\" }],\"E\": [{ \"T\": 1, \"N\": \"Rostro\" },{ \"T\": 1, \"N\": \"Senos\" },{ \"T\": 1, \"N\": \"Trasero\" }]}}")
+		str := string(str1)
+		tx, err := h.Dbs.Begin()
+		if err != nil {
+			fmt.Println(err)
+		}
+		defer tx.Rollback() // The rollback will be ignored if the tx has been committed later in the function.
+		stmt, err := tx.Prepare("INSERT INTO contents(content) VALUES(?)")
+		if err != nil {
+			fmt.Println(err)
+		}
+		defer stmt.Close() // Prepared statements take up server resources and should be closed after use.
+		now := time.Now()
+		for i:=0; i<10000; i++ {
+			if _, err := stmt.Exec(str); err != nil {
+				fmt.Println(err)
 			}
-			printelaped(now, "1000")
+		}
+		printelaped(now, "INSERT 10000")
+		if err := tx.Commit(); err != nil {
+			fmt.Println(err)
 		}
 		fmt.Fprintf(ctx, "OK")
+
 	default:
 		ctx.Error("Not Found", fasthttp.StatusNotFound)
 	}
