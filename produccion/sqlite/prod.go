@@ -186,7 +186,10 @@ func (h *MyHandler) HandleFastHTTP(ctx *fasthttp.RequestCtx) {
 			fmt.Println(err)
 		}
 		file.Close()
-		byteValue, _ := ioutil.ReadAll(file)
+		byteValue, err := ioutil.ReadAll(file)
+		if err != nil{
+			fmt.Println(err)
+		}
 		fmt.Println(byteValue)
 		fmt.Fprintf(ctx, string(byteValue))
 
