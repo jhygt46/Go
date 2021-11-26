@@ -68,19 +68,6 @@ func main() {
 	//escribir_file("/var/db1_test", 3500)
 
 	db, err := getsqlite(0)
-
-
-	
-	for j:=0; j<35; j++ {
-		now := time.Now()
-		for i:=0; i<10000; i++ {
-			add_txt_db(db)
-		}
-		printelaped(now, "10000")
-	}
-	
-
-
 	if err == nil {
 		h := &MyHandler{ Dbs: db }
 		fasthttp.ListenAndServe(":80", h.HandleFastHTTP)
@@ -205,7 +192,12 @@ func (h *MyHandler) HandleFastHTTP(ctx *fasthttp.RequestCtx) {
 		fmt.Fprintf(ctx, string(byteValue))
 
 	case "/put":
-		
+		now := time.Now()
+		for i:=0; i<1000; i++ {
+			add_txt_db(db)
+		}
+		printelaped(now, "1000")
+		fmt.Fprintf(ctx, "OK")
 	default:
 		ctx.Error("Not Found", fasthttp.StatusNotFound)
 	}
