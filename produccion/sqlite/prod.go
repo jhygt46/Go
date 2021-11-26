@@ -185,12 +185,11 @@ func (h *MyHandler) HandleFastHTTP(ctx *fasthttp.RequestCtx) {
 		if err != nil{
 			fmt.Println(err)
 		}
-		file.Close()
 		byteValue, err := ioutil.ReadAll(file)
 		if err != nil{
 			fmt.Println(err)
 		}
-		fmt.Println(byteValue)
+		file.Close()
 		fmt.Fprintf(ctx, string(byteValue))
 
 	case "/put1":
