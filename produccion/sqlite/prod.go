@@ -68,7 +68,7 @@ func main() {
 
 	//escribir_file("/var/db1_test", 3500)
 
-	total := 350
+	total := 35000
 	db, err := getsqlite(0)
 	if err == nil {
 		h := &MyHandler{ Dbs: db }
@@ -202,7 +202,7 @@ func (h *MyHandler) HandleFastHTTP(ctx *fasthttp.RequestCtx) {
 	switch string(ctx.Path()) {
 	case "/get0":
 		
-		x := random(350)
+		x := random(35000)
 		if res, found := h.Minicache[x]; found {
 			json.NewEncoder(ctx).Encode(res)
 		}else{
