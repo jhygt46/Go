@@ -67,11 +67,13 @@ func main() {
 
 	//escribir_file("/var/db1_test", 3500)
 
+	total := 35000
 	db, err := getsqlite(0)
 	if err == nil {
 		h := &MyHandler{ Dbs: db }
+		h.Minicache = make(map[int64]*Data, total)
 
-		for i:=1; i<=350; i++ {
+		for i:=1; i<=total; i++ {
 			folderfile := getFolderFile64(random(int64(i)))
 			file, err := os.Open("/var/db1_test/"+folderfile)
 			if err != nil{
