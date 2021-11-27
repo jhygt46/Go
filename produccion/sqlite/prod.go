@@ -25,6 +25,7 @@ type Objecto struct {
 type Data struct {
 	C [] Campos `json:"C"`
 	E [] Evals `json:"E"`
+	N string `json:"N"`
 }
 type Campos struct {
 	T int `json:"T"`
@@ -67,12 +68,20 @@ func main() {
 
 	//escribir_file("/var/db1_test", 3500)
 
-	total := 3500
+	total := 350
 	db, err := getsqlite(0)
 	if err == nil {
 		h := &MyHandler{ Dbs: db }
-
 		h.Minicache = make(map[int64]*Data, total)
+		/*
+		data := Data{ N: "HOLA" }
+		
+		for i:=1; i<=total; i++ {
+			h.Minicache[int64(i)] = &data
+		}
+		fmt.Println(h.Minicache[1])
+		*/
+		
 		for i:=1; i<=total; i++ {
 			folderfile := getFolderFile64(random(int64(i)))
 			file, err := os.Open("/var/db1_test/"+folderfile)
@@ -86,6 +95,7 @@ func main() {
 				h.Minicache[int64(i)] = &data
 			}
 		}
+		
 		
 		fasthttp.ListenAndServe(":80", h.HandleFastHTTP)
 	}
@@ -192,8 +202,7 @@ func (h *MyHandler) HandleFastHTTP(ctx *fasthttp.RequestCtx) {
 	switch string(ctx.Path()) {
 	case "/get0":
 		
-		x := random(3500)
-		//fmt.Printf("%T %v\n", x, x)
+		x := random(350)
 		if res, found := h.Minicache[x]; found {
 			json.NewEncoder(ctx).Encode(res)
 		}else{
