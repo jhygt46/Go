@@ -82,7 +82,7 @@ func main() {
 			data := Data{}
 			if err := json.Unmarshal(byteValue, &data); err == nil {
 				//h.Minicache[int64(i)] = &data
-				fmt.Println(data)
+				fmt.Println(data.C)
 			}
 		}
 
