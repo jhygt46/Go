@@ -88,7 +88,7 @@ func main() {
 			}
 		}
 		
-		fmt.Println(h.Minicache[0])
+		fmt.Println(*h.Minicache[1])
 		fasthttp.ListenAndServe(":80", h.HandleFastHTTP)
 	}
 	
