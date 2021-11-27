@@ -68,12 +68,14 @@ func main() {
 
 	//escribir_file("/var/db1_test", 3500)
 
-	total := 250000
+	total := 200000
 	db, err := getsqlite(0)
 	if err == nil {
+
 		h := &MyHandler{ Dbs: db }
 		h.Minicache = make(map[int64]*Data, total)
 		
+		now := time.Now()
 		for i:=1; i<=total; i++ {
 			folderfile := getFolderFile64(random(int64(i)))
 			file, err := os.Open("/var/db1_test/"+folderfile)
@@ -87,7 +89,7 @@ func main() {
 				h.Minicache[int64(i)] = &data
 			}
 		}
-		
+		printelaped(now, "CACHE LISTO")
 		
 		fasthttp.ListenAndServe(":80", h.HandleFastHTTP)
 	}
@@ -194,11 +196,14 @@ func (h *MyHandler) HandleFastHTTP(ctx *fasthttp.RequestCtx) {
 	switch string(ctx.Path()) {
 	case "/get0":
 		
-		if res, found := h.Minicache[random(350000)]; found {
+		x := random(350000)
+		if res, found := h.Minicache[x]; found {
+			fmt.Printf("CACHE: %v\n", x)
 			json.NewEncoder(ctx).Encode(res)
 		}else{
-			content, err := get_content(h.Dbs, random(350000))
+			content, err := get_content(h.Dbs, x)
 			if err == nil{
+				fmt.Printf("DB: %v\n", x)
 				fmt.Fprintf(ctx, content)
 			}else{
 				ctx.Error("Not Found", fasthttp.StatusNotFound)
