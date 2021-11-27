@@ -65,9 +65,9 @@ func main() {
 	}
 	*/
 
-	//escribir_file("/var/db1_test", 3500)
+	escribir_file("/var/db1_test", 3500)
 
-	total := 35000
+	total := 350000
 	db, err := getsqlite(0)
 	if err == nil {
 		h := &MyHandler{ Dbs: db }
