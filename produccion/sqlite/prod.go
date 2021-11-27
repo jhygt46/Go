@@ -73,14 +73,6 @@ func main() {
 	if err == nil {
 		h := &MyHandler{ Dbs: db }
 		h.Minicache = make(map[int64]*Data, total)
-		/*
-		data := Data{ N: "HOLA" }
-		
-		for i:=1; i<=total; i++ {
-			h.Minicache[int64(i)] = &data
-		}
-		fmt.Println(h.Minicache[1])
-		*/
 		
 		for i:=1; i<=total; i++ {
 			folderfile := getFolderFile64(random(int64(i)))
@@ -202,10 +194,15 @@ func (h *MyHandler) HandleFastHTTP(ctx *fasthttp.RequestCtx) {
 	switch string(ctx.Path()) {
 	case "/get0":
 		
-		if res, found := h.Minicache[random(250000)]; found {
+		if res, found := h.Minicache[random(350000)]; found {
 			json.NewEncoder(ctx).Encode(res)
 		}else{
-			ctx.Error("Not Found", fasthttp.StatusNotFound)
+			content, err := get_content(h.Dbs, random(350000))
+			if err == nil{
+				fmt.Fprintf(ctx, content)
+			}else{
+				ctx.Error("Not Found", fasthttp.StatusNotFound)
+			}
 		}
 
 	case "/get1":
