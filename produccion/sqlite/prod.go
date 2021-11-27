@@ -71,7 +71,7 @@ func main() {
 	if err == nil {
 		h := &MyHandler{ Dbs: db }
 
-		for i:=1; i<=350000; i++ {
+		for i:=1; i<=350; i++ {
 			folderfile := getFolderFile64(random(int64(i)))
 			file, err := os.Open("/var/db1_test/"+folderfile)
 			if err != nil{
@@ -81,7 +81,8 @@ func main() {
 			file.Close()
 			data := Data{}
 			if err := json.Unmarshal(byteValue, &data); err == nil {
-				h.Minicache[int64(i)] = &data
+				//h.Minicache[int64(i)] = &data
+				fmt.Println(data)
 			}
 		}
 
