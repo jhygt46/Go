@@ -193,7 +193,7 @@ func (h *MyHandler) HandleFastHTTP(ctx *fasthttp.RequestCtx) {
 	case "/get0":
 		
 		x := random(3500)
-		fmt.Printf("%T %v\n", x, x)
+		//fmt.Printf("%T %v\n", x, x)
 		if res, found := h.Minicache[x]; found {
 			json.NewEncoder(ctx).Encode(res)
 		}else{
