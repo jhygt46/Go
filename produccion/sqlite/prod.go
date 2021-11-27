@@ -11,7 +11,7 @@ import (
 	"crypto/rand"
 	"database/sql"
 	"path/filepath"
-	//"encoding/json"
+	"encoding/json"
 	_ "github.com/mattn/go-sqlite3"
 	"github.com/valyala/fasthttp"
 	//"github.com/povsister/scp"
@@ -38,7 +38,7 @@ type Evals struct {
 type MyHandler struct {
 	Dbs *sql.DB `json:"Dbs"`
 	Config Config `json:"Config"`
-	Minicache map[uint64]*Data
+	Minicache map[int64]*Data
 	DB []Dbs `json:"DB"`
 }
 type Dbs struct {
@@ -65,9 +65,26 @@ func main() {
 	}
 	*/
 
+	escribir_file("/var/db1_test", 3500)
+
 	db, err := getsqlite(0)
 	if err == nil {
 		h := &MyHandler{ Dbs: db }
+
+		for i:=1; i<=350000; i++ {
+			folderfile := getFolderFile64(random(int64(i)))
+			file, err := os.Open("/var/db1_test/"+folderfile)
+			if err != nil{
+				fmt.Println(err)
+			}
+			byteValue, err := ioutil.ReadAll(file)
+			file.Close()
+			data := Data{}
+			if err := json.Unmarshal(byteValue, &data); err == nil {
+				h.Minicache[int64(i)] = &data
+			}
+		}
+
 		fasthttp.ListenAndServe(":80", h.HandleFastHTTP)
 	}
 	
@@ -139,7 +156,7 @@ func add_txt_db(db *sql.DB) (error) {
 }
 func escribir_file(path string, numb int){
 
-	d1 := []byte("{\"Id\":1,\"Data\":{\"C\":[{ \"T\": 1, \"N\": \"Nacionalidad\", \"V\": [\"Chilena\", \"Argentina\", \"Brasileña\", \"Uruguaya\"] }, { \"T\": 2, \"N\": \"Servicios\", \"V\": [\"Americana\", \"Rusa\", \"Bailarina\", \"Masaje\"] },{ \"T\": 3, \"N\": \"Edad\" }],\"E\": [{ \"T\": 1, \"N\": \"Rostro\" },{ \"T\": 1, \"N\": \"Senos\" },{ \"T\": 1, \"N\": \"Trasero\" }]}}")
+	d1 := []byte("{\"C\":[{ \"T\": 1, \"N\": \"Nacionalidad\", \"V\": [\"Chilena\", \"Argentina\", \"Brasileña\", \"Uruguaya\"] }, { \"T\": 2, \"N\": \"Servicios\", \"V\": [\"Americana\", \"Rusa\", \"Bailarina\", \"Masaje\"] },{ \"T\": 3, \"N\": \"Edad\" }],\"E\": [{ \"T\": 1, \"N\": \"Rostro\" },{ \"T\": 1, \"N\": \"Senos\" },{ \"T\": 1, \"N\": \"Trasero\" }]}")
 	c := 0
 
 	now := time.Now()
@@ -168,7 +185,17 @@ func (h *MyHandler) HandleFastHTTP(ctx *fasthttp.RequestCtx) {
 
 	//id := read_int64(ctx.QueryArgs().Peek("id"))
 
+	ctx.Response.Header.Set("Content-Type", "application/json")
+
 	switch string(ctx.Path()) {
+	case "/get0":
+		
+		if res, found := h.Minicache[random(350000)]; found {
+			json.NewEncoder(ctx).Encode(res)
+		}else{
+			fmt.Println("NOT FOUND")
+		}
+
 	case "/get1":
 		
 		content, err := get_content(h.Dbs, random(350000))
@@ -194,7 +221,7 @@ func (h *MyHandler) HandleFastHTTP(ctx *fasthttp.RequestCtx) {
 
 	case "/put1":
 		
-		str1 := []byte("{\"Id\":1,\"Data\":{\"C\":[{ \"T\": 1, \"N\": \"Nacionalidad\", \"V\": [\"Chilena\", \"Argentina\", \"Brasileña\", \"Uruguaya\"] }, { \"T\": 2, \"N\": \"Servicios\", \"V\": [\"Americana\", \"Rusa\", \"Bailarina\", \"Masaje\"] },{ \"T\": 3, \"N\": \"Edad\" }],\"E\": [{ \"T\": 1, \"N\": \"Rostro\" },{ \"T\": 1, \"N\": \"Senos\" },{ \"T\": 1, \"N\": \"Trasero\" }]}}")
+		str1 := []byte("{\"C\":[{ \"T\": 1, \"N\": \"Nacionalidad\", \"V\": [\"Chilena\", \"Argentina\", \"Brasileña\", \"Uruguaya\"] }, { \"T\": 2, \"N\": \"Servicios\", \"V\": [\"Americana\", \"Rusa\", \"Bailarina\", \"Masaje\"] },{ \"T\": 3, \"N\": \"Edad\" }],\"E\": [{ \"T\": 1, \"N\": \"Rostro\" },{ \"T\": 1, \"N\": \"Senos\" },{ \"T\": 1, \"N\": \"Trasero\" }]}")
 		str := string(str1)
 		tx, err := h.Dbs.Begin()
 		if err != nil {
@@ -218,13 +245,10 @@ func (h *MyHandler) HandleFastHTTP(ctx *fasthttp.RequestCtx) {
 		}
 		fmt.Fprintf(ctx, "OK")
 
-	case "/put2":
-
-		escribir_file("/var/db1_test", 3500)
-
 	case "/update":
 		
-		str1 := []byte("{\"Id\":1,\"Data\":{\"C\":[{ \"T\": 1, \"N\": \"Nacionalidad\", \"V\": [\"Alemana\", \"Española\", \"Inglesa\", \"Francesa\"] }, { \"T\": 2, \"N\": \"Servicios\", \"V\": [\"Americana\", \"Rusa\", \"Bailarina\", \"Masaje\"] },{ \"T\": 3, \"N\": \"Edad\" }],\"E\": [{ \"T\": 1, \"N\": \"Rostro\" },{ \"T\": 1, \"N\": \"Senos\" },{ \"T\": 1, \"N\": \"Trasero\" }]}}")
+		//str1 := []byte("{\"Id\":1,\"Data\":{\"C\":[{ \"T\": 1, \"N\": \"Nacionalidad\", \"V\": [\"Alemana\", \"Española\", \"Inglesa\", \"Francesa\"] }, { \"T\": 2, \"N\": \"Servicios\", \"V\": [\"Americana\", \"Rusa\", \"Bailarina\", \"Masaje\"] },{ \"T\": 3, \"N\": \"Edad\" }],\"E\": [{ \"T\": 1, \"N\": \"Rostro\" },{ \"T\": 1, \"N\": \"Senos\" },{ \"T\": 1, \"N\": \"Trasero\" }]}}")
+		str1 := []byte("{\"C\":[{ \"T\": 1, \"N\": \"Nacionalidad\", \"V\": [\"Alemana\", \"Española\", \"Inglesa\", \"Francesa\"] }, { \"T\": 2, \"N\": \"Servicios\", \"V\": [\"Americana\", \"Rusa\", \"Bailarina\", \"Masaje\"] },{ \"T\": 3, \"N\": \"Edad\" }],\"E\": [{ \"T\": 1, \"N\": \"Rostro\" },{ \"T\": 1, \"N\": \"Senos\" },{ \"T\": 1, \"N\": \"Trasero\" }]}")
 		str := string(str1)
 		tx, err := h.Dbs.Begin()
 		if err != nil {
