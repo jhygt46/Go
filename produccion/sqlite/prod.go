@@ -68,7 +68,7 @@ func main() {
 
 	//escribir_file("/var/db1_test", 3500)
 
-	total := 200000
+	total := 200
 	db, err := getsqlite(0)
 	if err == nil {
 
