@@ -72,7 +72,6 @@ func main() {
 	if err == nil {
 		h := &MyHandler{ Dbs: db }
 
-		
 		h.Minicache = make(map[int64]*Data, total)
 		for i:=1; i<=total; i++ {
 			folderfile := getFolderFile64(random(int64(i)))
@@ -88,7 +87,6 @@ func main() {
 			}
 		}
 		
-		fmt.Println(*h.Minicache[1])
 		fasthttp.ListenAndServe(":80", h.HandleFastHTTP)
 	}
 	
