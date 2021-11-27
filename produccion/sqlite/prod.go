@@ -192,7 +192,8 @@ func (h *MyHandler) HandleFastHTTP(ctx *fasthttp.RequestCtx) {
 	switch string(ctx.Path()) {
 	case "/get0":
 		
-		if res, found := h.Minicache[random(3500)]; found {
+		x := random(3500)
+		if res, found := h.Minicache[x]; found {
 			json.NewEncoder(ctx).Encode(res)
 		}else{
 			fmt.Println("NOT FOUND")
