@@ -39,8 +39,12 @@ type Evals struct {
 type MyHandler struct {
 	Dbs *sql.DB `json:"Dbs"`
 	Config Config `json:"Config"`
-	Minicache map[int64]*Data
+	//Minicache map[int64]*Data `json:"Minicache"`
+	Minicache *Minicache `json:"Minicache"`
 	DB []Dbs `json:"DB"`
+}
+type Minicache struct {
+	Cache map[int64]*Data `json:"Cache"`
 }
 type Dbs struct {
 	Db *sql.DB `json:"Db"`
@@ -72,8 +76,7 @@ func main() {
 	db, err := getsqlite(0)
 	if err == nil {
 
-		h := &MyHandler{ Dbs: db }
-		h.Minicache = make(map[int64]*Data, total)
+		cache := make(map[int64]*Data, total)
 		
 		now := time.Now()
 		for i:=1; i<=total; i++ {
@@ -86,11 +89,14 @@ func main() {
 			file.Close()
 			data := Data{}
 			if err := json.Unmarshal(byteValue, &data); err == nil {
-				h.Minicache[int64(i)] = &data
+				cache[int64(i)] = &data
 			}
 		}
 		printelaped(now, "CACHE LISTO")
 		
+		minicache := &Minicache{ Cache: cache }
+
+		h := &MyHandler{ Dbs: db, Minicache: minicache }
 		fasthttp.ListenAndServe(":80", h.HandleFastHTTP)
 	}
 	
@@ -197,7 +203,7 @@ func (h *MyHandler) HandleFastHTTP(ctx *fasthttp.RequestCtx) {
 	case "/get0":
 		
 		x := random(350000)
-		if res, found := h.Minicache[x]; found {
+		if res, found := h.Minicache.Cache[x]; found {
 			json.NewEncoder(ctx).Encode(res)
 		}else{
 			content, err := get_content(h.Dbs, x)
