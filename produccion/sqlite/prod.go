@@ -198,12 +198,10 @@ func (h *MyHandler) HandleFastHTTP(ctx *fasthttp.RequestCtx) {
 		
 		x := random(350000)
 		if res, found := h.Minicache[x]; found {
-			fmt.Printf("CACHE: %v\n", x)
 			json.NewEncoder(ctx).Encode(res)
 		}else{
 			content, err := get_content(h.Dbs, x)
 			if err == nil{
-				fmt.Printf("DB: %v\n", x)
 				fmt.Fprintf(ctx, content)
 			}else{
 				ctx.Error("Not Found", fasthttp.StatusNotFound)
