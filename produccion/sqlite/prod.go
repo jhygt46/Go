@@ -65,14 +65,15 @@ func main() {
 	}
 	*/
 
-	escribir_file("/var/db1_test", 3500)
+	//escribir_file("/var/db1_test", 3500)
 
-	total := 350000
+	//total := 350000
 	db, err := getsqlite(0)
 	if err == nil {
 		h := &MyHandler{ Dbs: db }
-		h.Minicache = make(map[int64]*Data, total)
 
+		/*
+		h.Minicache = make(map[int64]*Data, total)
 		for i:=1; i<=total; i++ {
 			folderfile := getFolderFile64(random(int64(i)))
 			file, err := os.Open("/var/db1_test/"+folderfile)
@@ -86,6 +87,7 @@ func main() {
 				h.Minicache[int64(i)] = &data
 			}
 		}
+		*/
 
 		fasthttp.ListenAndServe(":80", h.HandleFastHTTP)
 	}
