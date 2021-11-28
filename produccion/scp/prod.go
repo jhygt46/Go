@@ -13,33 +13,25 @@ func main() {
 	// we ignore the host key in this example, please change this if you use this library
 	clientConfig, _ := auth.PrivateKey("root", "/root/.ssh/id_rsa", ssh.InsecureIgnoreHostKey())
 
-	// For other authentication methods see ssh.ClientConfig and ssh.AuthMethod
-
-	// Create a new SCP client
 	client := scp.NewClient("3.142.90.232:22", &clientConfig)
 
-	// Connect to the remote server
 	err := client.Connect()
 	if err != nil {
 		fmt.Println("Couldn't establish a connection to the remote server ", err)
 		return
 	}
 
-	// Open a file
-	f, _ := os.Open("/var/test.txt")
+	f, _ := os.Open("/var/hola.txt")
 
-	// Close client connection after the file has been copied
 	defer client.Close()
-
-	// Close the file after it has been copied
 	defer f.Close()
 
-	// Finaly, copy the file over
-	// Usage: CopyFile(fileReader, remotePath, permission)
-
-	err = client.CopyFile(f, "/root/test.txt", "0655")
-
+	err = client.CopyFromRemote(f, "/root/hola.txt")
+	//err = client.CopyFile(f, "/root/test.txt", "0655")
 	if err != nil {
 		fmt.Println("Error while copying file ", err)
 	}
+
+	
+
 }
