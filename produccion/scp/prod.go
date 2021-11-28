@@ -21,7 +21,10 @@ func main() {
 		return
 	}
 
-	f, _ := os.Open("/var/hola.txt")
+	f, errs := os.Open("/var/hola.txt")
+	if errs != nil {
+		fmt.Println("Error open file ", errs)
+	}
 
 	defer client.Close()
 	defer f.Close()
