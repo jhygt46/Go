@@ -216,7 +216,7 @@ func (h *MyHandler) HandleFastHTTP(ctx *fasthttp.RequestCtx) {
 
 	case "/get1":
 		
-		content, err := get_content(h.Dbs, random(350000))
+		content, err := get_content(h.Dbs, random(300000))
 		if err == nil{
 			fmt.Fprintf(ctx, content)
 		}else{
@@ -225,7 +225,7 @@ func (h *MyHandler) HandleFastHTTP(ctx *fasthttp.RequestCtx) {
 		
 	case "/get2":
 		
-		folderfile := getFolderFile64(random(350000))
+		folderfile := getFolderFile64(random(300000))
 		file, err := os.Open("/var/db1_test/"+folderfile)
 		if err != nil{
 			fmt.Println(err)
@@ -279,12 +279,12 @@ func (h *MyHandler) HandleFastHTTP(ctx *fasthttp.RequestCtx) {
 		}
 		defer stmt.Close() // Prepared statements take up server resources and should be closed after use.
 		now := time.Now()
-		for i:=1; i<=350000; i++ {
+		for i:=1; i<=300000; i++ {
 			if _, err := stmt.Exec(str, i); err != nil {
 				fmt.Println(err)
 			}
 		}
-		printelaped(now, "UPDATE 350000")
+		printelaped(now, "UPDATE 300000")
 		if err := tx.Commit(); err != nil {
 			fmt.Println(err)
 		}
