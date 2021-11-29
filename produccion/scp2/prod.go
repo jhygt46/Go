@@ -32,12 +32,12 @@ func main() {
 		fmt.Println(err1)
 	}
 	
-	/*
+	
 	err2 := scpClient.CopyDirFromRemote("/var/copy", "/var/copy", &scp.DirTransferOption{})
 	if err2 != nil {
 		fmt.Println("err2")
 		fmt.Println(err2)
 	}
-	*/
+	
 
 }
