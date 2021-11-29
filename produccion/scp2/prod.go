@@ -25,18 +25,19 @@ func main() {
 	}
 	defer scpClient.Close()
 
-	/*
+	
 	err1 := scpClient.CopyFileFromRemote("/var/dd.txt", "/var/dd.txt", &scp.FileTransferOption{})
 	if err1 != nil {
 		fmt.Println("err1")
 		fmt.Println(err1)
 	}
-	*/
-
+	
+	/*
 	err2 := scpClient.CopyDirFromRemote("/var/copy", "/var/copy", &scp.DirTransferOption{})
 	if err2 != nil {
 		fmt.Println("err2")
 		fmt.Println(err2)
 	}
+	*/
 
 }
