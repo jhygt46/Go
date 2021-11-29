@@ -21,7 +21,7 @@ func main() {
 		return
 	}
 
-	f, errs := os.OpenFile("/var/hola.txt", os.O_RDONLY|os.O_CREATE, 0666)
+	f, errs := os.Open("/var/hola.txt", os.O_RDONLY|os.O_CREATE, 0666)
 	if errs != nil {
 		fmt.Println("Error open file ", errs)
 	}
