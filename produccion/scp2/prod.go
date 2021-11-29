@@ -18,4 +18,9 @@ func main() {
 		fmt.Println(err)
 	}
 
+	err := scpClient.CopyDirToRemote("/var/copy", "/var/copy", &scp.DirTransferOption{})
+	if err != nil {
+		fmt.Println(err)
+	}
+
 }
