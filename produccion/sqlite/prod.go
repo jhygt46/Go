@@ -202,7 +202,7 @@ func (h *MyHandler) HandleFastHTTP(ctx *fasthttp.RequestCtx) {
 	switch string(ctx.Path()) {
 	case "/get0":
 		
-		x := random(350000)
+		x := random(300000)
 		if res, found := h.Minicache.Cache[x]; found {
 			json.NewEncoder(ctx).Encode(res)
 		}else{
@@ -252,12 +252,12 @@ func (h *MyHandler) HandleFastHTTP(ctx *fasthttp.RequestCtx) {
 		}
 		defer stmt.Close() // Prepared statements take up server resources and should be closed after use.
 		now := time.Now()
-		for i:=0; i<1000000; i++ {
+		for i:=0; i<300000; i++ {
 			if _, err := stmt.Exec(str); err != nil {
 				fmt.Println(err)
 			}
 		}
-		printelaped(now, "INSERT 3500000")
+		printelaped(now, "INSERT 300000")
 		if err := tx.Commit(); err != nil {
 			fmt.Println(err)
 		}
