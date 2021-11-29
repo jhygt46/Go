@@ -13,7 +13,7 @@ func main() {
 	// we ignore the host key in this example, please change this if you use this library
 	clientConfig, _ := auth.PrivateKey("root", "/root/.ssh/id_rsa", ssh.InsecureIgnoreHostKey())
 
-	client := scp.NewClient("3.142.90.232:22", &clientConfig)
+	client := scp.NewClient("18.117.117.108:22", &clientConfig)
 
 	err := client.Connect()
 	if err != nil {

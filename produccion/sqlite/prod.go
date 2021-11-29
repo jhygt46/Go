@@ -72,10 +72,10 @@ func main() {
 
 	//escribir_file("/var/db1_test", 3500)
 
-	total := 200000
+	//total := 200000
 	db, err := getsqlite(0)
 	if err == nil {
-
+		/*
 		cache := make(map[int64]*Data, total)
 		
 		now := time.Now()
@@ -95,8 +95,8 @@ func main() {
 		printelaped(now, "CACHE LISTO")
 		
 		minicache := &Minicache{ Cache: cache }
-
-		h := &MyHandler{ Dbs: db, Minicache: minicache }
+		*/
+		h := &MyHandler{ Dbs: db }
 		fasthttp.ListenAndServe(":80", h.HandleFastHTTP)
 	}
 	
@@ -252,12 +252,12 @@ func (h *MyHandler) HandleFastHTTP(ctx *fasthttp.RequestCtx) {
 		}
 		defer stmt.Close() // Prepared statements take up server resources and should be closed after use.
 		now := time.Now()
-		for i:=0; i<350000; i++ {
+		for i:=0; i<3500000; i++ {
 			if _, err := stmt.Exec(str); err != nil {
 				fmt.Println(err)
 			}
 		}
-		printelaped(now, "INSERT 10000")
+		printelaped(now, "INSERT 3500000")
 		if err := tx.Commit(); err != nil {
 			fmt.Println(err)
 		}
