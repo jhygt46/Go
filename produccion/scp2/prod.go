@@ -9,8 +9,20 @@ import (
 func main() {
 	
 	privPEM, err := ioutil.ReadFile("/root/.ssh/id_rsa")
+	if err != nil {
+		fmt.Println("errx")
+		fmt.Println(err)
+	}
 	sshConf, err := scp.NewSSHConfigFromPrivateKey("root", privPEM, "buenanelson")
+	if err != nil {
+		fmt.Println("erry")
+		fmt.Println(err)
+	}
 	scpClient, err := scp.NewClient("18.117.117.108:22", sshConf, &scp.ClientOption{})
+	if err != nil {
+		fmt.Println("errz")
+		fmt.Println(err)
+	}
 	defer scpClient.Close()
 
 	err1 := scpClient.CopyFileFromRemote("/var/dd.txt", "/var/dd.txt", &scp.FileTransferOption{})
