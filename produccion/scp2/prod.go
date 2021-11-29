@@ -34,10 +34,14 @@ func main() {
 	}else{
 		printelaped(now, "COPY DB")
 	}
-	err2 := scpClient.CopyDirFromRemote("/var/copy", "/var/copy", &scp.DirTransferOption{})
+
+	now1 := time.Now()
+	err2 := scpClient.CopyDirFromRemote("/var/copy", "/var/Go/produccion/sqlite", &scp.DirTransferOption{})
 	if err2 != nil {
 		fmt.Println("err2")
 		fmt.Println(err2)
+	}else{
+		printelaped(now1, "COPY DB2")
 	}
 
 }
