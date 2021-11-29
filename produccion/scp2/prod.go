@@ -24,7 +24,7 @@ func main() {
 		fmt.Println(err)
 	}
 	defer scpClient.Close()
-	err1 := scpClient.CopyFileFromRemote("/var/dd.txt", "/var/dd.txt", &scp.FileTransferOption{})
+	err1 := scpClient.CopyFileFromRemote("/var/filtros0.db", "/var/Go/produccion/sqlite/filtros0.db", &scp.FileTransferOption{})
 	if err1 != nil {
 		fmt.Println("err1")
 		fmt.Println(err1)
