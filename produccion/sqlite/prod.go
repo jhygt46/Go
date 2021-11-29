@@ -252,7 +252,7 @@ func (h *MyHandler) HandleFastHTTP(ctx *fasthttp.RequestCtx) {
 		}
 		defer stmt.Close() // Prepared statements take up server resources and should be closed after use.
 		now := time.Now()
-		for i:=0; i<3500000; i++ {
+		for i:=0; i<1000000; i++ {
 			if _, err := stmt.Exec(str); err != nil {
 				fmt.Println(err)
 			}
