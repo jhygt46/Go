@@ -216,7 +216,7 @@ func (h *MyHandler) HandleFastHTTP(ctx *fasthttp.RequestCtx) {
 
 	case "/get1":
 		
-		content, err := get_content(h.Dbs, random(300000))
+		content, err := get_content(h.Dbs, random(100000))
 		if err == nil{
 			fmt.Fprintf(ctx, content)
 		}else{
@@ -252,7 +252,7 @@ func (h *MyHandler) HandleFastHTTP(ctx *fasthttp.RequestCtx) {
 		}
 		defer stmt.Close() // Prepared statements take up server resources and should be closed after use.
 		now := time.Now()
-		for i:=0; i<300000; i++ {
+		for i:=0; i<100000; i++ {
 			if _, err := stmt.Exec(str); err != nil {
 				fmt.Println(err)
 			}
