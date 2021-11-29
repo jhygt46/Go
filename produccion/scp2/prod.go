@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"time"
 	"io/ioutil"
 	"github.com/povsister/scp"
 )
@@ -25,29 +24,15 @@ func main() {
 		fmt.Println(err)
 	}
 	defer scpClient.Close()
-
-	now := time.Now()
-	err1 := scpClient.CopyFileFromRemote("/var/filtros0.db", "/var/Go/produccion/sqlite/filtros0.db", &scp.FileTransferOption{})
+	err1 := scpClient.CopyFileFromRemote("/var/dd.txt", "/var/dd.txt", &scp.FileTransferOption{})
 	if err1 != nil {
 		fmt.Println("err1")
 		fmt.Println(err1)
-	}else{
-		printelaped(now, "COPY DB")
 	}
-
-	now1 := time.Now()
-	err2 := scpClient.CopyDirFromRemote("/var/copy", "/var/Go/produccion/sqlite", &scp.DirTransferOption{})
+	err2 := scpClient.CopyDirFromRemote("/var/copy", "/var/copy", &scp.DirTransferOption{})
 	if err2 != nil {
 		fmt.Println("err2")
 		fmt.Println(err2)
-	}else{
-		printelaped(now1, "COPY DB2")
 	}
 
-}
-
-func printelaped(start time.Time, str string) {
-	elapsed := time.Since(start)
-	fmt.Printf("%s / Tiempo [%v]\n", str, elapsed)
-	//return time.Now()
 }
