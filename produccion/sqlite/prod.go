@@ -216,7 +216,7 @@ func (h *MyHandler) HandleFastHTTP(ctx *fasthttp.RequestCtx) {
 
 	case "/get1":
 		
-		content, err := get_content(h.Dbs, random(300000))
+		content, err := get_content(h.Dbs, random(3000000))
 		if err == nil{
 			fmt.Fprintf(ctx, content)
 		}else{
