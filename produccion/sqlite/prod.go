@@ -53,7 +53,7 @@ type Dbs struct {
 }
 //context.Background()
 
-var cache map[int64]*Data
+var cache = make(map[int64]*Data)
 
 func main() {
 
@@ -73,7 +73,8 @@ func main() {
 	}
 	*/
 
-	for i:=1; i<=350000; i++ {
+	total := 200000
+	for i:=1; i<=total; i++ {
 		cache[int64(i)] = &Data{}
 	}
 
