@@ -41,7 +41,7 @@ type Minicache struct {
 
 func main() {
 
-	total := 3500
+	total := 350000
 	escribir_file("/var/db1_test", total)
 
 	cache := make(map[int64]*Data, total)
@@ -60,7 +60,7 @@ func main() {
 		}
 	}
 	elapsed := time.Since(now)
-	fmt.Printf("WRITES FILES %v [%s] c/u total %v\n", total, time_cu(elapsed, total), elapsed)
+	fmt.Printf("ADD FILES TO CACHE %v [%s] c/u total %v\n", total, time_cu(elapsed, total), elapsed)
 
 	h := &MyHandler{ Minicache: &Minicache{ Cache: cache }, Total: int64(total) }
 	fasthttp.ListenAndServe(":80", h.HandleFastHTTP)	
