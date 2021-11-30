@@ -3,10 +3,10 @@ const autocannon = require('autocannon');
 async function init(){
     const instance = autocannon({
         url: 'http://13.58.177.170/get',
-        connections: 10,
-        duration: 50,
+        connections: 20,
+        duration: 60,
         method: 'GET',
-        pipelining: 4
+        pipelining: 8
     });
     autocannon.track(instance, {renderProgressBar: true});
 }
