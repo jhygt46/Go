@@ -21,18 +21,19 @@ type MyHandler struct {
 
 func main() {
 
-	total := 100000
+	total := 1000000
+	subtotal := 100000
 	dbs := make([]*sql.DB, 0)
 	len := 10
 	for i:=0; i<len; i++ {
 		db, err := getsqlite(i)
 		if err == nil {
-			add_db(db, total)
+			add_db(db, subtotal)
 			dbs = append(dbs, db)
 		}
 	}
 
-	h := &MyHandler{ MDBS: dbs }
+	h := &MyHandler{ MDBS: dbs, Total: int64(total) }
 	fasthttp.ListenAndServe(":80", h.HandleFastHTTP)
 	
 }
