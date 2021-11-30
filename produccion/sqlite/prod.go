@@ -53,6 +53,8 @@ type Dbs struct {
 }
 //context.Background()
 
+var cache map[int64]*Data
+
 func main() {
 
 	/*
@@ -71,6 +73,10 @@ func main() {
 	}
 	*/
 
+	for i:=1; i<=350000; i++ {
+		cache[int64(i)] = &Data{}
+	}
+
 	dbs := make([]*sql.DB, 0)
 	len := 10
 	for i:=0; i<len; i++ {
@@ -80,7 +86,6 @@ func main() {
 		}
 	}
 
-	fmt.Println(dbs)
 
 	h := &MyHandler{ MDBS: dbs }
 	fasthttp.ListenAndServe(":80", h.HandleFastHTTP)
