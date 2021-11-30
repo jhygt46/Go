@@ -42,7 +42,7 @@ type Minicache struct {
 func main() {
 
 	total := 350000
-	escribir_file("/var/db1_test", total)
+	//escribir_file("/var/db1_test", total)
 
 	cache := make(map[int64]*Data, total)
 	now := time.Now()
@@ -73,9 +73,11 @@ func (h *MyHandler) HandleFastHTTP(ctx *fasthttp.RequestCtx) {
 	
 	switch string(ctx.Path()) {
 	case "/get":
-		if res, found := h.Minicache.Cache[random(h.Total)]; found {
+		total := random(h.Total)
+		if res, found := h.Minicache.Cache[total]; found {
 			json.NewEncoder(ctx).Encode(res)
 		}else{
+			fmt.Printf("ERROR: %v \n", total)
 			ctx.Error("Not Found", fasthttp.StatusNotFound)
 		}
 	default:
