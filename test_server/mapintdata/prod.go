@@ -107,7 +107,6 @@ func escribir_file(path string, numb int){
 			}
 			c++
 		}
-		fmt.Println(c)
 	}
 	elapsed := time.Since(now)
 	fmt.Printf("WRITES FILES %v [%s] c/u total %v\n", c, time_cu(elapsed, c), elapsed)
