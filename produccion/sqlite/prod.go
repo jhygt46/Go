@@ -72,7 +72,7 @@ func main() {
 	*/
 
 	dbs := make([]*sql.DB, 0)
-	len := 10
+	len := 20
 	for i:=0; i<len; i++ {
 		db, err := getsqlite(i)
 		if err == nil {
@@ -229,7 +229,7 @@ func (h *MyHandler) HandleFastHTTP(ctx *fasthttp.RequestCtx) {
 
 	case "/get1":
 		
-		db, id := getdbid(random(1000000), 0)
+		db, id := getdbid(random(2000000), 0)
 		content, err := get_content(h.MDBS[db], id)
 		if err == nil{
 			fmt.Fprintf(ctx, content)
