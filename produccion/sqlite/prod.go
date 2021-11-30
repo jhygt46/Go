@@ -229,7 +229,7 @@ func (h *MyHandler) HandleFastHTTP(ctx *fasthttp.RequestCtx) {
 
 	case "/get1":
 		
-		db, id := getdbid(random(2000000), 0)
+		db, id := getdbid(random(1000000), 0)
 		content, err := get_content(h.MDBS[db], id)
 		if err == nil{
 			fmt.Fprintf(ctx, content)
@@ -268,12 +268,12 @@ func (h *MyHandler) HandleFastHTTP(ctx *fasthttp.RequestCtx) {
 		}
 		defer stmt.Close() // Prepared statements take up server resources and should be closed after use.
 		now := time.Now()
-		for i:=0; i<200000; i++ {
+		for i:=0; i<100000; i++ {
 			if _, err := stmt.Exec(str); err != nil {
 				fmt.Println(err)
 			}
 		}
-		printelaped(now, "INSERT 200000")
+		printelaped(now, "INSERT 100000")
 		if err := tx.Commit(); err != nil {
 			fmt.Println(err)
 		}
@@ -572,7 +572,7 @@ func divmod(numerator, denominator int64) (quotient, remainder int64) {
 	return
 }
 func getdbid(num, base int64) (db, id int64) {
-	c, n := divmod(num-base, 200000)
+	c, n := divmod(num-base, 100000)
 	return c, n
 }
 func getFolder64(num int64) string {
