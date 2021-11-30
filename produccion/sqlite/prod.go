@@ -42,6 +42,7 @@ type MyHandler struct {
 	//Minicache map[int64]*Data `json:"Minicache"`
 	Minicache *Minicache `json:"Minicache"`
 	DB []Dbs `json:"DB"`
+	MDBS []*sql.DB `json:"MDBS"`
 }
 type Minicache struct {
 	Cache map[int64]*Data `json:"Cache"`
@@ -70,14 +71,27 @@ func main() {
 	}
 	*/
 
+	dbs := make([]*sql.DB, 0)
+	len := 10
+	for i:=0; i<len; i++ {
+		db, err := getsqlite(i)
+		if err == nil {
+			dbs = append(dbs, db)
+		}
+	}
+
+	fmt.Println(dbs)
+
+	h := &MyHandler{ MDBS: dbs }
+	fasthttp.ListenAndServe(":80", h.HandleFastHTTP)
+
 	//escribir_file("/var/db1_test", 3500)
 
 	//total := 200000
-	db, err := getsqlite(0)
+	//db, err := getsqlite(0)
+	/*
 	if err == nil {
-		/*
 		cache := make(map[int64]*Data, total)
-		
 		now := time.Now()
 		for i:=1; i<=total; i++ {
 			folderfile := getFolderFile64(random(int64(i)))
@@ -93,12 +107,11 @@ func main() {
 			}
 		}
 		printelaped(now, "CACHE LISTO")
-		
 		minicache := &Minicache{ Cache: cache }
-		*/
-		h := &MyHandler{ Dbs: db }
-		fasthttp.ListenAndServe(":80", h.HandleFastHTTP)
+		h := &MyHandler{ MDBS: dbs }
+		fasthttp.ListenAndServe(":80", h.HandleFastHTTP)	
 	}
+	*/
 	
 }
 func getsqlite(i int) (*sql.DB, error) {
@@ -195,10 +208,10 @@ func escribir_file(path string, numb int){
 
 func (h *MyHandler) HandleFastHTTP(ctx *fasthttp.RequestCtx) {
 
-	//id := read_int64(ctx.QueryArgs().Peek("id"))
+	
 
 	ctx.Response.Header.Set("Content-Type", "application/json")
-
+	
 	switch string(ctx.Path()) {
 	case "/get0":
 		
@@ -216,7 +229,8 @@ func (h *MyHandler) HandleFastHTTP(ctx *fasthttp.RequestCtx) {
 
 	case "/get1":
 		
-		content, err := get_content(h.Dbs, random(100000))
+		db, id := getdbid(random(1000000), 0)
+		content, err := get_content(h.MDBS[db], id)
 		if err == nil{
 			fmt.Fprintf(ctx, content)
 		}else{
@@ -239,9 +253,11 @@ func (h *MyHandler) HandleFastHTTP(ctx *fasthttp.RequestCtx) {
 
 	case "/put1":
 		
+		id := read_int64(ctx.QueryArgs().Peek("id"))
+
 		str1 := []byte("{\"C\":[{ \"T\": 1, \"N\": \"Nacionalidad\", \"V\": [\"Chilena\", \"Argentina\", \"Brasileña\", \"Uruguaya\"] }, { \"T\": 2, \"N\": \"Servicios\", \"V\": [\"Americana\", \"Rusa\", \"Bailarina\", \"Masaje\"] },{ \"T\": 3, \"N\": \"Edad\" }],\"E\": [{ \"T\": 1, \"N\": \"Rostro\" },{ \"T\": 1, \"N\": \"Senos\" },{ \"T\": 1, \"N\": \"Trasero\" }]}")
 		str := string(str1)
-		tx, err := h.Dbs.Begin()
+		tx, err := h.MDBS[id].Begin()
 		if err != nil {
 			fmt.Println(err)
 		}
@@ -554,6 +570,10 @@ func divmod(numerator, denominator int64) (quotient, remainder int64) {
 	quotient = numerator / denominator
 	remainder = numerator % denominator
 	return
+}
+func getdbid(num, base int64) (db, id int64) {
+	c, n := divmod(num-base, 100000)
+	return c, n
 }
 func getFolder64(num int64) string {
 
