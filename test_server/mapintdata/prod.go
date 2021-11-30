@@ -6,7 +6,7 @@ import (
 	"time"
 	"strconv"
 	"math/big"
-	"io/ioutil"
+	//"io/ioutil"
 	"crypto/rand"
 	"path/filepath"
 	"encoding/json"
@@ -43,7 +43,7 @@ func main() {
 
 	total := 350000
 	//escribir_file("/var/db1_test", total)
-
+	/*
 	cache := make(map[int64]*Data, total)
 	now := time.Now()
 	for i:=1; i<=total; i++ {
@@ -61,8 +61,8 @@ func main() {
 	}
 	elapsed := time.Since(now)
 	fmt.Printf("ADD FILES TO CACHE %v [%s] c/u total %v\n", total, time_cu(elapsed, total), elapsed)
-
-	h := &MyHandler{ Minicache: &Minicache{ Cache: cache }, Total: int64(total) }
+	*/
+	h := &MyHandler{ Minicache: &Minicache{ Cache: make(map[int64]*Data, total) }, Total: int64(total) }
 	fasthttp.ListenAndServe(":80", h.HandleFastHTTP)	
 	
 }
