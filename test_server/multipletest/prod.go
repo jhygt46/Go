@@ -79,7 +79,7 @@ func (h *MyHandler) HandleFastHTTP(ctx *fasthttp.RequestCtx) {
 			ctx.Error("Not Found", fasthttp.StatusNotFound)
 		}
 	case "/get2":
-		db, err := getsqlite(0)
+		db, err := getsqlite2(0)
 		if err == nil {
 			content, err := get_content(db, total)
 			if err == nil{
@@ -158,6 +158,7 @@ func getsqlite2(i int) (*sql.DB, error) {
 	if err == nil {
 		return db, nil
 	}
+	return db, err
 }
 func add_db(db *sql.DB, total int){
 
