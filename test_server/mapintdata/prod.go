@@ -35,7 +35,7 @@ type MyHandler struct {
 	Total int64 `json:"Total"`
 }
 type Minicache struct {
-	Cache map[int64]*Data `json:"Cache"`
+	Cache map[int64]Data `json:"Cache"`
 }
 
 
@@ -62,7 +62,7 @@ func main() {
 	elapsed := time.Since(now)
 	fmt.Printf("ADD FILES TO CACHE %v [%s] c/u total %v\n", total, time_cu(elapsed, total), elapsed)
 	*/
-	h := &MyHandler{ Minicache: &Minicache{ Cache: make(map[int64]*Data, total) }, Total: int64(total) }
+	h := &MyHandler{ Minicache: &Minicache{ Cache: make(map[int64]Data, total) }, Total: int64(total) }
 	fasthttp.ListenAndServe(":80", h.HandleFastHTTP)	
 	
 }
@@ -73,11 +73,9 @@ func (h *MyHandler) HandleFastHTTP(ctx *fasthttp.RequestCtx) {
 	
 	switch string(ctx.Path()) {
 	case "/get":
-		total := random(h.Total)
-		if res, found := h.Minicache.Cache[total]; found {
+		if res, found := h.Minicache.Cache[random(h.Total)]; found {
 			json.NewEncoder(ctx).Encode(res)
 		}else{
-			fmt.Printf("ERROR: %v \n", total)
 			ctx.Error("Not Found", fasthttp.StatusNotFound)
 		}
 	default:
