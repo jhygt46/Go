@@ -36,10 +36,6 @@ type MyHandler struct {
 type Minicache struct {
 	Cache map[int64]Data `json:"Cache"`
 }
-type Select struct {
-	Id int64 `json:"id"`
-	Content string `json:"Content"`
-}
 
 func main() {
 
@@ -82,16 +78,17 @@ func (h *MyHandler) db_to_cache(db *sql.DB) {
 		fmt.Println(err)
 	}
 	defer rows.Close()
-	sel := Select{}
+	var content string
+	var id int64
 	data := Data{}
 	c := 1
 	for rows.Next() {
-		err := rows.Scan(&sel)
+		err := rows.Scan(&id, &content)
 		if err != nil { 
 			fmt.Println(err)
 		}
-		if err := json.Unmarshal([]byte(sel.Content), &data); err == nil {
-			h.Minicache.Cache[sel.Id] = data
+		if err := json.Unmarshal([]byte(content), &data); err == nil {
+			h.Minicache.Cache[id] = data
 			c++
 		}
 	}
@@ -103,6 +100,7 @@ func (h *MyHandler) db_to_cache(db *sql.DB) {
 
 func getsqlite(i int) (*sql.DB, error) {
 	db, err := sql.Open("sqlite3", "./filtros"+strconv.Itoa(i)+".db")
+	//defer db.Close()
 	if err == nil {
 		stmt, err := db.Prepare(`create table if not exists contents (id integer not null primary key autoincrement,content text)`)
 		if err != nil {
