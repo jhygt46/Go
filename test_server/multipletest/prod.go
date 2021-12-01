@@ -72,6 +72,8 @@ func (h *MyHandler) HandleFastHTTP(ctx *fasthttp.RequestCtx) {
 }
 
 func (h *MyHandler) get_content(db *sql.DB) (string, error) {
+
+	now := time.Now()
 	rows, err := db.Query("SELECT content FROM contents")
 	if err != nil { 
 		return "", err
@@ -90,6 +92,8 @@ func (h *MyHandler) get_content(db *sql.DB) (string, error) {
 			c++
 		}
 	}
+	elapsed := time.Since(now)
+	fmt.Printf("WRITES FILES %v [%s] c/u total %v\n", c, time_cu(elapsed, c), elapsed)
 	return content, nil
 }
 
