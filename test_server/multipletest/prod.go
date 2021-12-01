@@ -40,7 +40,7 @@ type Minicache struct {
 func main() {
 
 	totalcache := 350000
-	total := 350000
+	total := 1000000
 
 	db, err := getsqlite(0)
 	if err == nil {
@@ -73,7 +73,7 @@ func (h *MyHandler) HandleFastHTTP(ctx *fasthttp.RequestCtx) {
 func (h *MyHandler) db_to_cache(db *sql.DB) {
 
 	now := time.Now()
-	rows, err := db.Query("SELECT id, content FROM contents")
+	rows, err := db.Query("SELECT id, content FROM contents LIMIT 350000")
 	if err != nil { 
 		fmt.Println(err)
 	}
