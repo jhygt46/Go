@@ -136,7 +136,7 @@ func (h *MyHandler) db_to_cache(db *sql.DB) {
 }
 func getsqlite(i int) (*sql.DB, error) {
 	db, err := sql.Open("sqlite3", "./filtros"+strconv.Itoa(i)+".db")
-	//defer db.Close()
+	defer db.Close()
 	if err == nil {
 		stmt, err := db.Prepare(`create table if not exists contents (id integer not null primary key autoincrement,content text)`)
 		if err != nil {
