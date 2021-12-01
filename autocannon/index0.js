@@ -2,7 +2,7 @@
 const autocannon = require('autocannon');
 async function init(){
     const instance = autocannon({
-        url: 'http://18.117.135.40/get',
+        url: 'http://3.142.247.170/get',
         connections: 20,
         duration: 60,
         method: 'GET',
