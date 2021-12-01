@@ -152,6 +152,13 @@ func getsqlite(i int) (*sql.DB, error) {
 		return db, err
 	}
 }
+func getsqlite2(i int) (*sql.DB, error) {
+	db, err := sql.Open("sqlite3", "./filtros"+strconv.Itoa(i)+".db")
+	defer db.Close()
+	if err == nil {
+		return db, nil
+	}
+}
 func add_db(db *sql.DB, total int){
 
 	str1 := []byte("{\"C\":[{ \"T\": 1, \"N\": \"Nacionalidad\", \"V\": [\"Chilena\", \"Argentina\", \"Brasileña\", \"Uruguaya\"] }, { \"T\": 2, \"N\": \"Servicios\", \"V\": [\"Americana\", \"Rusa\", \"Bailarina\", \"Masaje\"] },{ \"T\": 3, \"N\": \"Edad\" }],\"E\": [{ \"T\": 1, \"N\": \"Rostro\" },{ \"T\": 1, \"N\": \"Senos\" },{ \"T\": 1, \"N\": \"Trasero\" }]}")
