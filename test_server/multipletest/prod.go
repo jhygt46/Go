@@ -58,13 +58,30 @@ func main() {
 func (h *MyHandler) HandleFastHTTP(ctx *fasthttp.RequestCtx) {
 
 	ctx.Response.Header.Set("Content-Type", "application/json")
+	total := random(h.Total)
 	switch string(ctx.Path()) {
 	case "/get":
-		total := random(h.Total)
 		if res, found := h.Minicache.Cache[total]; found {
 			json.NewEncoder(ctx).Encode(res)
 		}else{
 			content, err := get_content(h.Dbs, total)
+			if err == nil{
+				fmt.Fprintf(ctx, content)
+			}else{
+				ctx.Error("Not Found", fasthttp.StatusNotFound)
+			}
+		}
+	case "/get1":
+		content, err := get_content(h.Dbs, total)
+		if err == nil{
+			fmt.Fprintf(ctx, content)
+		}else{
+			ctx.Error("Not Found", fasthttp.StatusNotFound)
+		}
+	case "/get2":
+		db, err := getsqlite(0)
+		if err == nil {
+			content, err := get_content(db, total)
 			if err == nil{
 				fmt.Fprintf(ctx, content)
 			}else{
