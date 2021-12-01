@@ -29,6 +29,7 @@ type Evals struct {
 	N string `json:"N"`
 }
 type MyHandler struct {
+	Dbs *sql.DB `json:"Dbs"`
 	Config Config `json:"Config"`
 	Minicache *Minicache `json:"Minicache"`
 	Total int64 `json:"Total"`
@@ -45,7 +46,7 @@ func main() {
 	db, err := getsqlite(0)
 	if err == nil {
 
-		h := &MyHandler{ Minicache: &Minicache{ Cache: make(map[int64]Data, totalcache) }, Total: int64(total) }
+		h := &MyHandler{ Dbs: db, Minicache: &Minicache{ Cache: make(map[int64]Data, totalcache) }, Total: int64(total) }
 		add_db(db, total)
 		h.db_to_cache(db)
 		fasthttp.ListenAndServe(":80", h.HandleFastHTTP)	
@@ -59,17 +60,37 @@ func (h *MyHandler) HandleFastHTTP(ctx *fasthttp.RequestCtx) {
 	ctx.Response.Header.Set("Content-Type", "application/json")
 	switch string(ctx.Path()) {
 	case "/get":
-		if res, found := h.Minicache.Cache[random(h.Total)]; found {
+		total := random(h.Total)
+		if res, found := h.Minicache.Cache[total]; found {
 			json.NewEncoder(ctx).Encode(res)
 		}else{
-			ctx.Error("Not Found", fasthttp.StatusNotFound)
+			content, err := get_content(h.Dbs, total)
+			if err == nil{
+				fmt.Fprintf(ctx, content)
+			}else{
+				ctx.Error("Not Found", fasthttp.StatusNotFound)
+			}
 		}
 	default:
 		ctx.Error("Not Found", fasthttp.StatusNotFound)
 	}
 	
 }
-
+func get_content(db *sql.DB, id int64) (string, error) {
+	rows, err := db.Query("SELECT content FROM contents WHERE id=?", id)
+	if err != nil { 
+		return "", err
+	}
+	defer rows.Close()
+	var content string
+	for rows.Next() {
+		err := rows.Scan(&content)
+		if err != nil { 
+			return "", err
+		}
+	}
+	return content, nil
+}
 func (h *MyHandler) db_to_cache(db *sql.DB) {
 
 	now := time.Now()
@@ -96,8 +117,6 @@ func (h *MyHandler) db_to_cache(db *sql.DB) {
 	fmt.Printf("WRITES FILES %v [%s] c/u total %v\n", c, time_cu(elapsed, c), elapsed)
 
 }
-
-
 func getsqlite(i int) (*sql.DB, error) {
 	db, err := sql.Open("sqlite3", "./filtros"+strconv.Itoa(i)+".db")
 	//defer db.Close()
