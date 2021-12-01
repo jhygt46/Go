@@ -41,7 +41,7 @@ type Minicache struct {
 func main() {
 
 	//totalcache := 350000
-	total := 1000000
+	total := 350000
 
 	db, err := getsqlite(0)
 	if err == nil {
