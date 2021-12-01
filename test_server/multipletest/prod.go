@@ -81,7 +81,7 @@ func (h *MyHandler) db_to_cache(db *sql.DB) {
 	var content string
 	var id int64
 	data := Data{}
-	c := 1
+	c := 0
 	for rows.Next() {
 		err := rows.Scan(&id, &content)
 		if err != nil { 
@@ -178,6 +178,6 @@ func getFolderFile64(num int64) string {
 
 }
 func random(max int64) int64 {
-	n, _ := rand.Int(rand.Reader, big.NewInt(max))
-	return n.Int64()
+	n, _ := rand.Int(rand.Reader, big.NewInt(max - 1))
+	return n.Int64() + 1
 }
