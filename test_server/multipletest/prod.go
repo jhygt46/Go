@@ -36,7 +36,10 @@ type MyHandler struct {
 type Minicache struct {
 	Cache map[int64]Data `json:"Cache"`
 }
-
+type Select struct {
+	Id int64 `json:"id"`
+	Content string `json:"Content"`
+}
 
 func main() {
 
@@ -48,7 +51,7 @@ func main() {
 
 		h := &MyHandler{ Minicache: &Minicache{ Cache: make(map[int64]Data, totalcache) }, Total: int64(total) }
 		add_db(db, total)
-		h.get_content(db)
+		h.db_to_cache(db)
 		fasthttp.ListenAndServe(":80", h.HandleFastHTTP)	
 
 	}
@@ -71,30 +74,30 @@ func (h *MyHandler) HandleFastHTTP(ctx *fasthttp.RequestCtx) {
 	
 }
 
-func (h *MyHandler) get_content(db *sql.DB) (string, error) {
+func (h *MyHandler) db_to_cache(db *sql.DB) {
 
 	now := time.Now()
-	rows, err := db.Query("SELECT content FROM contents")
+	rows, err := db.Query("SELECT id, content FROM contents")
 	if err != nil { 
-		return "", err
+		fmt.Println(err)
 	}
 	defer rows.Close()
-	var content string
+	sel := Select{}
 	data := Data{}
-	c := int64(1)
+	c := 1
 	for rows.Next() {
-		err := rows.Scan(&content)
+		err := rows.Scan(&sel)
 		if err != nil { 
-			return "", err
+			fmt.Println(err)
 		}
-		if err := json.Unmarshal([]byte(content), &data); err == nil {
-			h.Minicache.Cache[c] = data
+		if err := json.Unmarshal([]byte(sel.Content), &data); err == nil {
+			h.Minicache.Cache[sel.Id] = data
 			c++
 		}
 	}
 	elapsed := time.Since(now)
 	fmt.Printf("WRITES FILES %v [%s] c/u total %v\n", c, time_cu(elapsed, c), elapsed)
-	return content, nil
+
 }
 
 
