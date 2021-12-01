@@ -7,7 +7,7 @@ import (
 	"math/big"
 	"crypto/rand"
 	"database/sql"
-	"encoding/json"
+	//"encoding/json"
 	"github.com/valyala/fasthttp"
 	_ "github.com/mattn/go-sqlite3"
 )
@@ -40,15 +40,15 @@ type Minicache struct {
 
 func main() {
 
-	totalcache := 350000
+	//totalcache := 350000
 	total := 1000000
 
 	db, err := getsqlite(0)
 	if err == nil {
 
-		h := &MyHandler{ Dbs: db, Minicache: &Minicache{ Cache: make(map[int64]Data, totalcache) }, Total: int64(total) }
+		h := &MyHandler{ Dbs: db, /*Minicache: &Minicache{ Cache: make(map[int64]Data, totalcache) },*/ Total: int64(total) }
 		add_db(db, total)
-		h.db_to_cache(db)
+		//h.db_to_cache(db)
 		fasthttp.ListenAndServe(":80", h.HandleFastHTTP)	
 
 	}
@@ -61,6 +61,7 @@ func (h *MyHandler) HandleFastHTTP(ctx *fasthttp.RequestCtx) {
 	total := random(h.Total)
 	switch string(ctx.Path()) {
 	case "/get":
+		/*
 		if res, found := h.Minicache.Cache[total]; found {
 			json.NewEncoder(ctx).Encode(res)
 		}else{
@@ -71,6 +72,7 @@ func (h *MyHandler) HandleFastHTTP(ctx *fasthttp.RequestCtx) {
 				ctx.Error("Not Found", fasthttp.StatusNotFound)
 			}
 		}
+		*/
 	case "/get1":
 		content, err := get_content(h.Dbs, total)
 		if err == nil{
@@ -98,6 +100,7 @@ func get_content(db *sql.DB, id int64) (string, error) {
 	}
 	return content, nil
 }
+/*
 func (h *MyHandler) db_to_cache(db *sql.DB) {
 
 	now := time.Now()
@@ -124,6 +127,7 @@ func (h *MyHandler) db_to_cache(db *sql.DB) {
 	fmt.Printf("WRITES FILES %v [%s] c/u total %v\n", c, time_cu(elapsed, c), elapsed)
 
 }
+*/
 func getsqlite(i int) (*sql.DB, error) {
 	db, err := sql.Open("sqlite3", "./filtros"+strconv.Itoa(i)+".db")
 	//defer db.Close()
