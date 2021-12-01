@@ -78,16 +78,6 @@ func (h *MyHandler) HandleFastHTTP(ctx *fasthttp.RequestCtx) {
 		}else{
 			ctx.Error("Not Found", fasthttp.StatusNotFound)
 		}
-	case "/get2":
-		db, err := getsqlite2(0)
-		if err == nil {
-			content, err := get_content(db, total)
-			if err == nil{
-				fmt.Fprintf(ctx, content)
-			}else{
-				ctx.Error("Not Found", fasthttp.StatusNotFound)
-			}
-		}
 	default:
 		ctx.Error("Not Found", fasthttp.StatusNotFound)
 	}
@@ -136,7 +126,7 @@ func (h *MyHandler) db_to_cache(db *sql.DB) {
 }
 func getsqlite(i int) (*sql.DB, error) {
 	db, err := sql.Open("sqlite3", "./filtros"+strconv.Itoa(i)+".db")
-	defer db.Close()
+	//defer db.Close()
 	if err == nil {
 		stmt, err := db.Prepare(`create table if not exists contents (id integer not null primary key autoincrement,content text)`)
 		if err != nil {
@@ -151,14 +141,6 @@ func getsqlite(i int) (*sql.DB, error) {
 		fmt.Println(err)
 		return db, err
 	}
-}
-func getsqlite2(i int) (*sql.DB, error) {
-	db, err := sql.Open("sqlite3", "./filtros"+strconv.Itoa(i)+".db")
-	defer db.Close()
-	if err == nil {
-		return db, nil
-	}
-	return db, err
 }
 func add_db(db *sql.DB, total int){
 
