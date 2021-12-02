@@ -8,7 +8,7 @@ import (
 )
 
 type MyHandler struct {
-
+	redis *redis.Client
 }
 
 var ctx = context.Background()
@@ -21,9 +21,12 @@ func main() {
         DB:       0,  // use default DB
     })
 
-	fmt.Printf("tipo: %T", rdb)
+	err := rdb.Set(ctx, "buena", "Nelson", 0).Err()
+    if err != nil {
+        panic(err)
+    }
 
-	h := &MyHandler{}
+	h := &MyHandler{ redis: rdb }
 	fasthttp.ListenAndServe(":80", h.HandleFastHTTP)	
 
 }
@@ -33,6 +36,12 @@ func (h *MyHandler) HandleFastHTTP(ctx *fasthttp.RequestCtx) {
 	ctx.Response.Header.Set("Content-Type", "application/json")
 	switch string(ctx.Path()) {
 	case "/get0":
+
+		val, err := h.redis.Get(ctx, "buena").Result()
+		if err != nil {
+			panic(err)
+		}
+		fmt.Fprintf(ctx, val)
 
 	case "/get1":
 
