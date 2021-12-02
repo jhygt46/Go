@@ -20,7 +20,7 @@ type MyHandler struct {
 func main() {
 
 	totalfile := 3500000
-	totalmem := 3500000
+	totalmem := 350000
 
 	db1, err1 := getsqliteDbfile(0)
 	if err1 == nil {
