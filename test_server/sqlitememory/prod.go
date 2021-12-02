@@ -1,42 +1,74 @@
 package main
 
 import (
-	"database/sql"
 	"fmt"
-	"log"
 	"time"
+	"strconv"
 	"math/big"
 	"crypto/rand"
+	"database/sql"
 	_ "github.com/mattn/go-sqlite3"
 	"github.com/valyala/fasthttp"
 )
 
 type MyHandler struct {
-	Dbs *sql.DB `json:"Dbs"`
+	Dbs1 *sql.DB `json:"Dbs1"`
+	Dbs2 *sql.DB `json:"Dbs2"`
 	Total int64 `json:"Total"`
 }
 
 func main() {
 
-	total := 350000
+	totalfile := 3500000
+	totalmem := 3500000
 
-	db, err := sql.Open("sqlite3", ":memory:")
-	if err != nil {
-		log.Fatalf("cannot open an SQLite memory database: %v", err)
+	db1, err1 := getsqliteDbfile(0)
+	if err1 == nil {
+
 	}
-	defer db.Close()
-
-	_, err = db.Exec("CREATE TABLE contents (id integer not null primary key autoincrement,content text)")
-	if err != nil {
-		log.Fatalf("cannot create schema: %v", err)
+	db2, err2 := getsqliteDbmem()
+	if err2 == nil {
+		
 	}
 
-	add_db(db, total)
+	add_db(db1, totalfile)
+	add_db(db2, totalmem)
 
-	h := &MyHandler{ Dbs: db, Total: int64(total) }
+	h := &MyHandler{ Dbs1: db1, Dbs2: db2, Total: int64(totalfile) }
 	fasthttp.ListenAndServe(":80", h.HandleFastHTTP)
 	
 }
+
+func getsqliteDbfile(i int) (*sql.DB, error) {
+	db1, err := sql.Open("sqlite3", "./filtros"+strconv.Itoa(i)+".db")
+	if err != nil {
+		fmt.Printf("cannot open an SQLite memory database: %v", err)
+		return nil, err
+	}
+	defer db1.Close()
+	_, err = db1.Exec("CREATE TABLE contents (id integer not null primary key autoincrement,content text)")
+	if err != nil {
+		fmt.Printf("cannot create schema: %v", err)
+		return nil, err
+	}
+	return db1, nil
+}
+func getsqliteDbmem() (*sql.DB, error) {
+	db1, err := sql.Open("sqlite3", ":memory:")
+	if err != nil {
+		fmt.Printf("cannot open an SQLite memory database: %v", err)
+		return nil, err
+	}
+	defer db1.Close()
+	_, err = db1.Exec("CREATE TABLE contents (id integer not null primary key autoincrement,content text)")
+	if err != nil {
+		fmt.Printf("cannot create schema: %v", err)
+		return nil, err
+	}
+	return db1, nil
+}
+
+
 
 func (h *MyHandler) HandleFastHTTP(ctx *fasthttp.RequestCtx) {
 
@@ -44,12 +76,16 @@ func (h *MyHandler) HandleFastHTTP(ctx *fasthttp.RequestCtx) {
 	total := random(h.Total)
 	switch string(ctx.Path()) {
 	case "/get0":
-		content, err := get_content(h.Dbs, total)
+		content1, err := get_content(h.Dbs1, total)
 		if err == nil{
-			fmt.Fprintf(ctx, content)
+			fmt.Fprintf(ctx, content1)
 		}else{
-			fmt.Println(err)
-			ctx.Error("Not Found", fasthttp.StatusNotFound)
+			content2, err := get_content(h.Dbs2, total)
+			if err == nil{
+				fmt.Fprintf(ctx, content2)
+			}else{
+				ctx.Error("Not Found", fasthttp.StatusNotFound)
+			}
 		}
 	case "/get1":
 
