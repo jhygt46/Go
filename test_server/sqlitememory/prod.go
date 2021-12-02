@@ -31,7 +31,7 @@ func main() {
 		
 	}
 
-	add_db(db1, totalfile)
+	//add_db(db1, totalfile)
 	add_db(db2, totalmem)
 
 	h := &MyHandler{ Dbs1: db1, Dbs2: db2, Total: int64(totalfile) }
@@ -45,7 +45,6 @@ func getsqliteDbfile(i int) (*sql.DB, error) {
 		fmt.Printf("cannot open an SQLite memory database: %v", err)
 		return nil, err
 	}
-	defer db1.Close()
 	_, err = db1.Exec("CREATE TABLE contents (id integer not null primary key autoincrement,content text)")
 	if err != nil {
 		fmt.Printf("cannot create schema: %v", err)
@@ -59,7 +58,7 @@ func getsqliteDbmem() (*sql.DB, error) {
 		fmt.Printf("cannot open an SQLite memory database: %v", err)
 		return nil, err
 	}
-	defer db1.Close()
+	//defer db1.Close()
 	_, err = db1.Exec("CREATE TABLE contents (id integer not null primary key autoincrement,content text)")
 	if err != nil {
 		fmt.Printf("cannot create schema: %v", err)
