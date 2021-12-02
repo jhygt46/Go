@@ -60,7 +60,7 @@ func (h *MyHandler) HandleFastHTTP(ctx *fasthttp.RequestCtx) {
 	ctx.Response.Header.Set("Content-Type", "application/json")
 	total := random(h.Total)
 	switch string(ctx.Path()) {
-	case "/get":
+	case "/get0":
 		/*
 		if res, found := h.Minicache.Cache[total]; found {
 			json.NewEncoder(ctx).Encode(res)

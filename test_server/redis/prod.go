@@ -14,7 +14,7 @@ type MyHandler struct {
 var ctxs = context.Background()
 
 func main() {
-
+	
 	rdb := redis.NewClient(&redis.Options{
         Addr:     "localhost:6379",
         Password: "", // no password set
@@ -37,6 +37,7 @@ func (h *MyHandler) HandleFastHTTP(ctx *fasthttp.RequestCtx) {
 	switch string(ctx.Path()) {
 	case "/get0":
 
+		
 		val, err := h.redis.Get(ctxs, "buena").Result()
 		if err != nil {
 			panic(err)
