@@ -11,7 +11,7 @@ type MyHandler struct {
 	redis *redis.Client
 }
 
-var ctx = context.Background()
+var ctxs = context.Background()
 
 func main() {
 
@@ -21,7 +21,7 @@ func main() {
         DB:       0,  // use default DB
     })
 
-	err := rdb.Set(ctx, "buena", "Nelson", 0).Err()
+	err := rdb.Set(ctxs, "buena", "Nelson", 0).Err()
     if err != nil {
         panic(err)
     }
@@ -37,7 +37,7 @@ func (h *MyHandler) HandleFastHTTP(ctx *fasthttp.RequestCtx) {
 	switch string(ctx.Path()) {
 	case "/get0":
 
-		val, err := h.redis.Get(ctx, "buena").Result()
+		val, err := h.redis.Get(ctxs, "buena").Result()
 		if err != nil {
 			panic(err)
 		}
@@ -59,18 +59,18 @@ func ExampleClient() {
         DB:       0,  // use default DB
     })
 
-    err := rdb.Set(ctx, "key", "value", 0).Err()
+    err := rdb.Set(ctxs, "key", "value", 0).Err()
     if err != nil {
         panic(err)
     }
 
-    val, err := rdb.Get(ctx, "key").Result()
+    val, err := rdb.Get(ctxs, "key").Result()
     if err != nil {
         panic(err)
     }
     fmt.Println("key", val)
 
-    val2, err := rdb.Get(ctx, "key2").Result()
+    val2, err := rdb.Get(ctxs, "key2").Result()
     if err == redis.Nil {
         fmt.Println("key2 does not exist")
     } else if err != nil {
