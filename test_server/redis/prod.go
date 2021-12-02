@@ -1,18 +1,49 @@
 package main
 
 import (
-    "context"
 	"fmt"
+    "context"
     "github.com/go-redis/redis/v8"
+	"github.com/valyala/fasthttp"
 )
+
+type MyHandler struct {
+
+}
 
 var ctx = context.Background()
 
-func main(){
-	ExampleClient()
+func main() {
+
+	rdb := redis.NewClient(&redis.Options{
+        Addr:     "localhost:6379",
+        Password: "", // no password set
+        DB:       0,  // use default DB
+    })
+
+	fmt.Printf("tipo: %T", rdb)
+
+	h := &MyHandler{}
+	fasthttp.ListenAndServe(":80", h.HandleFastHTTP)	
+
+}
+
+func (h *MyHandler) HandleFastHTTP(ctx *fasthttp.RequestCtx) {
+
+	ctx.Response.Header.Set("Content-Type", "application/json")
+	switch string(ctx.Path()) {
+	case "/get0":
+
+	case "/get1":
+
+	default:
+		ctx.Error("Not Found", fasthttp.StatusNotFound)
+	}
+	
 }
 
 func ExampleClient() {
+
     rdb := redis.NewClient(&redis.Options{
         Addr:     "localhost:6379",
         Password: "", // no password set

@@ -5,10 +5,7 @@ import (
 	"fmt"
 	"log"
 	"time"
-
-	//_ "code.google.com/p/gosqlite/sqlite3"
 	_ "github.com/mattn/go-sqlite3"
-	//_ "github.com/mxk/go-sqlite/sqlite3"
 )
 
 func main() {
@@ -17,7 +14,7 @@ func main() {
 		log.Fatalf("cannot open an SQLite memory database: %v", err)
 	}
 	defer db.Close()
-
+	
 	// sqlite> select strftime('%J', '2015-04-13T19:22:19.773Z'), strftime('%J', '2015-04-13T19:22:19');
 	_, err = db.Exec("CREATE TABLE unix_time (time datetime); INSERT INTO unix_time (time) VALUES (strftime('%Y-%m-%dT%H:%MZ','now'))")
 	if err != nil {
