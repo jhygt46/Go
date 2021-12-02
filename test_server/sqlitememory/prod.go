@@ -48,6 +48,7 @@ func (h *MyHandler) HandleFastHTTP(ctx *fasthttp.RequestCtx) {
 		if err == nil{
 			fmt.Fprintf(ctx, content)
 		}else{
+			fmt.Println(err)
 			ctx.Error("Not Found", fasthttp.StatusNotFound)
 		}
 	case "/get1":
