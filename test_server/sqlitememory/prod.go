@@ -31,7 +31,7 @@ func main() {
 		
 	}
 
-	//add_db(db1, totalfile)
+	add_db(db1, totalfile)
 	add_db(db2, totalmem)
 
 	h := &MyHandler{ Dbs1: db1, Dbs2: db2, Total: int64(totalfile) }
