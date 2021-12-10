@@ -45,6 +45,25 @@ type Config struct {
 func main() {
     fmt.Println("Hello World")
 }
+
+var letras []int32 = []int32{1, 2, 3, 4, 5, 6, 7, 8, 9, 10}
+
+func BenchmarkFoo1(b *testing.B) {
+    for i := 0; i < b.N; i++ {
+        IndexOf(letras, 5)
+    }
+}
+
+func IndexOf(arr []int32, candidate int32) int {
+    for index, c := range arr {
+        if c == candidate {
+            return index
+        }
+    }
+    return -1
+}
+
+/*
 func BenchmarkFoo1(b *testing.B) {
     h := &MyHandler{}
     genericBenchmarkFoo1(b, h)
@@ -61,7 +80,8 @@ func BenchmarkFoo4(b *testing.B) {
     h := &MyHandler{}
     genericBenchmarkFoo4(b, h)
 }
-
+*/
+/*
 func genericBenchmarkFoo1(b *testing.B, h *MyHandler) {
     for i := 0; i < b.N; i++ {
         id := uint64(i)
@@ -90,15 +110,12 @@ func genericBenchmarkFoo1(b *testing.B, h *MyHandler) {
     }
 }
 func genericBenchmarkFoo2(b *testing.B, n *MyHandler) {
-    
 }
 func genericBenchmarkFoo3(b *testing.B, n *MyHandler) {
-    
 }
-func genericBenchmarkFoo4(b *testing.B, n *MyHandler) {
-    
+func genericBenchmarkFoo4(b *testing.B, n *MyHandler) {  
 }
-
+*/
 
 /*
 func BenchmarkCalculateA(b *testing.B) {

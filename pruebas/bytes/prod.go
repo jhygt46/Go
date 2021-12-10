@@ -1,12 +1,14 @@
 package main
 
 import (
+	"os"
 	"fmt"
 	"strings"
 	"strconv"
 	"unicode"
 	"io/ioutil"
 	"encoding/json"
+	"path/filepath"
 	"github.com/valyala/fasthttp"
 )
 
@@ -14,10 +16,11 @@ type MyHandler struct {}
 
 func main() {
 
-	/*
+	
 
 	//https://pkg.go.dev/unicode
 
+	/*
 	writeUnicode("Cc", unicode.Cc)
 	writeUnicode("Cf", unicode.Cf)
 	writeUnicode("Co", unicode.Co)
@@ -266,6 +269,26 @@ func main() {
 	//s := "Hello, 世界&¡¿🏳️‍🌈🇩🇪"
 	//fmt.Println(runetodir(s))
 
+	var files []string
+	errs := filepath.Walk("lang", func(path string, info os.FileInfo, err error) error {
+        files = append(files, path)
+        return nil
+    })
+	if errs != nil { panic(errs) }
+    for _, file := range files {
+		if FileExists(file) {
+			jsonFiltro, err := os.Open(file)
+			if err == nil {
+				byteValueFiltro, _ := ioutil.ReadAll(jsonFiltro)
+				data := []int32{}
+				if err := json.Unmarshal(byteValueFiltro, &data); err == nil {
+					fmt.Printf("%s => %v\n", file, len(data))
+				}
+			}
+			defer jsonFiltro.Close()
+		}
+	}
+
 	h := &MyHandler{}
 	fasthttp.ListenAndServe(":81", h.HandleFastHTTP)
 
@@ -313,6 +336,14 @@ func runetodir(s string) string {
 }
 func formatInt32(n int32) string {
     return strconv.FormatInt(int64(n), 10)
+}
+func FileExists(name string) bool {
+    if fi, err := os.Stat(name); err == nil {
+        if fi.Mode().IsRegular() {
+            return true
+        }
+    }
+    return false
 }
 /*
 s := "Hello, 世界&¡¿🏳️‍🌈🇩🇪"

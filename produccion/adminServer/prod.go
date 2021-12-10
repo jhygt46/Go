@@ -20,6 +20,12 @@ import (
 )
 
 // SERVICE KUBERNET//
+
+type Kubernet struct {
+	Servicios []Servicios
+}
+
+
 type Servicio struct {
 	Nombre string `json:"Nombre"`
 	Acl_tipo int8 `json:"Acl_tipo"`
@@ -117,7 +123,7 @@ type Config struct {
 	Tiempo time.Duration `json:"Tiempo"`
 }
 type MyHandler struct {
-	Conf *Config `json:"Conf"`
+	 
 	Servicios []*Servicio `json:"Servicios"`
 }
 
