@@ -30,28 +30,6 @@ type MyHandler struct {
 	Kubernet *kubernet.Kubernet `json:"Kubernet"`
 }
 
-func (h *MyHandler) AddServer(pos_serv int, pos_lista int, pos_bckn int) {
-	Id := "id-76767676"
-	h.Kubernet.Servicios[pos_serv].ListadeBackends[pos_lista].Backends[pos_bckn].Servers = append(h.Kubernet.Servicios[pos_serv].ListadeBackends[pos_lista].Backends[pos_bckn].Servers, kubernet.ServerId{Id: Id})
-	h.Kubernet.Servers[Id] = &kubernet.Server{
-		PosicionServicio:     pos_serv,
-		PosicionListaBackend: pos_lista,
-		PosicionBackend:      pos_bckn,
-	}
-}
-func (h *MyHandler) DelServer(Id string) {
-	if server, found := h.Kubernet.Servers[Id]; found {
-		delete(h.Kubernet.Servers, Id)
-		for i, v := range h.Kubernet.Servicios[server.PosicionServicio].ListadeBackends[server.PosicionListaBackend].Backends[server.PosicionBackend].Servers {
-			if v.Id == Id {
-				h.Kubernet.Servicios[server.PosicionServicio].ListadeBackends[server.PosicionListaBackend].Backends[server.PosicionBackend].Servers = kubernet.RemoveServerId(h.Kubernet.Servicios[server.PosicionServicio].ListadeBackends[server.PosicionListaBackend].Backends[server.PosicionBackend].Servers, i)
-			}
-		}
-	} else {
-		fmt.Println("DEL NOT FOUND")
-	}
-}
-
 func main() {
 
 	kub := kubernet.Kubernet{}
@@ -147,7 +125,7 @@ func main() {
 		}
 	}()
 	go func() {
-		fasthttp.ListenAndServe(":81", pass.HandleFastHTTP)
+		fasthttp.ListenAndServe(":80", pass.HandleFastHTTP)
 	}()
 	if err := run(con, pass, os.Stdout); err != nil {
 		fmt.Fprintf(os.Stderr, "%s\n", err)
@@ -228,7 +206,6 @@ func (h *MyHandler) InitServer(req initserver.ReqInitServer) initserver.ResInitS
 
 	return res
 }
-
 func (h *MyHandler) InitStatus(req initserver.ResStatus, Id string) {
 
 	if server, found := h.Kubernet.Servers[Id]; found {
@@ -248,7 +225,27 @@ func (h *MyHandler) InitStatus(req initserver.ResStatus, Id string) {
 		h.Kubernet.Servers[Id].DiskMb = req.SizeMb
 
 	}
-
+}
+func (h *MyHandler) AddServer(pos_serv int, pos_lista int, pos_bckn int) {
+	Id := "id-76767676"
+	h.Kubernet.Servicios[pos_serv].ListadeBackends[pos_lista].Backends[pos_bckn].Servers = append(h.Kubernet.Servicios[pos_serv].ListadeBackends[pos_lista].Backends[pos_bckn].Servers, kubernet.ServerId{Id: Id})
+	h.Kubernet.Servers[Id] = &kubernet.Server{
+		PosicionServicio:     pos_serv,
+		PosicionListaBackend: pos_lista,
+		PosicionBackend:      pos_bckn,
+	}
+}
+func (h *MyHandler) DelServer(Id string) {
+	if server, found := h.Kubernet.Servers[Id]; found {
+		delete(h.Kubernet.Servers, Id)
+		for i, v := range h.Kubernet.Servicios[server.PosicionServicio].ListadeBackends[server.PosicionListaBackend].Backends[server.PosicionBackend].Servers {
+			if v.Id == Id {
+				h.Kubernet.Servicios[server.PosicionServicio].ListadeBackends[server.PosicionListaBackend].Backends[server.PosicionBackend].Servers = kubernet.RemoveServerId(h.Kubernet.Servicios[server.PosicionServicio].ListadeBackends[server.PosicionListaBackend].Backends[server.PosicionBackend].Servers, i)
+			}
+		}
+	} else {
+		fmt.Println("DEL NOT FOUND")
+	}
 }
 
 // DAEMON //
