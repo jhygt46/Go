@@ -9,7 +9,6 @@ import (
 	"log"
 	"os"
 	"os/signal"
-	"scp"
 	"syscall"
 	"time"
 
