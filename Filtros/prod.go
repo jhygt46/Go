@@ -69,7 +69,7 @@ func main() {
 
 		u, err := json.Marshal(init)
 		if err == nil {
-			fmt.Println(u)
+			fmt.Println(string(u))
 		}
 
 		if init.Encontrado {
