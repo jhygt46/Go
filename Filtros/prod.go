@@ -55,7 +55,7 @@ func main() {
 	Id := utils.GetInstanceMeta("instance-id")
 	Ip := initserver.LocalIP()
 
-	fmt.Printf("Id:%s / Ip:%s", Id, Ip)
+	fmt.Printf("Id:%s / Ip:%s\n", Id, Ip)
 
 	pass := &MyHandler{
 		Daemon:       Daemon{TiempoMemory: time.Now(), TiempoDisk: time.Now(), TiempoCpu: time.Now()},
@@ -80,7 +80,7 @@ func main() {
 					pass.StatusServer.Scp = false
 				}
 				if err == nil {
-					fmt.Printf("ARCHIVO /var/db/%v\n", v.File)
+					fmt.Printf("ARCHIVO /var/db/%v COPIADO\n", v.File)
 				}
 			}
 			if consul.ConsulRegisters(init.Consulname, init.Consulhost) {
@@ -184,6 +184,7 @@ func (h *MyHandler) HandleFastHTTP(ctx *fasthttp.RequestCtx) {
 // DAEMON //
 func (h *MyHandler) StartDaemon() {
 
+	fmt.Println("DAEMON")
 	send := false
 	h.Daemon.Tiempo = 5 * time.Second
 
