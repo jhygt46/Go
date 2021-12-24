@@ -14,11 +14,10 @@ import (
 
 	"github.com/valyala/fasthttp"
 
-	//"lang"
-	//"utils"
-	//"monitoring"
-	"initserver"
-	"kubernet"
+	//"resource/lang"
+	//"resource/utils"
+	"resource/initserver"
+	"resource/kubernet"
 )
 
 type Config struct {
@@ -252,6 +251,7 @@ func (h *MyHandler) DelServer(Id string) {
 func (h *MyHandler) StartDaemon() {
 
 	h.Conf.Tiempo = 20 * time.Second
+	fmt.Println("DAEMON")
 	/*
 		hpconf := haproxy.Create_config_file(*h.Kubernet)
 		err := os.WriteFile("haproxy.cfg", []byte(hpconf), 0644)

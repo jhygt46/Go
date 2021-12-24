@@ -14,11 +14,10 @@ import (
 
 	"github.com/valyala/fasthttp"
 
-	//LOCAL MODULES//
-	//"consul"
-	//"lang"
-	"initserver"
-	"utils"
+	//"resource/consul"
+	//"resource/lang"
+	"resource/initserver"
+	"resource/utils"
 )
 
 type Count struct {
