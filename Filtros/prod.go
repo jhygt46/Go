@@ -14,7 +14,7 @@ import (
 
 	"github.com/valyala/fasthttp"
 
-	//"resource/consul"
+	"resource/consul"
 	//"resource/lang"
 	"resource/initserver"
 	"resource/scp"
@@ -67,11 +67,6 @@ func main() {
 	init, err := initserver.Init("http://18.118.187.180/init", initserver.ReqInitServer{Id: pass.InfoServer.Id, Ip: pass.InfoServer.Ip})
 	if err == nil {
 
-		u, err := json.Marshal(init)
-		if err == nil {
-			fmt.Println(string(u))
-		}
-
 		if init.Encontrado {
 
 			fmt.Printf("SERVIDOR ENCONTRADO\n")
@@ -84,13 +79,16 @@ func main() {
 				if err != nil && pass.StatusServer.Scp {
 					pass.StatusServer.Scp = false
 				}
-			}
-
-			/*
-				if consul.ConsulRegisters(init.Consulname, init.Consulhost) {
-					pass.StatusServer.Consul = true
+				if err == nil {
+					fmt.Printf("ARCHIVO /var/db/%v\n", v.File)
 				}
-			*/
+			}
+			if consul.ConsulRegisters(init.Consulname, init.Consulhost) {
+				pass.StatusServer.Consul = true
+				fmt.Printf("CONSUL REGISTER\n")
+			} else {
+				fmt.Printf("ERROR CONSUL\n")
+			}
 
 		} else {
 			fmt.Printf("SERVIDOR NO ENCONTRADO\n")
