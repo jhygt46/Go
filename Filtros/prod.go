@@ -9,6 +9,7 @@ import (
 	"log"
 	"os"
 	"os/signal"
+	"scp"
 	"syscall"
 	"time"
 
@@ -72,15 +73,15 @@ func main() {
 
 		pass.StatusServer.Init = true
 		pass.InfoServer.CacheCapicidad = init.TotalCache
-		/*
-			pass.StatusServer.Scp = true
-			for _, v := range init.Files {
-				err := scp.CopyFile(v.Ip, "/var/db/"+v.File, "/var/db/"+v.File)
-				if err != nil && pass.StatusServer.Scp {
-					pass.StatusServer.Scp = false
-				}
+
+		pass.StatusServer.Scp = true
+		for _, v := range init.Files {
+			err := scp.CopyFile(v.Ip, "/var/db/"+v.File, "/var/db/"+v.File)
+			if err != nil && pass.StatusServer.Scp {
+				pass.StatusServer.Scp = false
 			}
-		*/
+		}
+
 	}
 
 	/*
