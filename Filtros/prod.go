@@ -68,7 +68,7 @@ func main() {
 	if err == nil {
 
 		u, err := json.Marshal(init)
-		if err != nil {
+		if err == nil {
 			fmt.Println(u)
 		}
 
