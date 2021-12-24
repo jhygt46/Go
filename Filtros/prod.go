@@ -78,6 +78,8 @@ func main() {
 			err := scp.CopyFile(v.Ip, "/var/db/"+v.File, "/var/db/"+v.File)
 			if err != nil && pass.StatusServer.Scp {
 				pass.StatusServer.Scp = false
+				fmt.Println("err copy file")
+				fmt.Println(err)
 			}
 		}
 
