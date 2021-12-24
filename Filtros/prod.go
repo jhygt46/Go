@@ -17,8 +17,8 @@ import (
 
 	//"resource/consul"
 	//"resource/lang"
-	//"resource/scp"
 	"resource/initserver"
+	"resource/scp"
 	"resource/utils"
 )
 
