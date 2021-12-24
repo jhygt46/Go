@@ -37,19 +37,19 @@ func main() {
 		kubernet.Archivo{
 			Tipo:   1,
 			File:   "filtrodb0",
-			Ip:     "127.0.0.1",
+			Ip:     "18.118.187.180",
 			Rango1: 1,
 			Rango2: 1000000,
 		},
 		kubernet.Archivo{
 			Tipo:   1,
 			File:   "filtrodb1",
-			Ip:     "127.0.0.1",
+			Ip:     "18.118.187.180",
 			Rango1: 1000001,
 			Rango2: 2000000,
 		},
 	}
-	kub.Configuracion = kubernet.Configuracion{Ip: "127.0.0.1", Port: "8600", UltimoCambio: time.Now()}
+	kub.Configuracion = kubernet.Configuracion{Ip: "18.118.187.180", Port: "8600", UltimoCambio: time.Now()}
 
 	filtros := kubernet.Servicio{
 		Tipo:   1,
