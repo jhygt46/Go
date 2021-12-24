@@ -51,8 +51,10 @@ type Filtro struct {
 
 func main() {
 
-	Id := "id-76767676"
-	Ip := "127.0.0.1"
+	Id := utils.GetInstanceMeta("instance-id")
+	Ip := initserver.LocalIP()
+
+	fmt.Printf("Id:%s / Ip:%s", Id, Ip)
 
 	pass := &MyHandler{
 		Daemon:       Daemon{TiempoMemory: time.Now(), TiempoDisk: time.Now(), TiempoCpu: time.Now()},
