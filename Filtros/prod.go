@@ -55,7 +55,7 @@ func main() {
 	Id := utils.GetInstanceMeta("instance-id")
 	Ip := initserver.LocalIP()
 
-	//fmt.Printf("Id:%s / Ip:%s", Id, Ip)
+	fmt.Printf("Id:%s / Ip:%s", Id, Ip)
 
 	pass := &MyHandler{
 		Daemon:       Daemon{TiempoMemory: time.Now(), TiempoDisk: time.Now(), TiempoCpu: time.Now()},
