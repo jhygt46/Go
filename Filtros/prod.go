@@ -63,7 +63,7 @@ func main() {
 		InfoServer:   InfoServer{Id: Id, Ip: Ip, Token: "", CacheCount: 0, StopCache: false},
 	}
 
-	init, err := initserver.Init("http://172.31.35.16/init", initserver.ReqInitServer{Id: pass.InfoServer.Id, Ip: pass.InfoServer.Ip})
+	init, err := initserver.Init("http://52.15.100.147/init", initserver.ReqInitServer{Id: pass.InfoServer.Id, Ip: pass.InfoServer.Ip})
 	if err == nil {
 
 		fmt.Println("INIT")
