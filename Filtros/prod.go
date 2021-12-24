@@ -54,7 +54,7 @@ func main() {
 	Id := utils.GetInstanceMeta("instance-id")
 	Ip := initserver.LocalIP()
 
-	fmt.Printf("Id:%s / Ip:%s", Id, Ip)
+	//fmt.Printf("Id:%s / Ip:%s", Id, Ip)
 
 	pass := &MyHandler{
 		Daemon:       Daemon{TiempoMemory: time.Now(), TiempoDisk: time.Now(), TiempoCpu: time.Now()},
@@ -65,6 +65,10 @@ func main() {
 
 	init, err := initserver.Init("http://172.31.35.16/init", initserver.ReqInitServer{Id: pass.InfoServer.Id, Ip: pass.InfoServer.Ip})
 	if err == nil {
+
+		fmt.Println("INIT")
+		fmt.Println(init)
+
 		pass.StatusServer.Init = true
 		pass.InfoServer.CacheCapicidad = init.TotalCache
 		/*
