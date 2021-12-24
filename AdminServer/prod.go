@@ -200,6 +200,11 @@ func (h *MyHandler) InitServer(req initserver.ReqInitServer) initserver.ResInitS
 		//res.ListaCache = []int64{1, 2, 3, 4, 5, 6, 7, 8, 9}
 		res.TotalCache = 300000
 
+		u, err := json.Marshal(res)
+		if err == nil {
+			fmt.Println(string(u))
+		}
+
 	} else {
 		res.Encontrado = false
 	}
