@@ -67,6 +67,11 @@ func main() {
 	init, err := initserver.Init("http://18.118.187.180/init", initserver.ReqInitServer{Id: pass.InfoServer.Id, Ip: pass.InfoServer.Ip})
 	if err == nil {
 
+		u, err := json.Marshal(init)
+		if err != nil {
+			fmt.Println(u)
+		}
+
 		if init.Encontrado {
 
 			fmt.Printf("SERVIDOR ENCONTRADO\n")
