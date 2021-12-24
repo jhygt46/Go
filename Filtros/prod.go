@@ -67,29 +67,34 @@ func main() {
 	init, err := initserver.Init("http://18.118.187.180/init", initserver.ReqInitServer{Id: pass.InfoServer.Id, Ip: pass.InfoServer.Ip})
 	if err == nil {
 
-		fmt.Println("INIT")
-		fmt.Println(init)
+		if init.Encontrado {
 
-		pass.StatusServer.Init = true
-		pass.InfoServer.CacheCapicidad = init.TotalCache
+			fmt.Printf("SERVIDOR ENCONTRADO\n")
+			pass.StatusServer.Init = true
+			pass.InfoServer.CacheCapicidad = init.TotalCache
 
-		pass.StatusServer.Scp = true
-		for _, v := range init.Files {
-			err := scp.CopyFile(v.Ip, "/var/db/"+v.File, "/var/db/"+v.File)
-			if err != nil && pass.StatusServer.Scp {
-				pass.StatusServer.Scp = false
-				fmt.Println("err copy file")
-				fmt.Println(err)
+			pass.StatusServer.Scp = true
+			for _, v := range init.Files {
+				err := scp.CopyFile(v.Ip, "/var/db/"+v.File, "/var/db/"+v.File)
+				if err != nil && pass.StatusServer.Scp {
+					pass.StatusServer.Scp = false
+				}
 			}
+
+			/*
+				if consul.ConsulRegisters(init.Consulname, init.Consulhost) {
+					pass.StatusServer.Consul = true
+				}
+			*/
+
+		} else {
+			fmt.Printf("SERVIDOR NO ENCONTRADO\n")
 		}
 
+	} else {
+		fmt.Printf("ERROR INIT REQUEST\n")
+		fmt.Println(err)
 	}
-
-	/*
-		if consul.ConsulRegisters(init.Consulname, init.Consulhost) {
-			pass.StatusServer.Consul = true
-		}
-	*/
 
 	con := context.Background()
 	con, cancel := context.WithCancel(con)
@@ -216,24 +221,20 @@ func (h *MyHandler) StartDaemon() {
 			}
 			h.Daemon.TiempoMemory = h.Daemon.TiempoMemory.Add(30 * time.Second)
 		}
-
 	}
 
 	if time.Now().After(h.Daemon.TiempoDisk) {
-
-		/*
-			size, err := initserver.DirSize("C:/Allin/GoFinal/Filtros")
-			if err == nil {
-				if size > 3000{
-					send = true
-					h.StatusServer.SizeMb = size
-				}
+		size, err := initserver.DirSize("C:/Allin/GoFinal/Filtros")
+		if err == nil {
+			if size > 3000 {
+				send = true
+				h.StatusServer.SizeMb = size
 			}
-			h.Daemon.TiempoDisk = h.Daemon.TiempoDisk.Add(300 * time.Second)
-		*/
-
+		}
+		h.Daemon.TiempoDisk = h.Daemon.TiempoDisk.Add(300 * time.Second)
 	}
 	if send {
+		fmt.Println("ENVIANDO STATUS")
 		_, err := initserver.Status("http://localhost:81/status", initserver.ReqStatus{Id: h.InfoServer.Id, Ip: h.InfoServer.Ip, Token: h.InfoServer.Token})
 		if err != nil {
 			fmt.Println(err)

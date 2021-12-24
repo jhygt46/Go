@@ -180,6 +180,7 @@ func (h *MyHandler) InitServer(req initserver.ReqInitServer) initserver.ResInitS
 
 	if server, found := h.Kubernet.Servers[req.Id]; found {
 
+		res.Encontrado = true
 		res.Consulname = fmt.Sprintf("cn%s%d%d", h.Kubernet.Servicios[server.PosicionServicio].Nombre, server.PosicionListaBackend, server.PosicionBackend)
 		res.Consulhost = h.Kubernet.Configuracion.Ip + ":" + h.Kubernet.Configuracion.Port
 
@@ -200,7 +201,7 @@ func (h *MyHandler) InitServer(req initserver.ReqInitServer) initserver.ResInitS
 		res.TotalCache = 300000
 
 	} else {
-
+		res.Encontrado = false
 	}
 
 	return res
@@ -222,8 +223,10 @@ func (h *MyHandler) InitStatus(req initserver.ResStatus, Id string) {
 			h.Kubernet.Servers[Id].Memory = initserver.GetMemoryPonderacion(req.Memory)
 		}
 		h.Kubernet.Servers[Id].DiskMb = req.SizeMb
+		fmt.Println(h.Kubernet.Servers[Id])
 
 	}
+
 }
 func (h *MyHandler) AddServer(pos_serv int, pos_lista int, pos_bckn int) {
 	Id := "i-017fd28e0aeb4ee2d"
