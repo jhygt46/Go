@@ -199,12 +199,12 @@ func (h *MyHandler) StartDaemon() {
 	h.ResetCount()
 
 	if totalcache+totaldb*2 > 14 || time.Now().After(h.Daemon.TiempoCpu) {
-		
+
 		//statuscpu := initserver.StatusCpu{CountCacheperMilli: totalcache, CountDbperMilli: totaldb, Fecha: time.Now(), CpuUsage: 10, IdleTicks: 10, TotalTicks: 10} 
 		statuscpu := initserver.GetMonitoringsCpu(totalcache, totaldb)
 		u, err := json.Marshal(statuscpu)
 		if err == nil {
-			fmt.Println(u)
+			fmt.Println(string(u))
 		}
 		
 		if statuscpu.CpuUsage > 70 {
