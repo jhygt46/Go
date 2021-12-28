@@ -14,7 +14,7 @@ import (
 
 	"github.com/valyala/fasthttp"
 
-	"resource/consul"
+	//"resource/consul"
 	//"resource/lang"
 	"resource/initserver"
 	"resource/scp"
@@ -83,13 +83,14 @@ func main() {
 					fmt.Printf("ARCHIVO /var/db/%v COPIADO\n", v.File)
 				}
 			}
+			/*
 			if consul.ConsulRegisters(init.Consulname, init.Consulhost) {
 				pass.StatusServer.Consul = true
 				fmt.Printf("CONSUL REGISTER\n")
 			} else {
 				fmt.Printf("ERROR CONSUL\n")
 			}
-
+			*/
 		} else {
 			fmt.Printf("SERVIDOR NO ENCONTRADO\n")
 		}
@@ -197,14 +198,10 @@ func (h *MyHandler) StartDaemon() {
 	totaldb := h.Count.Db / total
 	h.ResetCount()
 
-	if time.Now().After(h.Daemon.TiempoCpu) {
-		fmt.Println("AFTER")
-	}else{
-		fmt.Println("BEFORE")
-	}
-
 	if totalcache+totaldb*2 > 14 || time.Now().After(h.Daemon.TiempoCpu) {
-		statuscpu := initserver.StatusCpu{CountCacheperMilli: totalcache, CountDbperMilli: totaldb, Fecha: time.Now(), CpuUsage: 10, IdleTicks: 10, TotalTicks: 10} //statuscpu := initserver.GetMonitoringsCpu(totalcache, totaldb)
+		//statuscpu := initserver.StatusCpu{CountCacheperMilli: totalcache, CountDbperMilli: totaldb, Fecha: time.Now(), CpuUsage: 10, IdleTicks: 10, TotalTicks: 10} 
+		statuscpu := initserver.GetMonitoringsCpu(totalcache, totaldb)
+		fmt.Println(statuscpu)
 		if statuscpu.CpuUsage > 70 {
 			send = true
 			if len(h.StatusServer.Cpu) > 9 {
