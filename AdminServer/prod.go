@@ -15,7 +15,7 @@ import (
 	"github.com/valyala/fasthttp"
 
 	//"resource/lang"
-	//"resource/utils"
+	"resource/utils"
 	"resource/initserver"
 	"resource/kubernet"
 )
