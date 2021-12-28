@@ -197,6 +197,12 @@ func (h *MyHandler) StartDaemon() {
 	totaldb := h.Count.Db / total
 	h.ResetCount()
 
+	if time.Now().After(h.Daemon.TiempoCpu) {
+		fmt.Println("AFTER")
+	}else{
+		fmt.Println("BEFORE")
+	}
+
 	if totalcache+totaldb*2 > 14 || time.Now().After(h.Daemon.TiempoCpu) {
 		statuscpu := initserver.StatusCpu{CountCacheperMilli: totalcache, CountDbperMilli: totaldb, Fecha: time.Now(), CpuUsage: 10, IdleTicks: 10, TotalTicks: 10} //statuscpu := initserver.GetMonitoringsCpu(totalcache, totaldb)
 		if statuscpu.CpuUsage > 70 {
