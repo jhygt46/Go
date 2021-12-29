@@ -290,7 +290,7 @@ func (h *MyHandler) AddCache(file string) {
 		if err == nil {
 			defer rows.Close()
 			var id int32
-			var filtro byte
+			var filtro string
 			for rows.Next() {
 				err := rows.Scan(&id, &filtro)
 				if err == nil {
