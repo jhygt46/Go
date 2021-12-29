@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"database/sql"
 	"encoding/json"
 	"flag"
 	"fmt"
@@ -80,16 +81,16 @@ func main() {
 					pass.StatusServer.Scp = false
 				}
 				if err == nil {
-					fmt.Printf("ARCHIVO /var/db/%v COPIADO\n", v.File)
+					pass.AddCache(v.File)
 				}
 			}
 			/*
-			if consul.ConsulRegisters(init.Consulname, init.Consulhost) {
-				pass.StatusServer.Consul = true
-				fmt.Printf("CONSUL REGISTER\n")
-			} else {
-				fmt.Printf("ERROR CONSUL\n")
-			}
+				if consul.ConsulRegisters(init.Consulname, init.Consulhost) {
+					pass.StatusServer.Consul = true
+					fmt.Printf("CONSUL REGISTER\n")
+				} else {
+					fmt.Printf("ERROR CONSUL\n")
+				}
 			*/
 		} else {
 			fmt.Printf("SERVIDOR NO ENCONTRADO\n")
@@ -200,13 +201,13 @@ func (h *MyHandler) StartDaemon() {
 
 	if totalcache+totaldb*2 > 14 || time.Now().After(h.Daemon.TiempoCpu) {
 
-		//statuscpu := initserver.StatusCpu{CountCacheperMilli: totalcache, CountDbperMilli: totaldb, Fecha: time.Now(), CpuUsage: 10, IdleTicks: 10, TotalTicks: 10} 
+		//statuscpu := initserver.StatusCpu{CountCacheperMilli: totalcache, CountDbperMilli: totaldb, Fecha: time.Now(), CpuUsage: 10, IdleTicks: 10, TotalTicks: 10}
 		statuscpu := initserver.GetMonitoringsCpu(totalcache, totaldb)
 		u, err := json.Marshal(statuscpu)
 		if err == nil {
 			fmt.Println(string(u))
 		}
-		
+
 		if statuscpu.CpuUsage > 70 {
 			send = true
 			if len(h.StatusServer.Cpu) > 9 {
@@ -276,4 +277,25 @@ func (h *MyHandler) ResetCount() {
 	h.Count.UltimaMedicion = time.Now()
 	h.Count.Cache = 0
 	h.Count.Db = 0
+}
+func (h *MyHandler) AddCache(file string) {
+
+	db, err := sql.Open("sqlite3", "/var/db/"+file)
+
+	if err == nil {
+		rows, err := db.Query("SELECT id, filtro FROM filtros WHERE ORDER BY cache DESC")
+		if err == nil {
+			defer rows.Close()
+			var id int
+			var filtro byte
+			for rows.Next() {
+				err := rows.Scan(&id, &filtro)
+				if err == nil {
+					//h.Cache[id] = filtro
+					fmt.Println(filtro, id)
+				}
+			}
+		}
+	}
+
 }

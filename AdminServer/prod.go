@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"database/sql"
 	"encoding/json"
 	"flag"
 	"fmt"
@@ -29,6 +30,19 @@ type MyHandler struct {
 	Kubernet *kubernet.Kubernet `json:"Kubernet"`
 }
 
+func CreateDb(files []kubernet.Archivo) {
+
+	total := 1000000
+
+	for _, v := range files {
+		db, err := getsqlite(v.File)
+		if err == nil {
+			add_db(db, total)
+		}
+	}
+
+}
+
 func main() {
 
 	kub := kubernet.Kubernet{}
@@ -49,8 +63,10 @@ func main() {
 			Rango2: 2000000,
 		},
 	}
-	kub.Configuracion = kubernet.Configuracion{Ip: "18.118.187.180", Port: "8600", UltimoCambio: time.Now()}
 
+	CreateDb(kub.Archivos)
+
+	kub.Configuracion = kubernet.Configuracion{Ip: "18.118.187.180", Port: "8600", UltimoCambio: time.Now()}
 	filtros := kubernet.Servicio{
 		Tipo:   1,
 		Nombre: "filtro",
@@ -226,7 +242,6 @@ func (h *MyHandler) InitStatus(req initserver.ResStatus, Id string) {
 		fmt.Println(h.Kubernet.Servers[Id])
 
 	}
-
 }
 func (h *MyHandler) AddServer(pos_serv int, pos_lista int, pos_bckn int) {
 	Id := "i-0c3d0fdd5f1459610"
@@ -293,4 +308,46 @@ func fileexist(files []initserver.File, file kubernet.Archivo) bool {
 		}
 	}
 	return true
+}
+
+func add_db(db *sql.DB, total int) {
+
+	str1 := []byte("{\"C\":[{ \"T\": 1, \"N\": \"Nacionalidad\", \"V\": [\"Chilena\", \"Argentina\", \"Brasileña\", \"Uruguaya\"] }, { \"T\": 2, \"N\": \"Servicios\", \"V\": [\"Americana\", \"Rusa\", \"Bailarina\", \"Masaje\"] },{ \"T\": 3, \"N\": \"Edad\" }],\"E\": [{ \"T\": 1, \"N\": \"Rostro\" },{ \"T\": 1, \"N\": \"Senos\" },{ \"T\": 1, \"N\": \"Trasero\" }]}")
+	str := string(str1)
+	tx, err := db.Begin()
+	if err != nil {
+		fmt.Println(err)
+	}
+	defer tx.Rollback() // The rollback will be ignored if the tx has been committed later in the function.
+	stmt, err := tx.Prepare("INSERT INTO filtros (filtro, cache) VALUES(?, ?)")
+	if err != nil {
+		fmt.Println(err)
+	}
+	defer stmt.Close() // Prepared statements take up server resources and should be closed after use.
+	for i := 0; i < total; i++ {
+		if _, err := stmt.Exec(str, i); err != nil {
+			fmt.Println(err)
+		}
+	}
+	if err := tx.Commit(); err != nil {
+		fmt.Println(err)
+	}
+
+}
+func getsqlite(db string) (*sql.DB, error) {
+	db, err := sql.Open("sqlite3", "/var/db/"+db)
+	if err == nil {
+		stmt, err := db.Prepare(`create table if not exists filtros (id integer not null primary key autoincrement,filtro text, cache integer)`)
+		if err != nil {
+			fmt.Println("err1")
+			fmt.Println(err)
+			return db, err
+		}
+		stmt.Exec()
+		return db, nil
+	} else {
+		fmt.Println("err2")
+		fmt.Println(err)
+		return db, err
+	}
 }
