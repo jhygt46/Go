@@ -281,6 +281,8 @@ func (h *MyHandler) ResetCount() {
 }
 func (h *MyHandler) AddCache(file string) {
 
+	fmt.Print("ADD CACHE:", file)
+
 	db, err := sql.Open("sqlite3", "/var/db/"+file)
 
 	if err == nil {
@@ -296,7 +298,13 @@ func (h *MyHandler) AddCache(file string) {
 					fmt.Println(filtro, id)
 				}
 			}
+		} else {
+			fmt.Print("ERRO SELECT TABLE FILTROS:")
+			fmt.Println(err)
 		}
+	} else {
+		fmt.Print("ERRO CONNECT DB:", file)
+		fmt.Println(err)
 	}
 
 }
