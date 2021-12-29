@@ -294,7 +294,7 @@ func (h *MyHandler) AddCache(file string) {
 			for rows.Next() {
 				err := rows.Scan(&id, &filtro)
 				if err == nil {
-					h.Cache[id] = filtro
+					//h.Cache[id] = filtro
 					fmt.Println(id)
 					fmt.Println(filtro)
 				} else {
