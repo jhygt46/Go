@@ -47,7 +47,7 @@ type MyHandler struct {
 	Count        Count                `json:"Count"`
 	Daemon       Daemon               `json:"Daemon"`
 	InfoServer   InfoServer           `json:"Info"`
-	Cache        map[uint32]Filtro    `json:"Cache"`
+	Cache        map[uint32]string    `json:"Cache"`
 }
 type Filtro struct {
 }
@@ -289,13 +289,12 @@ func (h *MyHandler) AddCache(file string) {
 		rows, err := db.Query("SELECT id, filtro FROM filtros")
 		if err == nil {
 			defer rows.Close()
-			var id int32
+			var id uint32
 			var filtro string
 			for rows.Next() {
 				err := rows.Scan(&id, &filtro)
 				if err == nil {
-					//h.Cache[id] = filtro
-					fmt.Println(filtro, id)
+					h.Cache[id] = filtro
 				} else {
 					fmt.Print("ERR SCAN:")
 					fmt.Println(err)
