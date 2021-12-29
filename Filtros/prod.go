@@ -60,6 +60,7 @@ func main() {
 	fmt.Printf("Id:%s / Ip:%s\n", Id, Ip)
 
 	pass := &MyHandler{
+		Cache:        make(map[uint32]string),
 		Daemon:       Daemon{TiempoMemory: time.Now(), TiempoDisk: time.Now(), TiempoCpu: time.Now()},
 		Count:        Count{Cache: 0, Db: 0, UltimaMedicion: time.Now()},
 		StatusServer: initserver.ResStatus{SizeMb: 0, Memory: make([]initserver.StatusMemory, 0), Cpu: make([]initserver.StatusCpu, 0), Consul: false, Scp: false, Init: false},
@@ -294,9 +295,7 @@ func (h *MyHandler) AddCache(file string) {
 			for rows.Next() {
 				err := rows.Scan(&id, &filtro)
 				if err == nil {
-					//h.Cache[id] = filtro
-					fmt.Println(id)
-					fmt.Println(filtro)
+					h.Cache[id] = filtro
 				} else {
 					fmt.Print("ERR SCAN:")
 					fmt.Println(err)
