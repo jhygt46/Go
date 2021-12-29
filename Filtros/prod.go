@@ -289,7 +289,7 @@ func (h *MyHandler) AddCache(file string) {
 		rows, err := db.Query("SELECT id, filtro FROM filtros")
 		if err == nil {
 			defer rows.Close()
-			var id int
+			var id int32
 			var filtro byte
 			for rows.Next() {
 				err := rows.Scan(&id, &filtro)
