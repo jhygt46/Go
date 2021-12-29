@@ -286,7 +286,7 @@ func (h *MyHandler) AddCache(file string) {
 	db, err := sql.Open("sqlite3", "/var/db/"+file)
 
 	if err == nil {
-		rows, err := db.Query("SELECT id, filtro FROM filtros WHERE ORDER BY cache DESC")
+		rows, err := db.Query("SELECT id, filtro FROM filtros")
 		if err == nil {
 			defer rows.Close()
 			var id int
@@ -299,11 +299,11 @@ func (h *MyHandler) AddCache(file string) {
 				}
 			}
 		} else {
-			fmt.Print("ERRO SELECT TABLE FILTROS:")
+			fmt.Print("ERR SELECT TABLE FILTROS:")
 			fmt.Println(err)
 		}
 	} else {
-		fmt.Print("ERRO CONNECT DB:", file)
+		fmt.Print("ERR CONNECT DB:", file)
 		fmt.Println(err)
 	}
 
