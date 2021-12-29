@@ -83,7 +83,7 @@ func main() {
 					pass.StatusServer.Scp = false
 				}
 				if err == nil {
-					pass.AddCache(v.File)
+					//pass.AddCache(v.File)
 				}
 			}
 			/*
