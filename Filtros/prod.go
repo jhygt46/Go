@@ -222,7 +222,14 @@ func (h *MyHandler) StartDaemon() {
 	}
 
 	if !h.InfoServer.StopCache || time.Now().After(h.Daemon.TiempoMemory) {
-		statusmemory := initserver.StatusMemory{Fecha: time.Now(), Alloc: 10, TotalAlloc: 10, Sys: 10, NumGC: 10} // statusmemory := initserver.PrintMemUsage()
+
+		//statusmemory := initserver.StatusMemory{Fecha: time.Now(), Alloc: 10, TotalAlloc: 10, Sys: 10, NumGC: 10}
+		statusmemory := initserver.PrintMemUsage()
+		u, err := json.Marshal(statusmemory)
+		if err == nil {
+			fmt.Println(string(u))
+		}
+
 		if statusmemory.TotalAlloc > 90 {
 			send = true
 			if len(h.StatusServer.Memory) > 9 {
@@ -288,7 +295,7 @@ func (h *MyHandler) AddCache(file string) {
 	db, err := sql.Open("sqlite3", "/var/db/"+file)
 
 	if err == nil {
-		rows, err := db.Query("SELECT id, filtro FROM filtros LIMIT 10")
+		rows, err := db.Query("SELECT id, filtro FROM filtros LIMIT 100000")
 		if err == nil {
 			defer rows.Close()
 			var id uint32
@@ -310,5 +317,4 @@ func (h *MyHandler) AddCache(file string) {
 		fmt.Print("ERR CONNECT DB:", file)
 		fmt.Println(err)
 	}
-
 }
