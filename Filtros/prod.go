@@ -296,6 +296,9 @@ func (h *MyHandler) AddCache(file string) {
 				if err == nil {
 					//h.Cache[id] = filtro
 					fmt.Println(filtro, id)
+				} else {
+					fmt.Print("ERR SCAN:")
+					fmt.Println(err)
 				}
 			}
 		} else {
