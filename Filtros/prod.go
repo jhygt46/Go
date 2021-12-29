@@ -147,7 +147,8 @@ func (h *MyHandler) HandleFastHTTP(ctx *fasthttp.RequestCtx) {
 			id := utils.Read_uint32(ctx.QueryArgs().Peek("id"))
 
 			if res, found := h.Cache[id]; found {
-				json.NewEncoder(ctx).Encode(res)
+				fmt.Fprintf(ctx, res)
+				//json.NewEncoder(ctx).Encode(res)
 				h.Count.Cache++
 			} else {
 				h.Count.Db++
