@@ -17,9 +17,9 @@ import (
 	"github.com/valyala/fasthttp"
 
 	//"resource/lang"
-	//"resource/utils"
 	"resource/initserver"
 	"resource/kubernet"
+	"resource/utils"
 )
 
 type Config struct {
@@ -34,11 +34,12 @@ type MyHandler struct {
 func CreateDb(files []kubernet.Archivo) {
 
 	total := 1000000
-
 	for _, v := range files {
-		db, err := getsqlite(v.File)
-		if err == nil {
-			add_db(db, total)
+		if !utils.FileExists("/var/db/" + v.File) {
+			db, err := getsqlite(v.File)
+			if err == nil {
+				add_db(db, total)
+			}
 		}
 	}
 
@@ -46,20 +47,22 @@ func CreateDb(files []kubernet.Archivo) {
 
 func main() {
 
+	dbip := initserver.LocalIP()
+
 	kub := kubernet.Kubernet{}
 	kub.Servers = make(map[string]*kubernet.Server, 0)
 	kub.Archivos = []kubernet.Archivo{
 		kubernet.Archivo{
 			Tipo:   1,
 			File:   "filtrodb0",
-			Ip:     "18.118.187.180",
+			Ip:     dbip,
 			Rango1: 1,
 			Rango2: 1000000,
 		},
 		kubernet.Archivo{
 			Tipo:   1,
 			File:   "filtrodb1",
-			Ip:     "18.118.187.180",
+			Ip:     dbip,
 			Rango1: 1000001,
 			Rango2: 2000000,
 		},
@@ -67,7 +70,7 @@ func main() {
 
 	CreateDb(kub.Archivos)
 
-	kub.Configuracion = kubernet.Configuracion{Ip: "18.118.187.180", Port: "8600", UltimoCambio: time.Now()}
+	kub.Configuracion = kubernet.Configuracion{Ip: dbip, Port: "8600", UltimoCambio: time.Now()}
 	filtros := kubernet.Servicio{
 		Tipo:   1,
 		Nombre: "filtro",
@@ -269,8 +272,6 @@ func (h *MyHandler) DelServer(Id string) {
 // DAEMON //
 func (h *MyHandler) StartDaemon() {
 
-	h.Conf.Tiempo = 20 * time.Second
-	fmt.Println("DAEMON")
 	/*
 		hpconf := haproxy.Create_config_file(*h.Kubernet)
 		err := os.WriteFile("haproxy.cfg", []byte(hpconf), 0644)
@@ -278,7 +279,8 @@ func (h *MyHandler) StartDaemon() {
 			fmt.Println("CREATE HAPROXY.CFG")
 		}
 	*/
-
+	h.Conf.Tiempo = 20 * time.Second
+	fmt.Println("DAEMON")
 }
 func (c *Config) init() {
 	var tick = flag.Duration("tick", 1*time.Second, "Ticking interval")
@@ -333,10 +335,9 @@ func add_db(db *sql.DB, total int) {
 	if err := tx.Commit(); err != nil {
 		fmt.Println(err)
 	}
-
 }
-func getsqlite(dbn string) (*sql.DB, error) {
-	db, err := sql.Open("sqlite3", "/var/db/"+dbn)
+func getsqlite(dbname string) (*sql.DB, error) {
+	db, err := sql.Open("sqlite3", "/var/db/"+dbname)
 	if err == nil {
 		stmt, err := db.Prepare(`create table if not exists filtros (id integer not null primary key autoincrement,filtro text, cache integer)`)
 		if err != nil {
