@@ -248,7 +248,7 @@ func (h *MyHandler) InitStatus(req initserver.ResStatus, Id string) {
 	}
 }
 func (h *MyHandler) AddServer(pos_serv int, pos_lista int, pos_bckn int) {
-	Id := "i-0c3d0fdd5f1459610"
+	Id := "i-00e86612e8f5bd188"
 	h.Kubernet.Servicios[pos_serv].ListadeBackends[pos_lista].Backends[pos_bckn].Servers = append(h.Kubernet.Servicios[pos_serv].ListadeBackends[pos_lista].Backends[pos_bckn].Servers, kubernet.ServerId{Id: Id})
 	h.Kubernet.Servers[Id] = &kubernet.Server{
 		PosicionServicio:     pos_serv,
