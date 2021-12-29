@@ -335,8 +335,8 @@ func add_db(db *sql.DB, total int) {
 	}
 
 }
-func getsqlite(db string) (*sql.DB, error) {
-	db, err := sql.Open("sqlite3", "/var/db/"+db)
+func getsqlite(dbn string) (*sql.DB, error) {
+	db, err := sql.Open("sqlite3", "/var/db/"+dbn)
 	if err == nil {
 		stmt, err := db.Prepare(`create table if not exists filtros (id integer not null primary key autoincrement,filtro text, cache integer)`)
 		if err != nil {
