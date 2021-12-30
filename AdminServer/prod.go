@@ -60,7 +60,7 @@ func main() {
 			Rango2: 1000000,
 		},
 		kubernet.Archivo{
-			Tipo:   1,
+			Tipo:   2,
 			File:   "filtrodb1",
 			Ip:     dbip,
 			Rango1: 1000001,
