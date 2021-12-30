@@ -27,6 +27,7 @@ type Count struct {
 	Cache          int32     `json:"Cache"`
 	Db             int32     `json:"Db"`
 	UltimaMedicion time.Time `json:"UltimaMedicion"`
+	TotalBytes     uint64    `json:"TotalBytes"`
 }
 type Daemon struct {
 	Tiempo       time.Duration `json:"Tiempo"`
@@ -62,7 +63,7 @@ func main() {
 	pass := &MyHandler{
 		Cache:        make(map[uint32]string),
 		Daemon:       Daemon{TiempoMemory: time.Now(), TiempoDisk: time.Now(), TiempoCpu: time.Now()},
-		Count:        Count{Cache: 0, Db: 0, UltimaMedicion: time.Now()},
+		Count:        Count{Cache: 0, Db: 0, UltimaMedicion: time.Now(), TotalBytes: 0},
 		StatusServer: initserver.ResStatus{SizeMb: 0, Memory: make([]initserver.StatusMemory, 0), Cpu: make([]initserver.StatusCpu, 0), Consul: false, Scp: false, Init: false},
 		InfoServer:   InfoServer{Id: Id, Ip: Ip, Token: "", CacheCount: 0, StopCache: false},
 	}
@@ -189,7 +190,7 @@ func (h *MyHandler) HandleFastHTTP(ctx *fasthttp.RequestCtx) {
 // DAEMON //
 func (h *MyHandler) StartDaemon() {
 
-	fmt.Println("DAEMON")
+	fmt.Println("TOTAL BYTES:", h.Count.TotalBytes)
 	send := false
 	h.Daemon.Tiempo = 5 * time.Second
 
@@ -225,12 +226,7 @@ func (h *MyHandler) StartDaemon() {
 
 		//statusmemory := initserver.StatusMemory{Fecha: time.Now(), Alloc: 10, TotalAlloc: 10, Sys: 10, NumGC: 10}
 		statusmemory := initserver.PrintMemUsage()
-		u, err := json.Marshal(statusmemory)
-		if err == nil {
-			fmt.Println(string(u))
-		}
-
-		if statusmemory.TotalAlloc > 90 {
+		if statusmemory.Alloc > 300 {
 			send = true
 			if len(h.StatusServer.Memory) > 9 {
 				h.StatusServer.Memory = initserver.RemoveIndexMem(h.StatusServer.Memory, 0)
@@ -244,6 +240,7 @@ func (h *MyHandler) StartDaemon() {
 			}
 			h.Daemon.TiempoMemory = h.Daemon.TiempoMemory.Add(30 * time.Second)
 		}
+
 	}
 
 	if time.Now().After(h.Daemon.TiempoDisk) {
@@ -304,6 +301,7 @@ func (h *MyHandler) AddCache(file string) {
 				err := rows.Scan(&id, &filtro)
 				if err == nil {
 					h.Cache[id] = filtro
+					h.Count.TotalBytes = h.Count.TotalBytes + uint64(len(filtro))
 				} else {
 					fmt.Print("ERR SCAN:")
 					fmt.Println(err)
