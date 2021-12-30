@@ -190,7 +190,7 @@ func (h *MyHandler) HandleFastHTTP(ctx *fasthttp.RequestCtx) {
 // DAEMON //
 func (h *MyHandler) StartDaemon() {
 
-	fmt.Println("TOTAL BYTES:", h.Count.TotalBytes)
+	fmt.Println("TOTAL BYTES:", h.Count.TotalBytes/1024/1024)
 	send := false
 	h.Daemon.Tiempo = 5 * time.Second
 
