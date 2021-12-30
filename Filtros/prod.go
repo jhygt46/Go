@@ -292,7 +292,7 @@ func (h *MyHandler) AddCache(file string) {
 	db, err := sql.Open("sqlite3", "/var/db/"+file)
 
 	if err == nil {
-		rows, err := db.Query("SELECT id, filtro FROM filtros LIMIT 200000")
+		rows, err := db.Query("SELECT id, filtro FROM filtros LIMIT 300000")
 		if err == nil {
 			defer rows.Close()
 			var id uint32
