@@ -316,10 +316,12 @@ func (h *MyHandler) AddCache(file string) {
 					data := Filtro{}
 					if err := json.Unmarshal([]byte(filtro), &data); err == nil {
 						h.Cache[id] = data
+					} else {
+						fmt.Println(err)
 					}
 
 					//h.Cache[id] = filtro
-					h.Count.TotalBytes = h.Count.TotalBytes + uint64(len(filtro))
+					//h.Count.TotalBytes = h.Count.TotalBytes + uint64(len(filtro))
 				} else {
 					fmt.Print("ERR SCAN:")
 					fmt.Println(err)
