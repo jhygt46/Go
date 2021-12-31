@@ -205,7 +205,7 @@ func (h *MyHandler) HandleFastHTTP(ctx *fasthttp.RequestCtx) {
 // DAEMON //
 func (h *MyHandler) StartDaemon() {
 
-	fmt.Println("TOTAL BYTES:", h.Count.TotalBytes/1024/1024)
+	//fmt.Println("TOTAL BYTES:", h.Count.TotalBytes/1024/1024)
 	send := false
 	h.Daemon.Tiempo = 5 * time.Second
 
@@ -222,11 +222,12 @@ func (h *MyHandler) StartDaemon() {
 
 		//statuscpu := initserver.StatusCpu{CountCacheperMilli: totalcache, CountDbperMilli: totaldb, Fecha: time.Now(), CpuUsage: 10, IdleTicks: 10, TotalTicks: 10}
 		statuscpu := initserver.GetMonitoringsCpu(totalcache, totaldb)
-		u, err := json.Marshal(statuscpu)
-		if err == nil {
-			fmt.Println(string(u))
-		}
-
+		/*
+			u, err := json.Marshal(statuscpu)
+			if err == nil {
+				fmt.Println(string(u))
+			}
+		*/
 		if statuscpu.CpuUsage > 70 {
 			send = true
 			if len(h.StatusServer.Cpu) > 9 {
@@ -269,11 +270,13 @@ func (h *MyHandler) StartDaemon() {
 		h.Daemon.TiempoDisk = h.Daemon.TiempoDisk.Add(300 * time.Second)
 	}
 	if send {
-		fmt.Println("ENVIANDO STATUS")
-		_, err := initserver.Status("http://localhost:81/status", initserver.ReqStatus{Id: h.InfoServer.Id, Ip: h.InfoServer.Ip, Token: h.InfoServer.Token})
-		if err != nil {
-			fmt.Println(err)
-		}
+		/*
+			fmt.Println("ENVIANDO STATUS")
+			_, err := initserver.Status("http://localhost:81/status", initserver.ReqStatus{Id: h.InfoServer.Id, Ip: h.InfoServer.Ip, Token: h.InfoServer.Token})
+			if err != nil {
+				fmt.Println(err)
+			}
+		*/
 	}
 }
 func (c *Daemon) init() {
