@@ -48,9 +48,21 @@ type MyHandler struct {
 	Count        Count                `json:"Count"`
 	Daemon       Daemon               `json:"Daemon"`
 	InfoServer   InfoServer           `json:"Info"`
-	Cache        map[uint32]string    `json:"Cache"`
+	Cache        map[uint32]Filtro    `json:"Cache"`
 }
+
 type Filtro struct {
+	C []Campos `json:"C"`
+	E []Evals  `json:"E"`
+}
+type Campos struct {
+	T int      `json:"T"`
+	N string   `json:"N"`
+	V []string `json:"V"`
+}
+type Evals struct {
+	T int    `json:"T"`
+	N string `json:"N"`
 }
 
 func main() {
@@ -61,7 +73,7 @@ func main() {
 	fmt.Printf("Id:%s / Ip:%s\n", Id, Ip)
 
 	pass := &MyHandler{
-		Cache:        make(map[uint32]string),
+		Cache:        make(map[uint32]Filtro),
 		Daemon:       Daemon{TiempoMemory: time.Now(), TiempoDisk: time.Now(), TiempoCpu: time.Now()},
 		Count:        Count{Cache: 0, Db: 0, UltimaMedicion: time.Now(), TotalBytes: 0},
 		StatusServer: initserver.ResStatus{SizeMb: 0, Memory: make([]initserver.StatusMemory, 0), Cpu: make([]initserver.StatusCpu, 0), Consul: false, Scp: false, Init: false},
@@ -292,7 +304,7 @@ func (h *MyHandler) AddCache(file string) {
 	db, err := sql.Open("sqlite3", "/var/db/"+file)
 
 	if err == nil {
-		rows, err := db.Query("SELECT id, filtro FROM filtros LIMIT 600000")
+		rows, err := db.Query("SELECT id, filtro FROM filtros LIMIT 100000")
 		if err == nil {
 			defer rows.Close()
 			var id uint32
@@ -300,7 +312,13 @@ func (h *MyHandler) AddCache(file string) {
 			for rows.Next() {
 				err := rows.Scan(&id, &filtro)
 				if err == nil {
-					h.Cache[id] = filtro
+
+					data := Filtro{}
+					if err := json.Unmarshal([]byte(filtro), &data); err == nil {
+						h.Cache[id] = data
+					}
+
+					//h.Cache[id] = filtro
 					h.Count.TotalBytes = h.Count.TotalBytes + uint64(len(filtro))
 				} else {
 					fmt.Print("ERR SCAN:")
