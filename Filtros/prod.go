@@ -48,7 +48,7 @@ type MyHandler struct {
 	Count        Count                `json:"Count"`
 	Daemon       Daemon               `json:"Daemon"`
 	InfoServer   InfoServer           `json:"Info"`
-	Cache        map[uint32]Filtro    `json:"Cache"`
+	Cache        map[uint32]string    `json:"Cache"`
 }
 
 type Filtro struct {
@@ -73,7 +73,7 @@ func main() {
 	fmt.Printf("Id:%s / Ip:%s\n", Id, Ip)
 
 	pass := &MyHandler{
-		Cache:        make(map[uint32]Filtro),
+		Cache:        make(map[uint32]string),
 		Daemon:       Daemon{TiempoMemory: time.Now(), TiempoDisk: time.Now(), TiempoCpu: time.Now()},
 		Count:        Count{Cache: 0, Db: 0, UltimaMedicion: time.Now(), TotalBytes: 0},
 		StatusServer: initserver.ResStatus{SizeMb: 0, Memory: make([]initserver.StatusMemory, 0), Cpu: make([]initserver.StatusCpu, 0), Consul: false, Scp: false, Init: false},
@@ -163,8 +163,8 @@ func (h *MyHandler) HandleFastHTTP(ctx *fasthttp.RequestCtx) {
 			id := utils.Read_uint32(ctx.QueryArgs().Peek("id"))
 
 			if res, found := h.Cache[id]; found {
-				//fmt.Fprintf(ctx, res)
-				json.NewEncoder(ctx).Encode(res)
+				fmt.Fprintf(ctx, res)
+				//json.NewEncoder(ctx).Encode(res)
 				h.Count.Cache++
 			} else {
 				h.Count.Db++
@@ -318,13 +318,13 @@ func (h *MyHandler) AddCache(file string) {
 			for rows.Next() {
 				err := rows.Scan(&id, &filtro)
 				if err == nil {
-
-					data := Filtro{}
-					if err := json.Unmarshal([]byte(filtro), &data); err == nil {
-						h.Cache[id] = data
-					}
-
-					//h.Cache[id] = filtro
+					/*
+						data := Filtro{}
+						if err := json.Unmarshal([]byte(filtro), &data); err == nil {
+							h.Cache[id] = data
+						}
+					*/
+					h.Cache[id] = filtro
 					//h.Count.TotalBytes = h.Count.TotalBytes + uint64(len(filtro))
 				} else {
 					fmt.Print("ERR SCAN:")
