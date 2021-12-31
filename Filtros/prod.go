@@ -316,6 +316,7 @@ func (h *MyHandler) AddCache(file string) {
 					data := Filtro{}
 					if err := json.Unmarshal([]byte(filtro), &data); err == nil {
 						h.Cache[id] = data
+						fmt.Println(data)
 					} else {
 						fmt.Println(err)
 					}
