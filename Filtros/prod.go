@@ -95,6 +95,9 @@ func main() {
 				if err != nil && pass.StatusServer.Scp {
 					pass.StatusServer.Scp = false
 				}
+				if err != nil {
+					fmt.Println(err)
+				}
 				if err == nil {
 					pass.AddCache(v.File)
 				}
