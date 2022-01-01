@@ -9,7 +9,6 @@ import (
 
 	"crypto/rand"
 	"encoding/json"
-	"io/ioutil"
 	"path/filepath"
 
 	"github.com/valyala/fasthttp"
@@ -41,29 +40,31 @@ type Minicache struct {
 }
 
 func main() {
+	/*
+		total := 350000
+		escribir_file("/var/db1_test", total)
 
-	total := 350000
-	escribir_file("/var/db1_test", total)
-
-	cache := make(map[int64]*Data, total)
-	now := time.Now()
-	for i := 1; i <= total; i++ {
-		folderfile := getFolderFile64(random(int64(i)))
-		file, err := os.Open("/var/db1_test/" + folderfile)
-		if err != nil {
-			fmt.Println(err)
+		cache := make(map[int64]*Data, total)
+		now := time.Now()
+		for i := 1; i <= total; i++ {
+			folderfile := getFolderFile64(random(int64(i)))
+			file, err := os.Open("/var/db1_test/" + folderfile)
+			if err != nil {
+				fmt.Println(err)
+			}
+			byteValue, err := ioutil.ReadAll(file)
+			file.Close()
+			data := Data{}
+			if err := json.Unmarshal(byteValue, &data); err == nil {
+				cache[int64(i)] = &data
+			}
 		}
-		byteValue, err := ioutil.ReadAll(file)
-		file.Close()
-		data := Data{}
-		if err := json.Unmarshal(byteValue, &data); err == nil {
-			cache[int64(i)] = &data
-		}
-	}
-	elapsed := time.Since(now)
-	fmt.Printf("ADD FILES TO CACHE %v [%s] c/u total %v\n", total, time_cu(elapsed, total), elapsed)
+		elapsed := time.Since(now)
+		fmt.Printf("ADD FILES TO CACHE %v [%s] c/u total %v\n", total, time_cu(elapsed, total), elapsed)
 
-	h := &MyHandler{Minicache: &Minicache{Cache: cache}, Total: int64(total)}
+		h := &MyHandler{ Minicache: &Minicache{Cache: cache}, Total: int64(total)}
+	*/
+	h := &MyHandler{}
 	fasthttp.ListenAndServe(":80", h.HandleFastHTTP)
 
 }
@@ -79,6 +80,8 @@ func (h *MyHandler) HandleFastHTTP(ctx *fasthttp.RequestCtx) {
 		} else {
 			ctx.Error("Not Found", fasthttp.StatusNotFound)
 		}
+	case "/get1":
+		fmt.Fprintf(ctx, "OK")
 	default:
 		ctx.Error("Not Found", fasthttp.StatusNotFound)
 	}
