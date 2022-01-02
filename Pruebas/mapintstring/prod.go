@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 	"math/big"
+	"os"
 	"resource/utils"
 	"strconv"
 	"time"
@@ -35,11 +36,17 @@ type MyHandler struct {
 
 func main() {
 
-	files := []string{"filtrodb0"}
-	CreateDb(files)
+	i, err := strconv.ParseInt(os.Args[1], 10, 64)
+	if err == nil {
 
-	h := &MyHandler{Cache: make(map[int64]*string, 300000), Total: 300000}
-	h.AddCache(files[0])
+		files := []string{"filtrodb0"}
+		CreateDb(files)
+
+		h := &MyHandler{Cache: make(map[int64]*string, i), Total: i}
+		h.AddCache(files[0], i)
+
+		fasthttp.ListenAndServe(":80", h.HandleFastHTTP)
+	}
 
 	/*
 		total := 350000
@@ -65,14 +72,12 @@ func main() {
 
 		h := &MyHandler{ Minicache: &Minicache{Cache: cache}, Total: int64(total)}
 	*/
-	fasthttp.ListenAndServe(":80", h.HandleFastHTTP)
 
 }
 
 func (h *MyHandler) HandleFastHTTP(ctx *fasthttp.RequestCtx) {
 
 	ctx.Response.Header.Set("Content-Type", "application/json")
-
 	switch string(ctx.Path()) {
 	case "/get0":
 		if res, found := h.Cache[random(h.Total)]; found {
@@ -138,14 +143,14 @@ func getsqlite(dbname string) (*sql.DB, error) {
 		return db, err
 	}
 }
-func (h *MyHandler) AddCache(file string) {
+func (h *MyHandler) AddCache(file string, cant int64) {
 
 	fmt.Print("ADD CACHE:", file)
 
 	db, err := sql.Open("sqlite3", "/var/db/"+file)
 
 	if err == nil {
-		rows, err := db.Query("SELECT id, filtro FROM filtros LIMIT 300000")
+		rows, err := db.Query("SELECT id, filtro FROM filtros LIMIT ?", cant)
 		if err == nil {
 			defer rows.Close()
 			var id int64
