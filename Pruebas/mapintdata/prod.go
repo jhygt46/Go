@@ -11,6 +11,7 @@ import (
 	"crypto/rand"
 	"encoding/json"
 
+	_ "github.com/mattn/go-sqlite3"
 	"github.com/valyala/fasthttp"
 )
 
