@@ -10,15 +10,16 @@ import (
 	"time"
 
 	"crypto/rand"
+	"encoding/json"
 
 	_ "github.com/mattn/go-sqlite3"
 	"github.com/valyala/fasthttp"
 )
 
 type Data struct {
-	C []Campos `json:"C"`
-	E []Evals  `json:"E"`
-	N string   `json:"N"`
+	C  []Campos `json:"C"`
+	E  []Evals  `json:"E"`
+	Id int32    `json:"Id"`
 }
 type Campos struct {
 	T int      `json:"T"`
@@ -46,42 +47,18 @@ func main() {
 		h.AddCache(files[0], i)
 
 		fasthttp.ListenAndServe(":80", h.HandleFastHTTP)
+
 	}
-
-	/*
-		total := 350000
-		escribir_file("/var/db1_test", total)
-
-		cache := make(map[int64]*Data, total)
-		now := time.Now()
-		for i := 1; i <= total; i++ {
-			folderfile := getFolderFile64(random(int64(i)))
-			file, err := os.Open("/var/db1_test/" + folderfile)
-			if err != nil {
-				fmt.Println(err)
-			}
-			byteValue, err := ioutil.ReadAll(file)
-			file.Close()
-			data := Data{}
-			if err := json.Unmarshal(byteValue, &data); err == nil {
-				cache[int64(i)] = &data
-			}
-		}
-		elapsed := time.Since(now)
-		fmt.Printf("ADD FILES TO CACHE %v [%s] c/u total %v\n", total, time_cu(elapsed, total), elapsed)
-
-		h := &MyHandler{ Minicache: &Minicache{Cache: cache}, Total: int64(total)}
-	*/
 
 }
 
 func (h *MyHandler) HandleFastHTTP(ctx *fasthttp.RequestCtx) {
 
 	ctx.Response.Header.Set("Content-Type", "application/json")
+
 	switch string(ctx.Path()) {
 	case "/get0":
 		if res, found := h.Cache[random(h.Total)]; found {
-			//json.NewEncoder(ctx).Encode(res)
 			fmt.Fprintf(ctx, string(res))
 		} else {
 			ctx.Error("Not Found", fasthttp.StatusNotFound)
@@ -93,33 +70,43 @@ func (h *MyHandler) HandleFastHTTP(ctx *fasthttp.RequestCtx) {
 	}
 }
 func CreateDb(files []string) {
+
 	total := 1000000
 	for _, v := range files {
 		if !utils.FileExists("/var/db/" + v) {
 			db, err := getsqlite(v)
 			if err == nil {
+				now := time.Now()
 				add_db(db, total)
+				elapsed := time.Since(now)
+				fmt.Printf("CREATE DB %s TOTAL %v [%s] c/u total %v\n", v, total, time_cu(elapsed, total), elapsed)
 			}
 		}
 	}
 }
 func add_db(db *sql.DB, total int) {
 
-	str1 := []byte("{\"C\":[{\"T\":1,\"N\":\"Nacionalidad\",\"V\":[\"Chilena\",\"Argentina\",\"Brasileña\",\"Uruguaya\"]},{\"T\":2,\"N\":\"Servicios\",\"V\":[\"Americana\",\"Rusa\",\"Bailarina\",\"Masaje\"]},{\"T\":3,\"N\":\"Edad\"}],\"E\":[{\"T\":1,\"N\":\"Rostro\"},{\"T\":1,\"N\":\"Senos\"},{\"T\":1,\"N\":\"Trasero\"}]}")
-	str := string(str1)
+	data := Data{}
+	data.C = []Campos{Campos{T: 1, N: "Procesador", V: []string{"X15", "IntelC3", "", "Amd71"}}, Campos{T: 1, N: "Pantalla", V: []string{"4", "4.5", "5.5"}}, Campos{T: 1, N: "Memoria", V: []string{"2GB", "4GB", "8GB"}}, Campos{T: 1, N: "Marca", V: []string{"Samsung", "Motorola", "Nokia"}}}
+	data.E = []Evals{Evals{T: 1, N: "Buena"}, Evals{T: 1, N: "Nelson"}, Evals{T: 1, N: "Hola"}, Evals{T: 1, N: "Mundo"}}
+
 	tx, err := db.Begin()
 	if err != nil {
 		fmt.Println(err)
 	}
 	defer tx.Rollback() // The rollback will be ignored if the tx has been committed later in the function.
-	stmt, err := tx.Prepare("INSERT INTO filtros (filtro, cache) VALUES(?, ?)")
+	stmt, err := tx.Prepare("INSERT INTO filtros (filtro) VALUES(?)")
 	if err != nil {
 		fmt.Println(err)
 	}
 	defer stmt.Close() // Prepared statements take up server resources and should be closed after use.
 	for i := 0; i < total; i++ {
-		if _, err := stmt.Exec(str, i); err != nil {
-			fmt.Println(err)
+		data.Id = int32(i)
+		u, err := json.Marshal(data)
+		if err == nil {
+			if _, err := stmt.Exec(string(u)); err != nil {
+				fmt.Println(err)
+			}
 		}
 	}
 	if err := tx.Commit(); err != nil {
@@ -145,8 +132,7 @@ func getsqlite(dbname string) (*sql.DB, error) {
 }
 func (h *MyHandler) AddCache(file string, cant int64) {
 
-	fmt.Print("ADD CACHE:", file)
-
+	now := time.Now()
 	db, err := sql.Open("sqlite3", "/var/db/"+file)
 
 	if err == nil {
@@ -161,11 +147,10 @@ func (h *MyHandler) AddCache(file string, cant int64) {
 					/*
 						data := Data{}
 						if err := json.Unmarshal([]byte(filtro), &data); err == nil {
-							h.Cache[id] = &data
+							h.Cache[id] = data
 						}
 					*/
 					h.Cache[id] = []byte(filtro)
-					//h.Count.TotalBytes = h.Count.TotalBytes + uint64(len(filtro))
 				} else {
 					fmt.Print("ERR SCAN:")
 					fmt.Println(err)
@@ -179,8 +164,9 @@ func (h *MyHandler) AddCache(file string, cant int64) {
 		fmt.Print("ERR CONNECT DB:", file)
 		fmt.Println(err)
 	}
+	elapsed := time.Since(now)
+	fmt.Printf("ADD CACHE DB %s TOTAL %v [%s] c/u total %v\n", file, cant, time_cu(elapsed, int(cant)), elapsed)
 }
-
 func time_cu(t time.Duration, c int) string {
 	ms := float64(t / time.Nanosecond)
 	res := ms / float64(c)
@@ -217,33 +203,3 @@ func random(max int64) int64 {
 	n, _ := rand.Int(rand.Reader, big.NewInt(max-1))
 	return n.Int64() + 1
 }
-
-/*
-func escribir_file(path string, numb int) {
-
-	d1 := []byte("{\"C\":[{ \"T\": 1, \"N\": \"Nacionalidad\", \"V\": [\"Chilena\", \"Argentina\", \"Brasileña\", \"Uruguaya\"] }, { \"T\": 2, \"N\": \"Servicios\", \"V\": [\"Americana\", \"Rusa\", \"Bailarina\", \"Masaje\"] },{ \"T\": 3, \"N\": \"Edad\" }],\"E\": [{ \"T\": 1, \"N\": \"Rostro\" },{ \"T\": 1, \"N\": \"Senos\" },{ \"T\": 1, \"N\": \"Trasero\" }]}")
-	c := 0
-
-	aux := numb / 100
-
-	now := time.Now()
-	for n := 0; n < aux; n++ {
-		folder := getFolder64(int64(n * 100))
-		newpath := filepath.Join(path, folder)
-		err := os.MkdirAll(newpath, os.ModePerm)
-		if err != nil {
-			fmt.Println(err)
-			fmt.Println("FOLDER ERROR: ", err)
-		}
-		for i := 0; i < 100; i++ {
-			err := os.WriteFile(path+"/"+folder+"/"+strconv.Itoa(i), d1, 0644)
-			if err != nil {
-				fmt.Println(err)
-			}
-			c++
-		}
-	}
-	elapsed := time.Since(now)
-	fmt.Printf("WRITES FILES %v [%s] c/u total %v\n", c, time_cu(elapsed, c), elapsed)
-}
-*/
