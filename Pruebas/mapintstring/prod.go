@@ -31,8 +31,8 @@ type Evals struct {
 	N string `json:"N"`
 }
 type MyHandler struct {
-	Cache map[int64]string `json:"Cache"`
-	Total int64            `json:"Total"`
+	Cache map[int64]*string `json:"Cache"`
+	Total int64             `json:"Total"`
 }
 
 func main() {
@@ -43,7 +43,7 @@ func main() {
 		files := []string{"filtrodb0"}
 		CreateDb(files)
 
-		h := &MyHandler{Cache: make(map[int64]string, i), Total: i}
+		h := &MyHandler{Cache: make(map[int64]*string, i), Total: i}
 		h.AddCache(files[0], i)
 
 		fasthttp.ListenAndServe(":80", h.HandleFastHTTP)
@@ -59,7 +59,7 @@ func (h *MyHandler) HandleFastHTTP(ctx *fasthttp.RequestCtx) {
 	switch string(ctx.Path()) {
 	case "/get0":
 		if res, found := h.Cache[random(h.Total)]; found {
-			fmt.Fprintf(ctx, res)
+			fmt.Fprintf(ctx, *res)
 		} else {
 			ctx.Error("Not Found", fasthttp.StatusNotFound)
 		}
@@ -150,7 +150,7 @@ func (h *MyHandler) AddCache(file string, cant int64) {
 							h.Cache[id] = data
 						}
 					*/
-					h.Cache[id] = filtro
+					h.Cache[id] = &filtro
 				} else {
 					fmt.Print("ERR SCAN:")
 					fmt.Println(err)
