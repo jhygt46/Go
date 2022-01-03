@@ -10,7 +10,6 @@ import (
 	"time"
 
 	"crypto/rand"
-	"encoding/json"
 
 	_ "github.com/mattn/go-sqlite3"
 	"github.com/valyala/fasthttp"
@@ -31,8 +30,8 @@ type Evals struct {
 	N string `json:"N"`
 }
 type MyHandler struct {
-	Cache map[int64]Data `json:"Cache"`
-	Total int64          `json:"Total"`
+	Cache map[int64][]uint8 `json:"Cache"`
+	Total int64             `json:"Total"`
 }
 
 func main() {
@@ -43,11 +42,10 @@ func main() {
 		files := []string{"filtrodb0"}
 		CreateDb(files)
 
-		h := &MyHandler{Cache: make(map[int64]Data, i), Total: i}
+		h := &MyHandler{Cache: make(map[int64][]uint8, i), Total: i}
 		h.AddCache(files[0], i)
 
 		fasthttp.ListenAndServe(":80", h.HandleFastHTTP)
-
 	}
 
 	/*
@@ -80,11 +78,11 @@ func main() {
 func (h *MyHandler) HandleFastHTTP(ctx *fasthttp.RequestCtx) {
 
 	ctx.Response.Header.Set("Content-Type", "application/json")
-
 	switch string(ctx.Path()) {
 	case "/get0":
 		if res, found := h.Cache[random(h.Total)]; found {
-			json.NewEncoder(ctx).Encode(res)
+			//json.NewEncoder(ctx).Encode(res)
+			fmt.Fprintf(ctx, string(res))
 		} else {
 			ctx.Error("Not Found", fasthttp.StatusNotFound)
 		}
@@ -160,11 +158,13 @@ func (h *MyHandler) AddCache(file string, cant int64) {
 			for rows.Next() {
 				err := rows.Scan(&id, &filtro)
 				if err == nil {
-					data := Data{}
-					if err := json.Unmarshal([]byte(filtro), &data); err == nil {
-						h.Cache[id] = data
-					}
-					//h.Cache[id] = filtro
+					/*
+						data := Data{}
+						if err := json.Unmarshal([]byte(filtro), &data); err == nil {
+							h.Cache[id] = &data
+						}
+					*/
+					h.Cache[id] = []byte(filtro)
 					//h.Count.TotalBytes = h.Count.TotalBytes + uint64(len(filtro))
 				} else {
 					fmt.Print("ERR SCAN:")
