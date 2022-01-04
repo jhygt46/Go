@@ -6,7 +6,6 @@ import (
 	"math/big"
 	"os"
 	"resource/utils"
-	"runtime"
 	"strconv"
 	"time"
 
@@ -32,8 +31,8 @@ type Evals struct {
 	N string `json:"N"`
 }
 type MyHandler struct {
-	Cache map[int64]string `json:"Cache"`
-	Total int64            `json:"Total"`
+	Cache map[int64]*Data `json:"Cache"`
+	Total int64           `json:"Total"`
 }
 
 func main() {
@@ -44,7 +43,7 @@ func main() {
 		files := []string{"filtrodb0"}
 		CreateDb(files)
 
-		h := &MyHandler{Cache: make(map[int64]string, i), Total: i}
+		h := &MyHandler{Cache: make(map[int64]*Data, i), Total: i}
 		h.AddCache(files[0], i)
 
 		fasthttp.ListenAndServe(":80", h.HandleFastHTTP)
@@ -60,7 +59,7 @@ func (h *MyHandler) HandleFastHTTP(ctx *fasthttp.RequestCtx) {
 	switch string(ctx.Path()) {
 	case "/get0":
 		if res, found := h.Cache[random(h.Total)]; found {
-			fmt.Fprintf(ctx, res)
+			json.NewEncoder(ctx).Encode(res)
 		} else {
 			ctx.Error("Not Found", fasthttp.StatusNotFound)
 		}
@@ -72,17 +71,9 @@ func (h *MyHandler) HandleFastHTTP(ctx *fasthttp.RequestCtx) {
 }
 func CreateDb(files []string) {
 
-	var path string
-
-	if runtime.GOOS == "windows" {
-		path = "C:/Allin/db/string_"
-	} else {
-		path = "/var/db/string_"
-	}
-
 	total := 1000000
 	for _, v := range files {
-		if !utils.FileExists(path + v) {
+		if !utils.FileExists("/var/db/" + v) {
 			db, err := getsqlite(v)
 			if err == nil {
 				now := time.Now()
@@ -123,16 +114,7 @@ func add_db(db *sql.DB, total int) {
 	}
 }
 func getsqlite(dbname string) (*sql.DB, error) {
-
-	var path string
-
-	if runtime.GOOS == "windows" {
-		path = "C:/Allin/db/string_"
-	} else {
-		path = "/var/db/string_"
-	}
-
-	db, err := sql.Open("sqlite3", path+dbname)
+	db, err := sql.Open("sqlite3", "/var/db/"+dbname)
 	if err == nil {
 		stmt, err := db.Prepare(`create table if not exists filtros (id integer not null primary key autoincrement,filtro text, cache integer)`)
 		if err != nil {
@@ -150,16 +132,8 @@ func getsqlite(dbname string) (*sql.DB, error) {
 }
 func (h *MyHandler) AddCache(file string, cant int64) {
 
-	var path string
-
-	if runtime.GOOS == "windows" {
-		path = "C:/Allin/db/string_"
-	} else {
-		path = "/var/db/string_"
-	}
-
 	now := time.Now()
-	db, err := sql.Open("sqlite3", path+file)
+	db, err := sql.Open("sqlite3", "/var/db/"+file)
 
 	if err == nil {
 		rows, err := db.Query("SELECT id, filtro FROM filtros LIMIT ?", cant)
@@ -170,13 +144,11 @@ func (h *MyHandler) AddCache(file string, cant int64) {
 			for rows.Next() {
 				err := rows.Scan(&id, &filtro)
 				if err == nil {
-					/*
-						data := Data{}
-						if err := json.Unmarshal([]byte(filtro), &data); err == nil {
-							h.Cache[id] = data
-						}
-					*/
-					h.Cache[id] = filtro
+					data := Data{}
+					if err := json.Unmarshal([]byte(filtro), &data); err == nil {
+						h.Cache[id] = &data
+					}
+					//h.Cache[id] = filtro
 				} else {
 					fmt.Print("ERR SCAN:")
 					fmt.Println(err)

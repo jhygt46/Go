@@ -6,6 +6,7 @@ import (
 	"math/big"
 	"os"
 	"resource/utils"
+	"runtime"
 	"strconv"
 	"time"
 
@@ -31,8 +32,8 @@ type Evals struct {
 	N string `json:"N"`
 }
 type MyHandler struct {
-	Cache map[int64][]uint8 `json:"Cache"`
-	Total int64             `json:"Total"`
+	Cache map[uint32][]uint8 `json:"Cache"`
+	Total int64              `json:"Total"`
 }
 
 func main() {
@@ -43,7 +44,7 @@ func main() {
 		files := []string{"filtrodb0"}
 		CreateDb(files)
 
-		h := &MyHandler{Cache: make(map[int64][]uint8, i), Total: i}
+		h := &MyHandler{Cache: make(map[uint32][]uint8, i), Total: i}
 		h.AddCache(files[0], i)
 
 		fasthttp.ListenAndServe(":80", h.HandleFastHTTP)
@@ -55,10 +56,11 @@ func main() {
 func (h *MyHandler) HandleFastHTTP(ctx *fasthttp.RequestCtx) {
 
 	ctx.Response.Header.Set("Content-Type", "application/json")
+	id := utils.Read_uint32(ctx.QueryArgs().Peek("id"))
 
 	switch string(ctx.Path()) {
 	case "/get0":
-		if res, found := h.Cache[random(h.Total)]; found {
+		if res, found := h.Cache[id]; found {
 			fmt.Fprintf(ctx, string(res))
 		} else {
 			ctx.Error("Not Found", fasthttp.StatusNotFound)
@@ -71,9 +73,17 @@ func (h *MyHandler) HandleFastHTTP(ctx *fasthttp.RequestCtx) {
 }
 func CreateDb(files []string) {
 
+	var path string
+
+	if runtime.GOOS == "windows" {
+		path = "C:/Allin/db/string_"
+	} else {
+		path = "/var/db/string_"
+	}
+
 	total := 1000000
 	for _, v := range files {
-		if !utils.FileExists("/var/db/" + v) {
+		if !utils.FileExists(path + v) {
 			db, err := getsqlite(v)
 			if err == nil {
 				now := time.Now()
@@ -87,8 +97,8 @@ func CreateDb(files []string) {
 func add_db(db *sql.DB, total int) {
 
 	data := Data{}
-	data.C = []Campos{Campos{T: 1, N: "Procesador", V: []string{"X15", "IntelC3", "", "Amd71"}}, Campos{T: 1, N: "Pantalla", V: []string{"4", "4.5", "5.5"}}, Campos{T: 1, N: "Memoria", V: []string{"2GB", "4GB", "8GB"}}, Campos{T: 1, N: "Marca", V: []string{"Samsung", "Motorola", "Nokia"}}}
-	data.E = []Evals{Evals{T: 1, N: "Buena"}, Evals{T: 1, N: "Nelson"}, Evals{T: 1, N: "Hola"}, Evals{T: 1, N: "Mundo"}}
+	data.C = []Campos{Campos{T: 1, N: "Procesador", V: []string{"X15", "IntelC3", "JT50", "Amd71", "X15", "IntelC3", "JT50", "Amd71", "X15", "IntelC3", "JT50", "Amd71", "X15", "IntelC3", "JT50", "Amd71", "X15", "IntelC3", "JT50", "Amd71", "X15", "IntelC3", "JT50", "Amd71", "X15", "IntelC3", "JT50", "Amd71", "X15", "IntelC3", "JT50", "Amd71", "X15", "IntelC3", "JT50", "Amd71", "X15", "IntelC3", "JT50", "Amd71", "X15", "IntelC3", "JT50", "Amd71", "X15", "IntelC3", "JT50", "Amd71", "X15", "IntelC3", "JT50", "Amd71", "X15", "IntelC3", "JT50", "Amd71", "X15", "IntelC3", "JT50", "Amd71", "X15", "IntelC3", "JT50", "Amd71", "X15", "IntelC3", "JT50", "Amd71", "X15", "IntelC3", "JT50", "Amd71", "X15", "IntelC3", "JT50", "Amd71", "X15", "IntelC3", "JT50", "Amd71", "X15", "IntelC3", "JT50", "Amd71"}}, Campos{T: 1, N: "Pantalla", V: []string{"4", "4.5", "5.5"}}, Campos{T: 1, N: "Memoria", V: []string{"2GB", "4GB", "8GB", "16GB", "32GB", "64GB", "128GB"}}, Campos{T: 1, N: "Marca", V: []string{"Samsung", "Motorola", "Nokia", "Samsung", "Motorola", "Nokia", "Samsung", "Motorola", "Nokia", "Samsung", "Motorola", "Nokia"}}}
+	data.E = []Evals{Evals{T: 1, N: "Velocidad"}, Evals{T: 1, N: "Peso"}, Evals{T: 1, N: "Performance"}, Evals{T: 1, N: "Mundo"}}
 
 	tx, err := db.Begin()
 	if err != nil {
@@ -101,10 +111,10 @@ func add_db(db *sql.DB, total int) {
 	}
 	defer stmt.Close() // Prepared statements take up server resources and should be closed after use.
 	for i := 0; i < total; i++ {
-		data.Id = int32(i)
+		data.Id = int32(i + 1)
 		u, err := json.Marshal(data)
 		if err == nil {
-			if _, err := stmt.Exec(string(u)); err != nil {
+			if _, err := stmt.Exec(u); err != nil {
 				fmt.Println(err)
 			}
 		}
@@ -114,9 +124,18 @@ func add_db(db *sql.DB, total int) {
 	}
 }
 func getsqlite(dbname string) (*sql.DB, error) {
-	db, err := sql.Open("sqlite3", "/var/db/"+dbname)
+
+	var path string
+
+	if runtime.GOOS == "windows" {
+		path = "C:/Allin/db/string_"
+	} else {
+		path = "/var/db/string_"
+	}
+
+	db, err := sql.Open("sqlite3", path+dbname)
 	if err == nil {
-		stmt, err := db.Prepare(`create table if not exists filtros (id integer not null primary key autoincrement,filtro text, cache integer)`)
+		stmt, err := db.Prepare(`create table if not exists filtros (id integer not null primary key autoincrement,filtro blob)`)
 		if err != nil {
 			fmt.Println("err1")
 			fmt.Println(err)
@@ -132,25 +151,27 @@ func getsqlite(dbname string) (*sql.DB, error) {
 }
 func (h *MyHandler) AddCache(file string, cant int64) {
 
+	var path string
+
+	if runtime.GOOS == "windows" {
+		path = "C:/Allin/db/string_"
+	} else {
+		path = "/var/db/string_"
+	}
+
 	now := time.Now()
-	db, err := sql.Open("sqlite3", "/var/db/"+file)
+	db, err := sql.Open("sqlite3", path+file)
 
 	if err == nil {
 		rows, err := db.Query("SELECT id, filtro FROM filtros LIMIT ?", cant)
 		if err == nil {
 			defer rows.Close()
-			var id int64
-			var filtro string
+			var id uint32
+			var filtro []uint8
 			for rows.Next() {
 				err := rows.Scan(&id, &filtro)
 				if err == nil {
-					/*
-						data := Data{}
-						if err := json.Unmarshal([]byte(filtro), &data); err == nil {
-							h.Cache[id] = data
-						}
-					*/
-					h.Cache[id] = []byte(filtro)
+					h.Cache[id] = filtro
 				} else {
 					fmt.Print("ERR SCAN:")
 					fmt.Println(err)
