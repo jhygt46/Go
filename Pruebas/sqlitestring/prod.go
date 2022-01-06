@@ -49,7 +49,6 @@ func (h *MyHandler) HandleFastHTTP(ctx *fasthttp.RequestCtx) {
 	switch string(ctx.Path()) {
 	case "/get0":
 		ran := utils.Random(h.Total)
-		fmt.Println(ran)
 		content, err := db.GetFiltroStringContent(h.Dbs, ran)
 		if err == nil {
 			fmt.Fprintf(ctx, content)
