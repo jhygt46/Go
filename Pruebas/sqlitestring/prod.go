@@ -21,8 +21,8 @@ func main() {
 	i, err := strconv.ParseInt(os.Args[1], 10, 64)
 	if err == nil {
 
-		sqlite, err := db.GetDbFiltroBytes("sFiltrodb1")
-		s := "ATTACH DATABASE '/var/db/sFiltrodb2' as 'db1'"
+		sqlite, err := db.GetDbFiltroBytes("sFiltrodb0")
+		s := "ATTACH DATABASE '/var/db/sFiltrodb1' as 'db1'"
 		_, err = sqlite.Exec(s)
 
 		//sqlite.SetMaxIdleConns(5)
