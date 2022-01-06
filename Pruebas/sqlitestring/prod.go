@@ -22,6 +22,9 @@ func main() {
 	if err == nil {
 
 		sqlite, err := db.GetDbFiltroBytes("sFiltrodb1")
+		s := "attach database '/var/db/sFiltrodb0.db' as db2;"
+		_, err = sqlite.Exec(s)
+
 		if err == nil {
 
 			filtro := db.Filtro{}
