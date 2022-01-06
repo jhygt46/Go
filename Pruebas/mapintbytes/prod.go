@@ -61,7 +61,14 @@ func (h *MyHandler) HandleFastHTTP(ctx *fasthttp.RequestCtx) {
 	switch string(ctx.Path()) {
 	case "/get0":
 		if res, found := h.Cache[id]; found {
-			fmt.Fprintf(ctx, string(res))
+
+			data := Data{}
+			if err := json.Unmarshal(res, &data); err == nil {
+				json.NewEncoder(ctx).Encode(data)
+			} else {
+				fmt.Println(err)
+			}
+
 		} else {
 			ctx.Error("Not Found", fasthttp.StatusNotFound)
 		}
