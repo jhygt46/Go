@@ -52,7 +52,9 @@ func (h *MyHandler) HandleFastHTTP(ctx *fasthttp.RequestCtx) {
 	ctx.Response.Header.Set("Content-Type", "application/json")
 	switch string(ctx.Path()) {
 	case "/get0":
-		content, err := db.GetFiltroStringContent(h.Dbs, utils.Random(h.Total))
+		ran := utils.Random(h.Total)
+		fmt.Println(ran)
+		content, err := db.GetFiltroStringContent(h.Dbs, ran)
 		if err == nil {
 			fmt.Fprintf(ctx, content)
 		} else {
