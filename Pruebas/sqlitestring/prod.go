@@ -51,6 +51,7 @@ func (h *MyHandler) HandleFastHTTP(ctx *fasthttp.RequestCtx) {
 		ran := utils.Random(h.Total)
 		content, err := db.GetFiltroStringContent(h.Dbs, ran)
 		if err == nil {
+			fmt.Println("FOUND", ran)
 			fmt.Fprintf(ctx, content)
 		} else {
 			fmt.Println("NOT FOUND", ran)
