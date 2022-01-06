@@ -4,11 +4,13 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"resource/utils"
 
 	"zombiezen.com/go/sqlite/sqlitex"
 )
 
 var dbpool *sqlitex.Pool
+var Total int64 = 1000000
 
 // Using a Pool to execute SQL in a concurrent HTTP handler.
 func main() {
@@ -28,7 +30,7 @@ func handle(w http.ResponseWriter, r *http.Request) {
 	}
 	defer dbpool.Put(conn)
 	stmt := conn.Prep("SELECT filtro FROM filtros WHERE id = $id")
-	stmt.SetText("$id", "1")
+	stmt.SetInt64("$id", utils.Random(Total))
 	for {
 		if hasRow, err := stmt.Step(); err != nil {
 			// ... handle error
