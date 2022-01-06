@@ -25,6 +25,10 @@ func main() {
 		s := "ATTACH DATABASE '/var/db/sFiltrodb0.db' as 'db2'"
 		_, err = sqlite.Exec(s)
 
+		if err != nil {
+			fmt.Println(err)
+		}
+
 		if err == nil {
 
 			filtro := db.Filtro{}
