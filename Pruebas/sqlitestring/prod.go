@@ -12,7 +12,9 @@ import (
 )
 
 type MyHandler struct {
-	Dbs   *sql.DB `json:"Dbs"`
+	Db1   *sql.DB `json:"Db1"`
+	Db2   *sql.DB `json:"Db2"`
+	Db3   *sql.DB `json:"Db3"`
 	Total int64   `json:"Total"`
 }
 
@@ -21,9 +23,9 @@ func main() {
 	i, err := strconv.ParseInt(os.Args[1], 10, 64)
 	if err == nil {
 
-		sqlite, err := db.GetDbFiltroBytes("sFiltrodb0")
-		s := "ATTACH DATABASE '/var/db/sFiltrodb1' as 'db1'"
-		_, err = sqlite.Exec(s)
+		sqlite1, err := db.GetDbFiltroBytes("sFiltrodb0")
+		sqlite2, err := db.GetDbFiltroBytes("sFiltrodb1")
+		sqlite3, err := db.GetDbFiltroBytes("sFiltrodb1")
 
 		//sqlite.SetMaxIdleConns(5)
 
@@ -36,11 +38,17 @@ func main() {
 
 		}
 
-		h := &MyHandler{Dbs: sqlite, Total: i}
+		h := &MyHandler{Db1: sqlite1, Db2: sqlite2, Db3: sqlite3, Total: i}
 		fasthttp.ListenAndServe(":80", h.HandleFastHTTP)
 
 	}
 
+}
+
+func GetDbbyId(id int64) (int64, int64) {
+	x := id / 1000000
+	y := id % 1000000
+	return x, y
 }
 
 func (h *MyHandler) HandleFastHTTP(ctx *fasthttp.RequestCtx) {
@@ -48,15 +56,33 @@ func (h *MyHandler) HandleFastHTTP(ctx *fasthttp.RequestCtx) {
 	ctx.Response.Header.Set("Content-Type", "application/json")
 	switch string(ctx.Path()) {
 	case "/get0":
-		ran := utils.Random(h.Total)
-		content, err := db.GetFiltroStringContent(h.Dbs, ran)
-		if err == nil {
-			fmt.Println("FOUND", ran)
-			fmt.Fprintf(ctx, content)
-		} else {
-			fmt.Println("NOT FOUND", ran)
-			ctx.Error("Not Found", fasthttp.StatusNotFound)
+
+		x, y := GetDbbyId(utils.Random(h.Total))
+		if x == 0 {
+			content, err := db.GetFiltroStringContent(h.Db1, y)
+			if err == nil {
+				fmt.Fprintf(ctx, content)
+			} else {
+				ctx.Error("Not Found", fasthttp.StatusNotFound)
+			}
 		}
+		if x == 1 {
+			content, err := db.GetFiltroStringContent(h.Db2, y)
+			if err == nil {
+				fmt.Fprintf(ctx, content)
+			} else {
+				ctx.Error("Not Found", fasthttp.StatusNotFound)
+			}
+		}
+		if x == 3 {
+			content, err := db.GetFiltroStringContent(h.Db2, y)
+			if err == nil {
+				fmt.Fprintf(ctx, content)
+			} else {
+				ctx.Error("Not Found", fasthttp.StatusNotFound)
+			}
+		}
+
 	default:
 		ctx.Error("Not Found", fasthttp.StatusNotFound)
 	}
