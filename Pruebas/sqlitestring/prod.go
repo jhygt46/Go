@@ -27,10 +27,6 @@ func main() {
 
 		//sqlite.SetMaxIdleConns(5)
 
-		if err != nil {
-			fmt.Println(err)
-		}
-
 		if err == nil {
 
 			filtro := db.Filtro{}
@@ -52,9 +48,7 @@ func (h *MyHandler) HandleFastHTTP(ctx *fasthttp.RequestCtx) {
 	ctx.Response.Header.Set("Content-Type", "application/json")
 	switch string(ctx.Path()) {
 	case "/get0":
-		ran := utils.Random(h.Total)
-		fmt.Println(ran)
-		content, err := db.GetFiltroStringContent(h.Dbs, ran)
+		content, err := db.GetFiltroStringContent(h.Dbs, utils.Random(h.Total))
 		if err == nil {
 			fmt.Fprintf(ctx, content)
 		} else {
