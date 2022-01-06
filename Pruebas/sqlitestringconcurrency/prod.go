@@ -13,7 +13,7 @@ var dbpool *sqlitex.Pool
 // Using a Pool to execute SQL in a concurrent HTTP handler.
 func main() {
 	var err error
-	dbpool, err = sqlitex.Open("C:/Allin/db/sFiltrodb0", 0, 10)
+	dbpool, err = sqlitex.Open("/var/db/sFiltrodb0", 0, 10)
 	if err != nil {
 		log.Fatal(err)
 	}
