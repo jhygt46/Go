@@ -36,41 +36,42 @@ func main() {
 
 func (h *MyHandler) HandleFastHTTP(ctx *fasthttp.RequestCtx) {
 
-	ctx.Response.Header.Set("Content-Type", "application/json")
-	switch string(ctx.Path()) {
-	case "/get0":
+	err := h.Stmt.Bind(utils.Random(h.Total))
+	_, err = h.Stmt.Step()
+	check(err)
+	var filtro string
+	err = h.Stmt.Scan(&filtro)
+	check(err)
+	err = h.Stmt.Reset()
+	check(err)
+	fmt.Fprintf(ctx, filtro)
 
-		err := h.Stmt.Bind(utils.Random(h.Total))
-		_, err = h.Stmt.Step()
-		check(err)
-		var filtro string
-		err = h.Stmt.Scan(&filtro)
-		check(err)
-		err = h.Stmt.Reset()
-		check(err)
-		fmt.Fprintf(ctx, filtro)
+	/*
+		ctx.Response.Header.Set("Content-Type", "application/json")
+		switch string(ctx.Path()) {
+		case "/get0":
 
-		/*
-			stmt, err := h.Dbs.Prepare(`SELECT filtro FROM filtros WHERE id = ?`, 18)
-			check(err)
-			defer stmt.Close()
-
-			for {
-				hasRow, err := stmt.Step()
+				stmt, err := h.Dbs.Prepare(`SELECT filtro FROM filtros WHERE id = ?`, 18)
 				check(err)
-				if !hasRow {
-					break
+				defer stmt.Close()
+
+				for {
+					hasRow, err := stmt.Step()
+					check(err)
+					if !hasRow {
+						break
+					}
+
+					var filtro string
+					err = stmt.Scan(&filtro)
+					check(err)
+					fmt.Fprintf(ctx, filtro)
 				}
 
-				var filtro string
-				err = stmt.Scan(&filtro)
-				check(err)
-				fmt.Fprintf(ctx, filtro)
-			}
-		*/
-	default:
-		ctx.Error("Not Found", fasthttp.StatusNotFound)
-	}
+		default:
+			ctx.Error("Not Found", fasthttp.StatusNotFound)
+		}
+	*/
 
 }
 
