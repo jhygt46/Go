@@ -16,7 +16,7 @@ type MyHandler struct {
 
 func main() {
 
-	conn, err := sqlite3.Open("file:C:/Allin/db/sFiltrodb0?cache=shared&mode=ro")
+	conn, err := sqlite3.Open("file:/var/db/sFiltrodb0?cache=shared&mode=ro")
 	if err != nil {
 		fmt.Println("Err1", err)
 	}
