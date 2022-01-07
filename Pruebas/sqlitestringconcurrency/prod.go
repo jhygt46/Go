@@ -56,14 +56,9 @@ func main() {
 
 		stmt := checkout()
 		defer checkin(stmt)
-
-		err := stmt.Bind(utils.Random(1000000))
-		_, err = stmt.Step()
-		check(err)
+		row := stmt.QueryRow(utils.Random(1000000))
 		var filtro string
-		err = stmt.Scan(&filtro)
-		check(err)
-		err = stmt.Reset()
+		err := row.Scan(&filtro)
 		check(err)
 		fmt.Fprintf(ctx, filtro)
 
