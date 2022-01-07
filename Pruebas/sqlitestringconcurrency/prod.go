@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"resource/utils"
+	"runtime"
 
 	"github.com/bvinc/go-sqlite-lite/sqlite3"
 	"github.com/valyala/fasthttp"
@@ -16,21 +17,57 @@ type MyHandler struct {
 
 func main() {
 
-	conn, err := sqlite3.Open("file:/var/db/sFiltrodb0?cache=shared&mode=ro")
-	if err != nil {
-		fmt.Println("Err1", err)
+	var path string
+	if runtime.GOOS == "windows" {
+		path = "file:C:/Allin/db/sFiltrodb0?cache=shared&mode=ro"
+	} else {
+		path = "file:/var/db/sFiltrodb0?cache=shared&mode=ro"
 	}
 
-	stmt, err := conn.Prepare("SELECT filtro FROM filtros WHERE id=?")
-	if err != nil {
-		fmt.Println("Err2", err)
+	max_conns := 5
+	conns := make(chan *sqlite3.Stmt, max_conns)
+
+	for i := 0; i < max_conns; i++ {
+		conn, err := sqlite3.Open(path)
+		if err != nil {
+			fmt.Println("Err1", err)
+		}
+		stmt, err := conn.Prepare("SELECT filtro FROM filtros WHERE id=?")
+		if err != nil {
+			fmt.Println("Err2", err)
+		}
+
+		defer func() {
+			stmt.Close()
+			conn.Close()
+		}()
+		conns <- stmt
 	}
 
-	defer stmt.Close()
-	defer conn.Close()
+	checkout := func() *sqlite3.Stmt {
+		return <-conns
+	}
 
-	h := &MyHandler{Stmt: stmt, Total: 1000000}
-	fasthttp.ListenAndServe(":80", h.HandleFastHTTP)
+	checkin := func(c *sqlite3.Stmt) {
+		conns <- c
+	}
+
+	fasthttp.ListenAndServe(":80", func(ctx *fasthttp.RequestCtx) {
+
+		stmt := checkout()
+		defer checkin(stmt)
+
+		err := stmt.Bind(utils.Random(1000000))
+		_, err = stmt.Step()
+		check(err)
+		var filtro string
+		err = stmt.Scan(&filtro)
+		check(err)
+		err = stmt.Reset()
+		check(err)
+		fmt.Fprintf(ctx, filtro)
+
+	})
 
 }
 
