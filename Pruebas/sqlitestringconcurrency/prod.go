@@ -29,7 +29,7 @@ func main() {
 	defer stmt.Close()
 	defer conn.Close()
 
-	h := &MyHandler{Dbs: conn, Stmt: stmt, Total: 1000000}
+	h := &MyHandler{Stmt: stmt, Total: 1000000}
 	fasthttp.ListenAndServe(":80", h.HandleFastHTTP)
 
 }
