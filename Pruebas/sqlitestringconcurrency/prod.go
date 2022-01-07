@@ -36,7 +36,6 @@ func main() {
 		if err != nil {
 			fmt.Println("Err2", err)
 		}
-
 		defer func() {
 			stmt.Close()
 			conn.Close()
@@ -47,7 +46,6 @@ func main() {
 	checkout := func() *sqlite3.Stmt {
 		return <-conns
 	}
-
 	checkin := func(c *sqlite3.Stmt) {
 		conns <- c
 	}
@@ -56,9 +54,14 @@ func main() {
 
 		stmt := checkout()
 		defer checkin(stmt)
-		row := stmt.QueryRow(utils.Random(1000000))
+
+		err := stmt.Bind(utils.Random(1000000))
+		_, err = stmt.Step()
+		check(err)
 		var filtro string
-		err := row.Scan(&filtro)
+		err = stmt.Scan(&filtro)
+		check(err)
+		err = stmt.Reset()
 		check(err)
 		fmt.Fprintf(ctx, filtro)
 
@@ -67,16 +70,6 @@ func main() {
 }
 
 func (h *MyHandler) HandleFastHTTP(ctx *fasthttp.RequestCtx) {
-
-	err := h.Stmt.Bind(utils.Random(h.Total))
-	_, err = h.Stmt.Step()
-	check(err)
-	var filtro string
-	err = h.Stmt.Scan(&filtro)
-	check(err)
-	err = h.Stmt.Reset()
-	check(err)
-	fmt.Fprintf(ctx, filtro)
 
 	/*
 		ctx.Response.Header.Set("Content-Type", "application/json")
