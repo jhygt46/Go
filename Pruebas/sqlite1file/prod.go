@@ -30,9 +30,9 @@ type Evals struct {
 	N string `json:"N"`
 }
 type MyHandler struct {
-	Dbs    *sql.DB `json:"Dbs"`
-	Config Config  `json:"Config"`
-	Total  int64   `json:"Total"`
+	Dbs   *sql.DB `json:"Dbs"`
+	Count int64   `json:"Count"`
+	Total int64   `json:"Total"`
 }
 
 func main() {
@@ -41,7 +41,7 @@ func main() {
 	db, err := getsqlite(0)
 	if err == nil {
 		add_db(db, total)
-		h := &MyHandler{Dbs: db, Total: int64(total)}
+		h := &MyHandler{Dbs: db, Total: int64(total), Count: 1}
 		fasthttp.ListenAndServe(":80", h.HandleFastHTTP)
 	}
 
@@ -54,8 +54,9 @@ func (h *MyHandler) HandleFastHTTP(ctx *fasthttp.RequestCtx) {
 	switch string(ctx.Path()) {
 	case "/get":
 
-		content, err := get_content(h.Dbs, random(h.Total))
+		content, err := get_content(h.Dbs, h.Count*3)
 		if err == nil {
+			h.Count++
 			fmt.Fprintf(ctx, content)
 		} else {
 			ctx.Error("Not Found", fasthttp.StatusNotFound)
