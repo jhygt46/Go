@@ -1,22 +1,38 @@
 package main
 
 import (
-	"fmt"
-	"time"
-	"strconv"
-	"math/big"
 	"crypto/rand"
 	"database/sql"
+	"encoding/json"
+	"fmt"
+	"math/big"
+	"strconv"
+	"time"
+
 	_ "github.com/mattn/go-sqlite3"
 	"github.com/valyala/fasthttp"
 )
-type Config struct {
 
+type Config struct {
+}
+type Filtro struct {
+	C  []Campos `json:"C"`
+	E  []Evals  `json:"E"`
+	Id int32    `json:"Id"`
+}
+type Campos struct {
+	T int      `json:"T"`
+	N string   `json:"N"`
+	V []string `json:"V"`
+}
+type Evals struct {
+	T int    `json:"T"`
+	N string `json:"N"`
 }
 type MyHandler struct {
-	Dbs *sql.DB `json:"Dbs"`
-	Config Config `json:"Config"`
-	Total int64 `json:"Total"`
+	Dbs    *sql.DB `json:"Dbs"`
+	Config Config  `json:"Config"`
+	Total  int64   `json:"Total"`
 }
 
 func main() {
@@ -25,35 +41,37 @@ func main() {
 	db, err := getsqlite(0)
 	if err == nil {
 		add_db(db, total)
-		h := &MyHandler{ Dbs: db, Total: int64(total) }
+		h := &MyHandler{Dbs: db, Total: int64(total)}
 		fasthttp.ListenAndServe(":80", h.HandleFastHTTP)
 	}
-	
+
 }
 
 func (h *MyHandler) HandleFastHTTP(ctx *fasthttp.RequestCtx) {
 
 	ctx.Response.Header.Set("Content-Type", "application/json")
-	
+
 	switch string(ctx.Path()) {
 	case "/get":
-		
+
 		content, err := get_content(h.Dbs, random(h.Total))
-		if err == nil{
+		if err == nil {
 			fmt.Fprintf(ctx, content)
-		}else{
+		} else {
 			ctx.Error("Not Found", fasthttp.StatusNotFound)
 		}
 
 	default:
 		ctx.Error("Not Found", fasthttp.StatusNotFound)
 	}
-	
-}
-func add_db(db *sql.DB, total int){
 
-	str1 := []byte("{\"C\":[{ \"T\": 1, \"N\": \"Nacionalidad\", \"V\": [\"Chilena\", \"Argentina\", \"Brasileña\", \"Uruguaya\"] }, { \"T\": 2, \"N\": \"Servicios\", \"V\": [\"Americana\", \"Rusa\", \"Bailarina\", \"Masaje\"] },{ \"T\": 3, \"N\": \"Edad\" }],\"E\": [{ \"T\": 1, \"N\": \"Rostro\" },{ \"T\": 1, \"N\": \"Senos\" },{ \"T\": 1, \"N\": \"Trasero\" }]}")
-	str := string(str1)
+}
+func add_db(db *sql.DB, total int) {
+
+	filtro := Filtro{}
+	filtro.C = []Campos{Campos{T: 1, N: "Procesador", V: []string{"X15", "IntelC3", "Amd71", "X15", "IntelC3", "Amd71", "X15", "IntelC3", "Amd71", "X15", "IntelC3", "Amd71", "X15", "IntelC3", "Amd71", "X15", "IntelC3", "Amd71", "X15", "IntelC3", "Amd71", "X15", "IntelC3", "Amd71", "X15", "IntelC3", "Amd71", "X15", "IntelC3", "Amd71", "X15", "IntelC3", "Amd71"}}, Campos{T: 1, N: "Pantalla", V: []string{"4", "4.5", "5.5", "4.5", "5.5", "4.5", "5.5", "4.5", "5.5", "4.5", "5.5"}}, Campos{T: 1, N: "Memoria", V: []string{"2GB", "4GB", "8GB", "16GB", "32GB", "64GB", "128GB"}}, Campos{T: 1, N: "Marca", V: []string{"Samsung", "Motorola", "Nokia", "Samsung", "Motorola", "Nokia", "Samsung", "Motorola", "Nokia", "Samsung", "Motorola", "Nokia", "Samsung", "Motorola", "Nokia"}}}
+	filtro.E = []Evals{Evals{T: 1, N: "Buena"}, Evals{T: 1, N: "Nelson"}, Evals{T: 1, N: "Hola"}, Evals{T: 1, N: "Mundo"}}
+
 	tx, err := db.Begin()
 	if err != nil {
 		fmt.Println(err)
@@ -65,10 +83,16 @@ func add_db(db *sql.DB, total int){
 	}
 	defer stmt.Close() // Prepared statements take up server resources and should be closed after use.
 	now := time.Now()
-	for i:=0; i<total; i++ {
-		if _, err := stmt.Exec(str); err != nil {
-			fmt.Println(err)
+	for i := 0; i < total; i++ {
+
+		filtro.Id = int32(i)
+		u, err := json.Marshal(filtro)
+		if err == nil {
+			if _, err := stmt.Exec(string(u)); err != nil {
+				fmt.Println(err)
+			}
 		}
+
 	}
 	elapsed := time.Since(now)
 	fmt.Printf("WRITES FILES %v [%s] c/u total %v\n", total, time_cu(elapsed, total), elapsed)
@@ -88,7 +112,7 @@ func getsqlite(i int) (*sql.DB, error) {
 		}
 		stmt.Exec()
 		return db, nil
-	}else{
+	} else {
 		fmt.Println("err2")
 		fmt.Println(err)
 		return db, err
@@ -96,14 +120,14 @@ func getsqlite(i int) (*sql.DB, error) {
 }
 func get_content(db *sql.DB, id int64) (string, error) {
 	rows, err := db.Query("SELECT content FROM contents WHERE id=?", id)
-	if err != nil { 
+	if err != nil {
 		return "", err
 	}
 	defer rows.Close()
 	var content string
 	for rows.Next() {
 		err := rows.Scan(&content)
-		if err != nil { 
+		if err != nil {
 			return "", err
 		}
 	}
@@ -124,7 +148,7 @@ func time_cu(t time.Duration, c int) string {
 	var s string
 	if res < 1000 {
 		s = fmt.Sprintf("%.2f NanoSec", res)
-	} else if res >= 1000 && res < 1000000{
+	} else if res >= 1000 && res < 1000000 {
 		s = fmt.Sprintf("%.2f MicroSec", res/1000)
 	} else {
 		s = fmt.Sprintf("%.2f MilliSec", res/1000000)
