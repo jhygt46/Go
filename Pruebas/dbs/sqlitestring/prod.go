@@ -24,21 +24,23 @@ func main() {
 
 		dbs, err := sql.Open("sqlite3", "/var/db/sFiltrodb0")
 		if err == nil {
-			stmt1, err := dbs.Prepare("CREATE TABLE IF NOT EXISTS autocomplete (filtro TEXT NOT NULL, id INTEGER NOT NULL, PRIMARY KEY (id))")
-			if err != nil {
-				fmt.Println(err)
-			} else {
-				fmt.Println("DB autocomplete CREATED")
-			}
-			stmt1.Exec()
+			/*
+				stmt1, err := dbs.Prepare("CREATE TABLE IF NOT EXISTS autocomplete (filtro TEXT NOT NULL, id INTEGER NOT NULL, PRIMARY KEY (id))")
+				if err != nil {
+					fmt.Println(err)
+				} else {
+					fmt.Println("DB autocomplete CREATED")
+				}
+				stmt1.Exec()
+			*/
 		}
 
 		filtro := db.Filtro{}
 		filtro.C = []db.Campos{db.Campos{T: 1, N: "Procesador", V: []string{"X15", "IntelC3", "Amd71", "X15", "IntelC3", "Amd71", "X15", "IntelC3", "Amd71", "X15", "IntelC3", "Amd71", "X15", "IntelC3", "Amd71", "X15", "IntelC3", "Amd71", "X15", "IntelC3", "Amd71", "X15", "IntelC3", "Amd71", "X15", "IntelC3", "Amd71", "X15", "IntelC3", "Amd71", "X15", "IntelC3", "Amd71"}}, db.Campos{T: 1, N: "Pantalla", V: []string{"4", "4.5", "5.5", "4.5", "5.5", "4.5", "5.5", "4.5", "5.5", "4.5", "5.5"}}, db.Campos{T: 1, N: "Memoria", V: []string{"2GB", "4GB", "8GB", "16GB", "32GB", "64GB", "128GB"}}, db.Campos{T: 1, N: "Marca", V: []string{"Samsung", "Motorola", "Nokia", "Samsung", "Motorola", "Nokia", "Samsung", "Motorola", "Nokia", "Samsung", "Motorola", "Nokia", "Samsung", "Motorola", "Nokia"}}}
 		filtro.E = []db.Evals{db.Evals{T: 1, N: "Buena"}, db.Evals{T: 1, N: "Nelson"}, db.Evals{T: 1, N: "Hola"}, db.Evals{T: 1, N: "Mundo"}}
 
-		//db.FiltroStringInit(dbs, filtro, 10)
-		//db.FiltroStringInit2(dbs, filtro, 10)
+		db.FiltroStringInit(dbs, filtro, 10)
+		db.FiltroStringInit2(dbs, filtro, 10)
 
 		/*
 			sqlite, err := db.GetDbFiltroString("sFiltrodb0")
