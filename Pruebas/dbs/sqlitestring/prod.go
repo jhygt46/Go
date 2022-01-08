@@ -22,9 +22,9 @@ func main() {
 	i, err := strconv.ParseInt(os.Args[1], 10, 64)
 	if err == nil {
 
-		db, err := sql.Open("sqlite3", "/var/db/sFiltrodb0")
+		dbs, err := sql.Open("sqlite3", "/var/db/sFiltrodb0")
 		if err == nil {
-			stmt1, err := db.Prepare("CREATE TABLE IF NOT EXISTS otro (filtro TEXT NOT NULL, id INTEGER NOT NULL, PRIMARY KEY (id))")
+			stmt1, err := dbs.Prepare("CREATE TABLE IF NOT EXISTS filtros (filtro TEXT NOT NULL, id INTEGER NOT NULL, PRIMARY KEY (id))")
 			if err != nil {
 				fmt.Println(err)
 			} else {
@@ -32,6 +32,13 @@ func main() {
 			}
 			stmt1.Exec()
 		}
+
+		filtro := db.Filtro{}
+		filtro.C = []db.Campos{db.Campos{T: 1, N: "Procesador", V: []string{"X15", "IntelC3", "Amd71", "X15", "IntelC3", "Amd71", "X15", "IntelC3", "Amd71", "X15", "IntelC3", "Amd71", "X15", "IntelC3", "Amd71", "X15", "IntelC3", "Amd71", "X15", "IntelC3", "Amd71", "X15", "IntelC3", "Amd71", "X15", "IntelC3", "Amd71", "X15", "IntelC3", "Amd71", "X15", "IntelC3", "Amd71"}}, db.Campos{T: 1, N: "Pantalla", V: []string{"4", "4.5", "5.5", "4.5", "5.5", "4.5", "5.5", "4.5", "5.5", "4.5", "5.5"}}, db.Campos{T: 1, N: "Memoria", V: []string{"2GB", "4GB", "8GB", "16GB", "32GB", "64GB", "128GB"}}, db.Campos{T: 1, N: "Marca", V: []string{"Samsung", "Motorola", "Nokia", "Samsung", "Motorola", "Nokia", "Samsung", "Motorola", "Nokia", "Samsung", "Motorola", "Nokia", "Samsung", "Motorola", "Nokia"}}}
+		filtro.E = []db.Evals{db.Evals{T: 1, N: "Buena"}, db.Evals{T: 1, N: "Nelson"}, db.Evals{T: 1, N: "Hola"}, db.Evals{T: 1, N: "Mundo"}}
+
+		//db.FiltroStringInit(dbs, filtro, 10)
+		//db.FiltroStringInit2(dbs, filtro, 10)
 
 		/*
 			sqlite, err := db.GetDbFiltroString("sFiltrodb0")
@@ -47,7 +54,7 @@ func main() {
 
 			}
 		*/
-		h := &MyHandler{Dbs: db, Total: i}
+		h := &MyHandler{Dbs: dbs, Total: i}
 		fasthttp.ListenAndServe(":80", h.HandleFastHTTP)
 
 	}
