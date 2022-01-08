@@ -24,11 +24,11 @@ func main() {
 
 		dbs, err := sql.Open("sqlite3", "/var/db/sFiltrodb0")
 		if err == nil {
-			stmt1, err := dbs.Prepare("CREATE TABLE IF NOT EXISTS filtros (filtro TEXT NOT NULL, id INTEGER NOT NULL, PRIMARY KEY (id))")
+			stmt1, err := dbs.Prepare("CREATE TABLE IF NOT EXISTS autocomplete (filtro TEXT NOT NULL, id INTEGER NOT NULL, PRIMARY KEY (id))")
 			if err != nil {
 				fmt.Println(err)
 			} else {
-				fmt.Println("DB FILTROS CREATED")
+				fmt.Println("DB autocomplete CREATED")
 			}
 			stmt1.Exec()
 		}
