@@ -39,11 +39,12 @@ func main() {
 
 	total := 1000000
 	db, err := getsqlite(0)
-	if err == nil {
+	if err != nil {
 		add_db(db, total)
-		h := &MyHandler{Dbs: db, Total: int64(total), Count: 1}
-		fasthttp.ListenAndServe(":80", h.HandleFastHTTP)
 	}
+	defer db.Close()
+	h := &MyHandler{Dbs: db, Total: int64(total), Count: 1}
+	fasthttp.ListenAndServe(":80", h.HandleFastHTTP)
 
 }
 
