@@ -66,13 +66,13 @@ type Data struct {
 
 var (
 	imgPrefix  = []byte("/img/")
-	imgHandler = fasthttp.FSHandler("C:/Pelao/img", 1)
+	imgHandler = fasthttp.FSHandler("/var/Go/Pelao/img", 1)
 
 	cssPrefix  = []byte("/css/")
-	cssHandler = fasthttp.FSHandler("C:/Pelao/css", 1)
+	cssHandler = fasthttp.FSHandler("/var/Go/Pelao/css", 1)
 
 	jsPrefix  = []byte("/js/")
-	jsHandler = fasthttp.FSHandler("C:/Pelao/js", 1)
+	jsHandler = fasthttp.FSHandler("/var/Go/Pelao/js", 1)
 )
 
 func main() {
@@ -272,7 +272,7 @@ func Img(ctx *fasthttp.RequestCtx) {
 
 // FUNCTION DB //
 func GetMySQLDB() (db *sql.DB, err error) {
-	db, err = sql.Open("mysql", "root:12345678@tcp(127.0.0.1:3306)/pelao")
+	db, err = sql.Open("mysql", "root:12345678@tcp(127.0.0.1:3306)/mydatabase")
 	return
 }
 func GetUser(token string) bool {
